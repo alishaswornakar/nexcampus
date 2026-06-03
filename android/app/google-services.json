@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1069670402553",
+    "project_id": "nexcampus-a33c9",
+    "storage_bucket": "nexcampus-a33c9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069670402553:android:2e79b800b39de62362d528",
+        "android_client_info": {
+          "package_name": "com.example.nexcampus_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiHiGuKxN4JqjCnYkwES7u6IKGCXoOgco"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
