@@ -41,12 +41,14 @@ dependencies:
   firebase_analytics: ^12.4.2
   firebase_crashlytics: ^5.2.3
   firebase_auth: ^6.5.2
+  google_sign_in: ^6.1.4
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
 
   flutter_test:
     sdk: flutter
+  flutter_lints: ^2.0.3
 flutter_icons:
   android: true
   ios: true
@@ -57,7 +59,7 @@ flutter_icons:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^6.0.0
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

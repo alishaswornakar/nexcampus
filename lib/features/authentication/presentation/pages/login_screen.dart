@@ -1,33 +1,5 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class AppColors {
-  static const Color primary = Color(0xFF002B5B);
-  static const Color background = Colors.white;
-  static const Color border = Color(0xFFE5E7EB);
-  static const Color textSecondary = Color(0xFF6B7280);
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'NexCampus',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
-        scaffoldBackgroundColor: Colors.white,
-        useMaterial3: true,
-      ),
-      home: const LoginScreen(),
-    );
-  }
-}
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -45,19 +17,20 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
 
-              // Logo
+              /// Logo
               Container(
                 height: 90,
                 width: 90,
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
+                  color: AppTheme.primary,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Icon(Icons.school, color: Colors.white, size: 45),
@@ -68,9 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
               const Text(
                 "NexCampus",
                 style: TextStyle(
-                  fontSize: 32,
+                  fontSize: 30,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
+                  color: AppTheme.primary,
                 ),
               ),
 
@@ -78,12 +51,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const Text(
                 "The future campus for students",
-                style: TextStyle(color: AppColors.textSecondary),
+                style: TextStyle(color: AppTheme.textSecondary),
               ),
 
               const SizedBox(height: 50),
 
-              // Email
+              /// Email
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
@@ -98,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 20),
 
-              // Password
+              /// Password
               TextField(
                 controller: passwordController,
                 obscureText: obscureText,
@@ -129,50 +102,43 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {},
                   child: const Text(
                     "Forgot Password?",
-                    style: TextStyle(color: AppColors.primary),
+                    style: TextStyle(color: AppTheme.primary),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
 
-              // Login Button
+              /// Login Button
               SizedBox(
                 width: double.infinity,
                 height: 56,
-                child: ElevatedButton.icon(
+                child: ElevatedButton(
                   onPressed: () {
-                    // Firebase login here
+                    // Firebase Login
                   },
-                  icon: const Icon(Icons.login),
-                  label: const Text(
-                    "Login",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
+                    backgroundColor: AppTheme.primary,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                ),
-              ),
-
-              const SizedBox(height: 35),
-
-              const Row(
-                children: [
-                  Expanded(child: Divider()),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(
-                      "Institutional Sign-In",
-                      style: TextStyle(color: AppColors.textSecondary),
-                    ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Login",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Icon(Icons.login),
+                    ],
                   ),
-                  Expanded(child: Divider()),
-                ],
+                ),
               ),
 
               const SizedBox(height: 25),
@@ -186,7 +152,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       label: const Text("Google"),
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size.fromHeight(52),
-                        side: const BorderSide(color: AppColors.border),
+                        foregroundColor: AppTheme.textPrimary,
+                        side: const BorderSide(color: AppTheme.border),
                       ),
                     ),
                   ),
@@ -200,7 +167,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       label: const Text("Microsoft"),
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size.fromHeight(52),
-                        side: const BorderSide(color: AppColors.border),
+                        foregroundColor: AppTheme.textPrimary,
+                        side: const BorderSide(color: AppTheme.border),
                       ),
                     ),
                   ),
@@ -218,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: const Text(
                       "Sign Up",
                       style: TextStyle(
-                        color: AppColors.primary,
+                        color: AppTheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

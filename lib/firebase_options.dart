@@ -41,48 +41,48 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCMn-fE9yYkE8RSTufTZ84bpOL-VtF2isQ',
-    appId: '1:1069670402553:web:499a37f1c302184e62d528',
-    messagingSenderId: '1069670402553',
-    projectId: 'nexcampus-a33c9',
-    authDomain: 'nexcampus-a33c9.firebaseapp.com',
-    storageBucket: 'nexcampus-a33c9.firebasestorage.app',
-    measurementId: 'G-5XZ6YRZFNS',
+    apiKey: 'AIzaSyAEdsc7LhDZf46r8yprUIq3D5wdyqVEPZ0',
+    appId: '1:1023420981418:web:7be36d95229c473b2df0d3',
+    messagingSenderId: '1023420981418',
+    projectId: 'nex-campus-a6bda',
+    authDomain: 'nex-campus-a6bda.firebaseapp.com',
+    storageBucket: 'nex-campus-a6bda.firebasestorage.app',
+    measurementId: 'G-E633NB50PG',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDiHiGuKxN4JqjCnYkwES7u6IKGCXoOgco',
-    appId: '1:1069670402553:android:2e79b800b39de62362d528',
-    messagingSenderId: '1069670402553',
-    projectId: 'nexcampus-a33c9',
-    storageBucket: 'nexcampus-a33c9.firebasestorage.app',
+    apiKey: 'AIzaSyB_lbtIluZWzxTiRSfsjkH2VSWOv22z3bo',
+    appId: '1:1023420981418:android:54f72681bb564ba32df0d3',
+    messagingSenderId: '1023420981418',
+    projectId: 'nex-campus-a6bda',
+    storageBucket: 'nex-campus-a6bda.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyB1IsD-rQPMF2lPtb2RfQ-q2PUJYGfNRkE',
-    appId: '1:1069670402553:ios:afd2f64514eb998e62d528',
-    messagingSenderId: '1069670402553',
-    projectId: 'nexcampus-a33c9',
-    storageBucket: 'nexcampus-a33c9.firebasestorage.app',
+    apiKey: 'AIzaSyBBVtkpPO0AfPcaHFQ-wznge1xMjF-p3v8',
+    appId: '1:1023420981418:ios:56b5fb69290491a02df0d3',
+    messagingSenderId: '1023420981418',
+    projectId: 'nex-campus-a6bda',
+    storageBucket: 'nex-campus-a6bda.firebasestorage.app',
     iosBundleId: 'com.example.nexcampusApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyB1IsD-rQPMF2lPtb2RfQ-q2PUJYGfNRkE',
-    appId: '1:1069670402553:ios:afd2f64514eb998e62d528',
-    messagingSenderId: '1069670402553',
-    projectId: 'nexcampus-a33c9',
-    storageBucket: 'nexcampus-a33c9.firebasestorage.app',
+    apiKey: 'AIzaSyBBVtkpPO0AfPcaHFQ-wznge1xMjF-p3v8',
+    appId: '1:1023420981418:ios:56b5fb69290491a02df0d3',
+    messagingSenderId: '1023420981418',
+    projectId: 'nex-campus-a6bda',
+    storageBucket: 'nex-campus-a6bda.firebasestorage.app',
     iosBundleId: 'com.example.nexcampusApp',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCMn-fE9yYkE8RSTufTZ84bpOL-VtF2isQ',
-    appId: '1:1069670402553:web:a755002215e6f1cb62d528',
-    messagingSenderId: '1069670402553',
-    projectId: 'nexcampus-a33c9',
-    authDomain: 'nexcampus-a33c9.firebaseapp.com',
-    storageBucket: 'nexcampus-a33c9.firebasestorage.app',
-    measurementId: 'G-9QRKB3VYXY',
+    apiKey: 'AIzaSyAEdsc7LhDZf46r8yprUIq3D5wdyqVEPZ0',
+    appId: '1:1023420981418:web:1c7330dc1c9991bb2df0d3',
+    messagingSenderId: '1023420981418',
+    projectId: 'nex-campus-a6bda',
+    authDomain: 'nex-campus-a6bda.firebaseapp.com',
+    storageBucket: 'nex-campus-a6bda.firebasestorage.app',
+    measurementId: 'G-6MZWDZ5M0C',
   );
 }
