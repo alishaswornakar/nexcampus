@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
+import 'package:nexcampus_app/features/authentication/services/auth_service.dart';
+import 'package:nexcampus_app/features/student/screen/student_dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class SignUpScreen extends StatelessWidget {
+  const SignUpScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Sign Up')),
+      body: const Center(child: Text('Registration Screen')),
+    );
+  }
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -143,36 +157,45 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 25),
 
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.g_mobiledata),
-                      label: const Text("Google"),
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(52),
-                        foregroundColor: AppTheme.textPrimary,
-                        side: const BorderSide(color: AppTheme.border),
-                      ),
-                    ),
-                  ),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: OutlinedButton.icon(
+                  onPressed: () async {
+                    final user = await AuthService().signInWithGoogle();
 
-                  const SizedBox(width: 15),
+                    if (user != null && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Welcome ${user.displayName ?? user.email}',
+                          ),
+                        ),
+                      );
 
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.business),
-                      label: const Text("Microsoft"),
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(52),
-                        foregroundColor: AppTheme.textPrimary,
-                        side: const BorderSide(color: AppTheme.border),
-                      ),
-                    ),
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              StudentDashboardScreen(user: user),
+                        ),
+                      );
+                    }
+                  },
+                  icon: Image.asset(
+                    'assets/images/google_logo.png',
+                    height: 22,
                   ),
-                ],
+                  label: const Text(
+                    "Sign in with Google",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black87,
+                    side: const BorderSide(color: Color(0xFFDDDDDD)),
+                  ),
+                ),
               ),
 
               const SizedBox(height: 35),
@@ -182,7 +205,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const Text("New to the platform?"),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SignUpScreen()),
+                      );
+                    },
                     child: const Text(
                       "Sign Up",
                       style: TextStyle(
