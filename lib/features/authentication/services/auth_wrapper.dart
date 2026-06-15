@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nexcampus_app/features/authentication/presentation/pages/login_screen.dart';
-import 'package:nexcampus_app/features/student/screen/student_dashboard_screen.dart';
+import 'package:nexcampus_app/features/student/screens/student_dashboard_screen.dart';
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});

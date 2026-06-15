@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/authentication/services/auth_service.dart';
-import 'package:nexcampus_app/features/student/screen/student_dashboard_screen.dart';
+import 'package:nexcampus_app/features/student/screens/student_dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
