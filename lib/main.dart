@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nexcampus_app/features/authentication/blocs/auth/auth_bloc.dart';
+
 import 'firebase_options.dart';
-//import 'features/authentication/presentation/pages/login_screen.dart';
+
 import 'package:nexcampus_app/features/authentication/services/auth_wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(const NexCampusApp());
 }
@@ -17,13 +21,22 @@ class NexCampusApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'NexCampus',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AuthBloc(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'NexCampus',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          useMaterial3: true,
+        ),
 
-      // Initial Screen
-      home: const AuthWrapper(),
+        // ✅ This handles login / role routing
+        home: const AuthWrapper(),
+      ),
     );
   }
 }
