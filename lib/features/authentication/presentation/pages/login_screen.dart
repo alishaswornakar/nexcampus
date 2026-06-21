@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/authentication/services/auth_service.dart';
 import 'package:nexcampus_app/features/student/screens/student_dashboard_screen.dart';
+import 'package:nexcampus_app/features/authentication/presentation/pages/sign_up_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -10,23 +11,18 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Sign Up')),
-      body: const Center(child: Text('Registration Screen')),
-    );
-  }
-}
-
 class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   bool obscureText = true;
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const SizedBox(height: 40),
 
-              /// Logo
+              // Logo
               Container(
                 height: 90,
                 width: 90,
@@ -47,7 +43,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: AppTheme.primary,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Icon(Icons.school, color: Colors.white, size: 45),
+                child: const Icon(
+                  Icons.school,
+                  color: Colors.white,
+                  size: 45,
+                ),
               ),
 
               const SizedBox(height: 20),
@@ -70,12 +70,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 50),
 
-              /// Email
+              // Email
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
                   labelText: "Email",
-                  hintText: "e.g. 2024-12345",
                   prefixIcon: const Icon(Icons.email_outlined),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -85,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 20),
 
-              /// Password
+              // Password
               TextField(
                 controller: passwordController,
                 obscureText: obscureText,
@@ -123,13 +122,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 20),
 
-              /// Login Button
+              // Login Button
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Firebase Login
+                  onPressed: () async {
+                    // TODO: Email/password login
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primary,
@@ -157,6 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 25),
 
+              // Google Sign In
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -188,7 +188,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   label: const Text(
                     "Sign in with Google",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   style: OutlinedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -208,7 +211,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const SignUpScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const SignUpScreen(),
+                        ),
                       );
                     },
                     child: const Text(
