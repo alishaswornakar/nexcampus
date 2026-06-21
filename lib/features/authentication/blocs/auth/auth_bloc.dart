@@ -142,8 +142,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       emit(AuthAuthenticated(event.role));
     } catch (e) {
-      emit(AuthError("Signup failed. Try again."));
-    }
+  print("SIGNUP ERROR: $e");
+  emit(AuthError(e.toString()));
+}
   }
 
   // =========================

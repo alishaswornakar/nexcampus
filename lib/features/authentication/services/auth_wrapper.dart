@@ -71,9 +71,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:nexcampus_app/features/student/screens/student_dashboard_screen.dart';
-import 'package:nexcampus_app/features/teacher/screens/teacher_dashboard_screen.dart';
+
 import 'package:nexcampus_app/features/admin/screens/admin_dashboard_screen.dart';
 import 'package:nexcampus_app/features/authentication/presentation/pages/login_screen.dart';
+import 'package:nexcampus_app/features/teachers/screens/teacher_dashboard_screen.dart';
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
