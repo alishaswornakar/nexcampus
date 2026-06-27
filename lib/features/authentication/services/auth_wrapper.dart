@@ -66,7 +66,7 @@
 //     );
 //   }
 // }
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -80,8 +80,10 @@ class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
 
   Future<String?> _getRole(String uid) async {
-    final doc =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get();
 
     if (!doc.exists) return null;
     return doc['role'];
@@ -113,9 +115,11 @@ class AuthWrapper extends StatelessWidget {
               return const AdminDashboardScreen();
             } else if (role == 'teacher') {
               return const TeacherDashboardScreen();
-            } else {
-              return const StudentDashboardScreen();
+            } else if (role == 'student') {
+              return StudentDashboardScreen(user: user);
             }
+
+            return const Scaffold(body: Center(child: Text('Invalid role')));
           },
         );
       },

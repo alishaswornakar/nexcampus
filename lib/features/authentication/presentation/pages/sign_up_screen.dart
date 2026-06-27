@@ -22,10 +22,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _rollController = TextEditingController();
   final _departmentController = TextEditingController();
   final _employeeIdController = TextEditingController();
-
+  bool _isPasswordVisible = false;
   int _semester = 1;
   String selectedRole = "student";
-
+  String? _selectedDepartment;
   bool _isLoading = false;
 
   @override
@@ -45,23 +45,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final role = selectedRole;
 
     context.read<AuthBloc>().add(
-          SignupRequested(
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
-            fullName: _fullNameController.text.trim(),
-            roll: role == "student" ? _rollController.text.trim() : "",
-            department: _departmentController.text.trim(),
-            semester: role == "student" ? _semester.toString() : "",
-            role: role,
-          ),
-        );
+      SignupRequested(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+        fullName: _fullNameController.text.trim(),
+        roll: role == "student" ? _rollController.text.trim() : "",
+        department: _departmentController.text.trim(),
+        semester: role == "student" ? _semester.toString() : "",
+        role: role,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
-      appBar: AppBar(title: const Text("Create Account")),
+      appBar: AppBar(
+        backgroundColor: AppTheme.primary,
+        foregroundColor: Colors.white,
+        title: const Text(
+          "Account Registration",
+          /*style: TextStyle(fontSize: 14),*/
+        ),
+      ),
       body: BlocListener<AuthBloc, dynamic>(
         listener: (context, state) {
           if (state is AuthLoading) {
@@ -71,9 +78,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           }
 
           if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
 
           if (state is AuthAuthenticated) {
@@ -90,7 +97,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                 /// ROLE SELECTOR
                 DropdownButtonFormField<String>(
-                  value: selectedRole,
+                  initialValue: selectedRole,
                   decoration: const InputDecoration(
                     labelText: "Select Role",
                     border: OutlineInputBorder(),
@@ -98,7 +105,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   items: const [
                     DropdownMenuItem(value: "student", child: Text("Student")),
                     DropdownMenuItem(value: "teacher", child: Text("Teacher")),
-                    DropdownMenuItem(value: "admin", child: Text("Admin")),
                   ],
                   onChanged: (value) {
                     setState(() {
@@ -116,8 +122,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     labelText: "Full Name",
                     border: OutlineInputBorder(),
                   ),
-                  validator: (v) =>
-                      v == null || v.isEmpty ? "Required" : null,
+                  validator: (v) => v == null || v.isEmpty ? "Required" : null,
                 ),
 
                 const SizedBox(height: 12),
@@ -129,8 +134,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     labelText: "Email",
                     border: OutlineInputBorder(),
                   ),
-                  validator: (v) =>
-                      v == null || v.isEmpty ? "Required" : null,
+                  validator: (v) => v == null || v.isEmpty ? "Required" : null,
                 ),
 
                 const SizedBox(height: 12),
@@ -138,10 +142,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 /// PASSWORD
                 TextFormField(
                   controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
+                  obscureText: !_isPasswordVisible,
+                  decoration: InputDecoration(
                     labelText: "Password",
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
                   ),
                   validator: (v) =>
                       v != null && v.length < 6 ? "Min 6 chars" : null,
@@ -164,13 +180,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(height: 12),
 
                   DropdownButtonFormField<int>(
-                    value: _semester,
+                    initialValue: _semester,
                     decoration: const InputDecoration(
                       labelText: "Semester",
                       border: OutlineInputBorder(),
                     ),
                     items: List.generate(
-                      8,
+                      10,
                       (i) => DropdownMenuItem(
                         value: i + 1,
                         child: Text("Semester ${i + 1}"),
@@ -196,14 +212,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(height: 12),
 
                 /// DEPARTMENT (COMMON)
-                TextFormField(
-                  controller: _departmentController,
+                DropdownButtonFormField<String>(
+                  initialValue: _selectedDepartment,
                   decoration: const InputDecoration(
-                    labelText: "Department",
+                    labelText: "Select Department",
                     border: OutlineInputBorder(),
                   ),
-                  validator: (v) =>
-                      v == null || v.isEmpty ? "Required" : null,
+                  items: const [
+                    DropdownMenuItem(value: "Civil", child: Text("Civil")),
+                    DropdownMenuItem(
+                      value: "Computer",
+                      child: Text("Computer"),
+                    ),
+                    DropdownMenuItem(
+                      value: "Architecture",
+                      child: Text("Architecture"),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedDepartment = value;
+                    });
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Required";
+                    }
+                    return null;
+                  },
                 ),
 
                 const SizedBox(height: 20),
@@ -213,10 +249,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
                     onPressed: _isLoading ? null : _signup,
                     child: _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text("Create Account"),
+                        : const Text(
+                            "Create Account",
+                            style: TextStyle(color: Colors.white),
+                          ),
                   ),
                 ),
               ],
