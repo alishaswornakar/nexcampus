@@ -72,12 +72,12 @@
 //     }
 //   }
 // }
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nexcampus_app/features/authentication/services/auth_service.dart';
-
+import 'package:flutter/foundation.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
-
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService _authService = AuthService();
@@ -85,16 +85,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthInitial()) {
     on<LoginRequested>(_login);
     on<SignupRequested>(_signup);
-    on<GoogleLoginRequested>(_googleLogin); 
+    on<GoogleLoginRequested>(_googleLogin);
   }
 
   // =========================
   // EMAIL LOGIN
   // =========================
-  Future<void> _login(
-    LoginRequested event,
-    Emitter<AuthState> emit,
-  ) async {
+  Future<void> _login(LoginRequested event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
 
     try {
@@ -116,10 +113,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   // =========================
   // SIGNUP
   // =========================
-  Future<void> _signup(
-    SignupRequested event,
-    Emitter<AuthState> emit,
-  ) async {
+  Future<void> _signup(SignupRequested event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
 
     try {
@@ -142,13 +136,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       emit(AuthAuthenticated(event.role));
     } catch (e) {
-  print("SIGNUP ERROR: $e");
-  emit(AuthError(e.toString()));
-}
+      debugPrint("SIGNUP ERROR: $e");
+      emit(AuthError(e.toString()));
+    }
   }
 
   // =========================
-  // GOOGLE LOGIN 
+  // GOOGLE LOGIN
   // =========================
   Future<void> _googleLogin(
     GoogleLoginRequested event,
