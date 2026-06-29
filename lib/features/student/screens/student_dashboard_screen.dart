@@ -41,7 +41,6 @@ class StudentDashboardScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 10),
-
             const ScheduleCard(
               subject: "Data Structures",
               time: "09:00 AM - 10:00 AM",
