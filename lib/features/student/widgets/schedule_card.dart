@@ -13,7 +13,6 @@ class ScheduleCard extends StatelessWidget {
     required this.teacher,
     required this.room,
   });
-
   @override
   Widget build(BuildContext context) {
     return Container(
