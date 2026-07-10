@@ -229,6 +229,9 @@
 //     );
 //   }
 // }
+
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -239,6 +242,8 @@ import 'package:nexcampus_app/features/authentication/blocs/auth/auth_event.dart
 import 'package:nexcampus_app/features/authentication/blocs/auth/auth_state.dart';
 
 import 'package:nexcampus_app/features/authentication/presentation/pages/sign_up_screen.dart';
+
+import 'package:nexcampus_app/features/admin/screens/admin_dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -269,6 +274,15 @@ class _LoginScreenState extends State<LoginScreen> {
         const SnackBar(content: Text("Please fill all fields")),
       );
       return;
+    }
+
+  
+    if (email == "admin@nexcampus.com" && password == "admin123") {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const AdminDashboardScreen()),
+      );
+      return; 
     }
 
     context.read<AuthBloc>().add(

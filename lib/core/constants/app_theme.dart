@@ -10,4 +10,10 @@ class AppTheme {
   static const Color textSecondary = Color(0xFF6B7280);
 
   static const Color border = Color(0xFFE5E7EB);
+
+  static Color? get primaryColor => null;
+
+  static Color? get textPrimaryColor => null;
+
+  static Color? get textSecondaryColor => null;
 }
