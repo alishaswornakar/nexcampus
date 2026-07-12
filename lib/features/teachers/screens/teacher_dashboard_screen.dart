@@ -398,6 +398,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/features/authentication/presentation/pages/login_screen.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/department_screen.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/student_list_screen.dart';
 
 
 
@@ -458,20 +460,72 @@ class TeacherDashboard extends StatelessWidget {
             const Text("Quick Access",style: TextStyle(fontSize:22,fontWeight: FontWeight.bold)),
             const SizedBox(height:12),
             GridView.count(
-              shrinkWrap:true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount:2,
-              crossAxisSpacing:12,
-              mainAxisSpacing:12,
-              children:[
-                _feature(Icons.calendar_today,"Attendance",Colors.blue),
-                _feature(Icons.assignment,"Assignments",Colors.green),
-                _feature(Icons.grade,"Grades",Colors.orange),
-                _feature(Icons.campaign,"Notices",Colors.deepPurple),
-                _feature(Icons.group,"Students",Colors.red),
-                _feature(Icons.person,"Profile",Colors.teal),
-              ],
-            )
+  shrinkWrap: true,
+  physics: const NeverScrollableScrollPhysics(),
+  crossAxisCount: 2,
+  crossAxisSpacing: 12,
+  mainAxisSpacing: 12,
+  childAspectRatio: 1.05,
+  children: [
+    _feature(
+      Icons.calendar_today,
+      "Attendance",
+      Colors.blue,
+      () {
+        // TODO: Attendance Screen
+      },
+    ),
+
+    _feature(
+      Icons.assignment,
+      "Assignments",
+      Colors.green,
+      () {
+        // TODO: Assignment Screen
+      },
+    ),
+
+    _feature(
+      Icons.grade,
+      "Grades",
+      Colors.orange,
+      () {
+        // TODO: Grades Screen
+      },
+    ),
+
+    _feature(
+      Icons.campaign,
+      "Notices",
+      Colors.deepPurple,
+      () {
+        // TODO: Notice Screen
+      },
+    ),
+
+    _feature(
+  Icons.class_,
+  "Classes",
+  Colors.red,
+  () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const DepartmentScreen(),
+      ),
+    );
+  },
+),
+    _feature(
+      Icons.person,
+      "Profile",
+      Colors.teal,
+      () {
+        // TODO: Profile Screen
+      },
+    ),
+  ],
+),
           ],
         ),
       ),
@@ -566,18 +620,56 @@ class TeacherDashboard extends StatelessWidget {
     child: Column(children:[Icon(i,color:c),const SizedBox(height:8),Text(v,style: const TextStyle(fontWeight: FontWeight.bold,fontSize:22)),Text(t)]),
   );
 
-  Widget _feature(IconData i,String t,Color c)=>Container(
-    decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(14)),
-    child: InkWell(
-      onTap:(){},
-      child: Column(mainAxisAlignment: MainAxisAlignment.center,children:[
-        CircleAvatar(backgroundColor:c.withOpacity(.15),child: Icon(i,color:c)),
-        const SizedBox(height:10),
-        Text(t,style: const TextStyle(fontWeight: FontWeight.bold))
-      ]),
+ 
+ Widget _feature(
+  IconData icon,
+  String title,
+  Color color,
+  VoidCallback onTap,
+) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(14),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.15),
+          blurRadius: 8,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: color.withOpacity(.15),
+              child: Icon(
+                icon,
+                color: color,
+                size: 28,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+            ),
+          ],
+        ),
+      ),
     ),
   );
-
+}
   Future<void> _logout(BuildContext context) async{
     final ok = await showDialog<bool>(
       context: context,

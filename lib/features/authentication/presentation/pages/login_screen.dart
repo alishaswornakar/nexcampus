@@ -234,7 +234,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import 'package:nexcampus_app/features/authentication/blocs/auth/auth_bloc.dart';
@@ -244,6 +244,8 @@ import 'package:nexcampus_app/features/authentication/blocs/auth/auth_state.dart
 import 'package:nexcampus_app/features/authentication/presentation/pages/sign_up_screen.dart';
 
 import 'package:nexcampus_app/features/admin/screens/admin_dashboard_screen.dart';
+import 'package:nexcampus_app/features/student/screens/student_dashboard_screen.dart';
+import 'package:nexcampus_app/features/teachers/screens/teacher_dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -305,14 +307,31 @@ class _LoginScreenState extends State<LoginScreen> {
         }
 
         if (state is AuthAuthenticated) {
-          if (state.role == 'admin') {
-            Navigator.pushReplacementNamed(context, '/admin');
-          } else if (state.role == 'teacher') {
-            Navigator.pushReplacementNamed(context, '/teacher');
-          } else {
-            Navigator.pushReplacementNamed(context, '/student');
-          }
-        }
+  if (state.role == 'admin') {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const AdminDashboardScreen(),
+      ),
+    );
+  } else if (state.role == 'teacher') {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const TeacherDashboard(),
+      ),
+    );
+  }final user = FirebaseAuth.instance.currentUser;
+
+if (user != null) {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (_) => StudentDashboardScreen(user: user),
+    ),
+  );
+}
+}
 
         if (state is AuthError) {
           ScaffoldMessenger.of(context).showSnackBar(
