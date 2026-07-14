@@ -32,7 +32,7 @@ class QuickTile extends StatelessWidget {
             Text(
               label,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: 10),
             ),
           ],
         ),
