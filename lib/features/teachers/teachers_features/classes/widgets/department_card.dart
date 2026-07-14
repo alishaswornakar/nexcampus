@@ -21,9 +21,7 @@ class DepartmentCard extends StatelessWidget {
     return Card(
       elevation: 4,
       margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
         onTap: onTap,
@@ -33,20 +31,15 @@ class DepartmentCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 30,
-                backgroundColor: color.withOpacity(.15),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 30,
-                ),
+                backgroundColor: color.withValues(alpha: 0.15),
+                child: Icon(icon, color: color, size: 30),
               ),
 
               const SizedBox(width: 18),
 
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
@@ -60,9 +53,7 @@ class DepartmentCard extends StatelessWidget {
 
                     Text(
                       "$totalStudents Students",
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
-                      ),
+                      style: TextStyle(color: Colors.grey.shade700),
                     ),
 
                     const SizedBox(height: 4),
@@ -72,10 +63,7 @@ class DepartmentCard extends StatelessWidget {
                 ),
               ),
 
-              const Icon(
-                Icons.arrow_forward_ios,
-                size: 18,
-              ),
+              const Icon(Icons.arrow_forward_ios, size: 18),
             ],
           ),
         ),
