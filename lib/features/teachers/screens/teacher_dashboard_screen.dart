@@ -397,6 +397,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/features/authentication/presentation/pages/login_screen.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/department_screen.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/student_list_screen.dart';
 
 class TeacherDashboard extends StatelessWidget {
   const TeacherDashboard({super.key});
@@ -444,6 +446,7 @@ class TeacherDashboard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             teacherWelcomeCard(),
+<<<<<<< HEAD
             const SizedBox(height: 20),
             const Text(
               "Overview",
@@ -504,6 +507,92 @@ class TeacherDashboard extends StatelessWidget {
                 _feature(Icons.person, "Profile", Colors.teal),
               ],
             ),
+=======
+            const SizedBox(height:20),
+            const Text("Overview",style: TextStyle(fontSize:22,fontWeight: FontWeight.bold)),
+            const SizedBox(height:12),
+            Row(children:[
+              Expanded(child:_stat("Classes","6",Icons.class_,Colors.orange)),
+              const SizedBox(width:12),
+              Expanded(child:_stat("Students","180",Icons.people,Colors.green)),
+            ]),
+            const SizedBox(height:12),
+            Row(children:[
+              Expanded(child:_stat("Assignments","12",Icons.assignment,Colors.purple)),
+              const SizedBox(width:12),
+              Expanded(child:_stat("Attendance","95%",Icons.check_circle,Colors.red)),
+            ]),
+            const SizedBox(height:24),
+            const Text("Quick Access",style: TextStyle(fontSize:22,fontWeight: FontWeight.bold)),
+            const SizedBox(height:12),
+            GridView.count(
+  shrinkWrap: true,
+  physics: const NeverScrollableScrollPhysics(),
+  crossAxisCount: 2,
+  crossAxisSpacing: 12,
+  mainAxisSpacing: 12,
+  childAspectRatio: 1.05,
+  children: [
+    _feature(
+      Icons.calendar_today,
+      "Attendance",
+      Colors.blue,
+      () {
+        // TODO: Attendance Screen
+      },
+    ),
+
+    _feature(
+      Icons.assignment,
+      "Assignments",
+      Colors.green,
+      () {
+        // TODO: Assignment Screen
+      },
+    ),
+
+    _feature(
+      Icons.grade,
+      "Grades",
+      Colors.orange,
+      () {
+        // TODO: Grades Screen
+      },
+    ),
+
+    _feature(
+      Icons.campaign,
+      "Notices",
+      Colors.deepPurple,
+      () {
+        // TODO: Notice Screen
+      },
+    ),
+
+    _feature(
+  Icons.class_,
+  "Classes",
+  Colors.red,
+  () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const DepartmentScreen(),
+      ),
+    );
+  },
+),
+    _feature(
+      Icons.person,
+      "Profile",
+      Colors.teal,
+      () {
+        // TODO: Profile Screen
+      },
+    ),
+  ],
+),
+>>>>>>> 5638de26a34f360ab2926bf0bbcecf8df6723dfb
           ],
         ),
       ),
@@ -588,6 +677,7 @@ class TeacherDashboard extends StatelessWidget {
 
   Widget _stat(String t, String v, IconData i, Color c) => Container(
     padding: const EdgeInsets.all(16),
+<<<<<<< HEAD
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(14),
@@ -627,6 +717,63 @@ class TeacherDashboard extends StatelessWidget {
   );
 
   Future<void> _logout(BuildContext context) async {
+=======
+    decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(14)),
+    child: Column(children:[Icon(i,color:c),const SizedBox(height:8),Text(v,style: const TextStyle(fontWeight: FontWeight.bold,fontSize:22)),Text(t)]),
+  );
+
+ 
+ Widget _feature(
+  IconData icon,
+  String title,
+  Color color,
+  VoidCallback onTap,
+) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(14),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.15),
+          blurRadius: 8,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: color.withOpacity(.15),
+              child: Icon(
+                icon,
+                color: color,
+                size: 28,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+  Future<void> _logout(BuildContext context) async{
+>>>>>>> 5638de26a34f360ab2926bf0bbcecf8df6723dfb
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
