@@ -38,7 +38,7 @@ class QuickAccessGrid extends StatelessWidget {
             QuickTile(
               icon: Icons.calendar_today,
               label: "Attendance",
-              onTap: () => Navigator.pushReplacement(
+              onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => AttendanceScreen(studentId: studentId),

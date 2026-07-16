@@ -512,7 +512,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.2"
-<<<<<<< HEAD
   intl:
     dependency: "direct main"
     description:
@@ -521,8 +520,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.20.3"
-=======
->>>>>>> 6b8329a011f5b2f160e8ac1edacdc2836bff8ef7
   json_annotation:
     dependency: transitive
     description:
@@ -739,7 +736,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
-<<<<<<< HEAD
   simple_gesture_detector:
     dependency: transitive
     description:
@@ -748,8 +744,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1"
-=======
->>>>>>> 6b8329a011f5b2f160e8ac1edacdc2836bff8ef7
   sky_engine:
     dependency: transitive
     description: flutter
@@ -787,7 +781,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
-<<<<<<< HEAD
   table_calendar:
     dependency: "direct main"
     description:
@@ -796,8 +789,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.0"
-=======
->>>>>>> 6b8329a011f5b2f160e8ac1edacdc2836bff8ef7
   term_glyph:
     dependency: transitive
     description:
