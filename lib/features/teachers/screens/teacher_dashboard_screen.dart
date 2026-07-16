@@ -397,6 +397,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/features/authentication/presentation/pages/login_screen.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/attendance/screens/attendance_department_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/department_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/student_list_screen.dart';
 
@@ -499,9 +500,20 @@ class TeacherDashboard extends StatelessWidget {
               mainAxisSpacing: 12,
               childAspectRatio: 1.05,
               children: [
-                _feature(Icons.calendar_today, "Attendance", Colors.blue, () {
-                  // TODO: Attendance Screen
-                }),
+               _feature(
+  Icons.calendar_today,
+  "Attendance",
+  Colors.blue,
+  () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            const AttendanceDepartmentScreen(),
+      ),
+    );
+  },
+),
 
                 _feature(Icons.assignment, "Assignments", Colors.green, () {
                   // TODO: Assignment Screen
