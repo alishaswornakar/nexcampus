@@ -14,7 +14,10 @@ class AdminDashboardScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF6F5FB),
       appBar: AppBar(
         backgroundColor: AppTheme.primaryColor,
-        title: const Text("Admin Dashboard", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        title: const Text(
+          "Admin Dashboard",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.black),
@@ -25,7 +28,7 @@ class AdminDashboardScreen extends StatelessWidget {
                 (route) => false,
               );
             },
-          )
+          ),
         ],
       ),
       body: Padding(
@@ -35,12 +38,19 @@ class AdminDashboardScreen extends StatelessWidget {
           children: [
             Text(
               "Admin Services",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryColor),
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textPrimaryColor,
+              ),
             ),
             const SizedBox(height: 5),
-            Text("Select a service to manage NexCampus operations", style: TextStyle(color: AppTheme.textSecondaryColor)),
+            Text(
+              "Select a service to manage NexCampus operations",
+              style: TextStyle(color: AppTheme.textSecondaryColor),
+            ),
             const SizedBox(height: 25),
-            
+
             // Grid View for Admin Services
             Expanded(
               child: GridView.count(
@@ -78,24 +88,43 @@ class AdminDashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildServiceCard(BuildContext context, {required String title, required IconData icon, required Color color, required Widget targetScreen}) {
+  Widget _buildServiceCard(
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    required Color color,
+    required Widget targetScreen,
+  }) {
     return InkWell(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => targetScreen)),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => targetScreen),
+      ),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircleAvatar(radius: 30, backgroundColor: color.withOpacity(0.1), child: Icon(icon, color: color, size: 32)),
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: color.withValues(alpha: 0.1),
+              child: Icon(icon, color: color, size: 32),
+            ),
             const SizedBox(height: 15),
             Text(
-              title, 
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16), 
-              textAlign: TextAlign.center, 
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              textAlign: TextAlign.center,
             ),
           ],
         ),

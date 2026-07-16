@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
 
 import 'quick_tile.dart';
+import '../screens/alerts_screen.dart';
+import '../screens/attendance_screen.dart';
+import '../screens/digital_queue_screen.dart';
+import '../screens/notes_screen.dart';
+import '../screens/syllabus_screen.dart';
+import '../screens/schedule_screen.dart';
+import '../screens/fees_screen.dart';
+import '../screens/notices_screen.dart';
+import '../screens/issue_reporting_screen.dart';
+import '../screens/team_finder_screen.dart';
 
 class QuickAccessGrid extends StatelessWidget {
   const QuickAccessGrid({super.key});
@@ -23,19 +33,111 @@ class QuickAccessGrid extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 10,
           crossAxisSpacing: 10,
-          children: const [
-            QuickTile(icon: Icons.calendar_today, label: "Attendance"),
-            QuickTile(icon: Icons.assignment, label: "Pending"),
-            QuickTile(icon: Icons.star, label: "GPA"),
-            QuickTile(icon: Icons.notifications, label: "Alerts"),
-            QuickTile(icon: Icons.menu_book, label: "Notes"),
-            QuickTile(icon: Icons.book, label: "Syllabus"),
-            QuickTile(icon: Icons.schedule, label: "Schedule"),
-            QuickTile(icon: Icons.payment, label: "Fees"),
-            QuickTile(icon: Icons.campaign, label: "Notices"),
-            QuickTile(icon: Icons.support_agent, label: "Support"),
-            QuickTile(icon: Icons.local_library, label: "Library"),
-            QuickTile(icon: Icons.group, label: "Clubs"),
+          children: [
+            QuickTile(
+              icon: Icons.calendar_today,
+              label: "Attendance",
+              onTap: () => Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AttendanceScreen(),
+                ),
+              ),
+            ),
+            // QuickTile(
+            //   icon: Icons.assignment,
+            //   label: "Tasks",
+            //   onTap: () => Navigator.pushReplacement(
+            //     context,
+            //     MaterialPageRoute(builder: (context) => const TasksScreen()),
+            //   ),
+            // ),
+            // QuickTile(
+            //   icon: Icons.queue,
+            //   label: "Digital Queue",
+            //   onTap: () => Navigator.pushReplacement(
+            //     context,
+            //     MaterialPageRoute(
+            //       builder: (context) => const DigitalQueueScreen(),
+            //     ),
+            //   ),
+            // ),
+            // QuickTile(
+            //   icon: Icons.notifications,
+            //   label: "Alerts",
+            //   onTap: () => Navigator.pushReplacement(
+            //     context,
+            //     MaterialPageRoute(builder: (context) => const AlertsScreen()),
+            //   ),
+            // ),
+            // QuickTile(
+            //   icon: Icons.menu_book,
+            //   label: "Notes",
+            //   onTap: () => Navigator.pushReplacement(
+            //     context,
+            //     MaterialPageRoute(builder: (context) => const NotesScreen()),
+            //   ),
+            // ),
+            // QuickTile(
+            //   icon: Icons.book,
+            //   label: "Syllabus",
+            //   onTap: () => Navigator.pushReplacement(
+            //     context,
+            //     MaterialPageRoute(builder: (context) => const SyllabusScreen()),
+            //   ),
+            // ),
+            // QuickTile(
+            //   icon: Icons.schedule,
+            //   label: "Schedule",
+            //   onTap: () => Navigator.pushReplacement(
+            //     context,
+            //     MaterialPageRoute(builder: (context) => const ScheduleScreen()),
+            //   ),
+            // ),
+            // QuickTile(
+            //   icon: Icons.payment,
+            //   label: "Fees",
+            //   onTap: () => Navigator.pushReplacement(
+            //     context,
+            //     MaterialPageRoute(builder: (context) => const FeesScreen()),
+            //   ),
+            // ),
+            // QuickTile(
+            //   icon: Icons.campaign,
+            //   label: "Notices",
+            //   onTap: () => Navigator.pushReplacement(
+            //     context,
+            //     MaterialPageRoute(builder: (context) => const NoticesScreen()),
+            //   ),
+            // ),
+            // QuickTile(
+            //   icon: Icons.support_agent,
+            //   label: "Issue",
+            //   onTap: () => Navigator.pushReplacement(
+            //     context,
+            //     MaterialPageRoute(
+            //       builder: (context) => const IssueReportingScreen(),
+            //     ),
+            //   ),
+            // ),
+            // QuickTile(
+            //   icon: Icons.local_library,
+            //   label: "Library",
+            //   onTap: () => Navigator.pushReplacement(
+            //     context,
+            //     MaterialPageRoute(builder: (context) => const LibraryScreen()),
+            //   ),
+            // ),
+            // QuickTile(
+            //   icon: Icons.group,
+            //   label: "Team",
+            //   onTap: () => Navigator.pushReplacement(
+            //     context,
+            //     MaterialPageRoute(
+            //       builder: (context) => const TeamFinderScreen(),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ],

@@ -4,7 +4,6 @@
 
 // // Import your login screen
 
-
 // class TeacherDashboard extends StatelessWidget {
 //   const TeacherDashboard({super.key});
 
@@ -401,8 +400,6 @@ import 'package:nexcampus_app/features/authentication/presentation/pages/login_s
 import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/department_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/student_list_screen.dart';
 
-
-
 class TeacherDashboard extends StatelessWidget {
   const TeacherDashboard({super.key});
 
@@ -412,28 +409,35 @@ class TeacherDashboard extends StatelessWidget {
       backgroundColor: const Color(0xffF5F7FA),
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: const Text('Teacher Dashboard', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Teacher Dashboard',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications,color: Colors.white),
+            icon: const Icon(Icons.notifications, color: Colors.white),
             onPressed: () {},
           ),
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert,color: Colors.white),
-            onSelected: (v){
-              if(v=="logout"){_logout(context);}
+            icon: const Icon(Icons.more_vert, color: Colors.white),
+            onSelected: (v) {
+              if (v == "logout") {
+                _logout(context);
+              }
             },
             itemBuilder: (_) => const [
               PopupMenuItem(
                 value: "logout",
-                child: Row(children:[
-                  Icon(Icons.logout,color: Colors.red),
-                  SizedBox(width:8),
-                  Text("Logout")
-                ]),
-              )
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, color: Colors.red),
+                    SizedBox(width: 8),
+                    Text("Logout"),
+                  ],
+                ),
+              ),
             ],
-          )
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -442,253 +446,260 @@ class TeacherDashboard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             teacherWelcomeCard(),
-            const SizedBox(height:20),
-            const Text("Overview",style: TextStyle(fontSize:22,fontWeight: FontWeight.bold)),
-            const SizedBox(height:12),
-            Row(children:[
-              Expanded(child:_stat("Classes","6",Icons.class_,Colors.orange)),
-              const SizedBox(width:12),
-              Expanded(child:_stat("Students","180",Icons.people,Colors.green)),
-            ]),
-            const SizedBox(height:12),
-            Row(children:[
-              Expanded(child:_stat("Assignments","12",Icons.assignment,Colors.purple)),
-              const SizedBox(width:12),
-              Expanded(child:_stat("Attendance","95%",Icons.check_circle,Colors.red)),
-            ]),
-            const SizedBox(height:24),
-            const Text("Quick Access",style: TextStyle(fontSize:22,fontWeight: FontWeight.bold)),
-            const SizedBox(height:12),
-            GridView.count(
-  shrinkWrap: true,
-  physics: const NeverScrollableScrollPhysics(),
-  crossAxisCount: 2,
-  crossAxisSpacing: 12,
-  mainAxisSpacing: 12,
-  childAspectRatio: 1.05,
-  children: [
-    _feature(
-      Icons.calendar_today,
-      "Attendance",
-      Colors.blue,
-      () {
-        // TODO: Attendance Screen
-      },
-    ),
-
-    _feature(
-      Icons.assignment,
-      "Assignments",
-      Colors.green,
-      () {
-        // TODO: Assignment Screen
-      },
-    ),
-
-    _feature(
-      Icons.grade,
-      "Grades",
-      Colors.orange,
-      () {
-        // TODO: Grades Screen
-      },
-    ),
-
-    _feature(
-      Icons.campaign,
-      "Notices",
-      Colors.deepPurple,
-      () {
-        // TODO: Notice Screen
-      },
-    ),
-
-    _feature(
-  Icons.class_,
-  "Classes",
-  Colors.red,
-  () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const DepartmentScreen(),
-      ),
-    );
-  },
-),
-    _feature(
-      Icons.person,
-      "Profile",
-      Colors.teal,
-      () {
-        // TODO: Profile Screen
-      },
-    ),
-  ],
-),
-          ],
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(items:[
-        BottomNavigationBarItem(icon:Icon(Icons.home),label:"Home"),
-        BottomNavigationBarItem(icon:Icon(Icons.class_),label:"Classes"),
-        BottomNavigationBarItem(icon:Icon(Icons.person),label:"Profile"),
-      ]),
-    );
-  }
-
-  Widget teacherWelcomeCard() {
-  final user = FirebaseAuth.instance.currentUser;
-
-  return StreamBuilder<DocumentSnapshot>(
-    stream: FirebaseFirestore.instance
-        .collection('users')
-        .doc(user!.uid)
-        .snapshots(),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return const CircularProgressIndicator();
-      }
-
-      String teacherName = "Teacher";
-
-      // First try Firebase Authentication displayName
-      if (user.displayName != null &&
-          user.displayName!.trim().isNotEmpty) {
-        teacherName = user.displayName!;
-      }
-
-      // If displayName is empty, use Firestore fullName
-      if (snapshot.hasData && snapshot.data!.exists) {
-        final data = snapshot.data!.data() as Map<String, dynamic>;
-
-        if (data['fullName'] != null &&
-            data['fullName'].toString().isNotEmpty) {
-          teacherName = data['fullName'];
-        }
-      }
-
-      return Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Row(
-          children: [
-            const CircleAvatar(
-              radius: 35,
-              backgroundColor: Colors.white,
-              child: Icon(
-                Icons.person,
-                size: 40,
-                color: Colors.blue,
-              ),
+            const SizedBox(height: 20),
+            const Text(
+              "Overview",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(width: 15),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(height: 12),
+            Row(
               children: [
-                const Text(
-                  "Welcome",
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 16,
+                Expanded(
+                  child: _stat("Classes", "6", Icons.class_, Colors.orange),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _stat("Students", "180", Icons.people, Colors.green),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _stat(
+                    "Assignments",
+                    "12",
+                    Icons.assignment,
+                    Colors.purple,
                   ),
                 ),
-                const SizedBox(height: 5),
-                Text(
-                  teacherName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _stat(
+                    "Attendance",
+                    "95%",
+                    Icons.check_circle,
+                    Colors.red,
                   ),
                 ),
               ],
             ),
-          ],
-        ),
-      );
-    },
-  );
-}
-
-  Widget _stat(String t,String v,IconData i,Color c)=>Container(
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(14)),
-    child: Column(children:[Icon(i,color:c),const SizedBox(height:8),Text(v,style: const TextStyle(fontWeight: FontWeight.bold,fontSize:22)),Text(t)]),
-  );
-
- 
- Widget _feature(
-  IconData icon,
-  String title,
-  Color color,
-  VoidCallback onTap,
-) {
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(14),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.grey.withOpacity(0.15),
-          blurRadius: 8,
-          offset: const Offset(0, 4),
-        ),
-      ],
-    ),
-    child: Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: onTap,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: color.withOpacity(.15),
-              child: Icon(
-                icon,
-                color: color,
-                size: 28,
-              ),
+            const SizedBox(height: 24),
+            const Text(
+              "Quick Access",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            Text(
-              title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-              ),
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.05,
+              children: [
+                _feature(Icons.calendar_today, "Attendance", Colors.blue, () {
+                  // TODO: Attendance Screen
+                }),
+
+                _feature(Icons.assignment, "Assignments", Colors.green, () {
+                  // TODO: Assignment Screen
+                }),
+
+                _feature(Icons.grade, "Grades", Colors.orange, () {
+                  // TODO: Grades Screen
+                }),
+
+                _feature(Icons.campaign, "Notices", Colors.deepPurple, () {
+                  // TODO: Notice Screen
+                }),
+
+                _feature(Icons.class_, "Classes", Colors.red, () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const DepartmentScreen()),
+                  );
+                }),
+                _feature(Icons.person, "Profile", Colors.teal, () {
+                  // TODO: Profile Screen
+                }),
+              ],
             ),
           ],
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.class_), label: "Classes"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+        ],
+      ),
+    );
+  }
+
+  Widget teacherWelcomeCard() {
+    final user = FirebaseAuth.instance.currentUser;
+
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }
+
+        String teacherName = "Teacher";
+
+        // First try Firebase Authentication displayName
+        if (user.displayName != null && user.displayName!.trim().isNotEmpty) {
+          teacherName = user.displayName!;
+        }
+
+        // If displayName is empty, use Firestore fullName
+        if (snapshot.hasData && snapshot.data!.exists) {
+          final data = snapshot.data!.data() as Map<String, dynamic>;
+
+          if (data['fullName'] != null &&
+              data['fullName'].toString().isNotEmpty) {
+            teacherName = data['fullName'];
+          }
+        }
+
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.blue,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Row(
+            children: [
+              const CircleAvatar(
+                radius: 35,
+                backgroundColor: Colors.white,
+                child: Icon(Icons.person, size: 40, color: Colors.blue),
+              ),
+              const SizedBox(width: 15),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Welcome",
+                    style: TextStyle(color: Colors.white70, fontSize: 16),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    teacherName,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _stat(String t, String v, IconData i, Color c) => Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(14),
+    ),
+    child: Column(
+      children: [
+        Icon(i, color: c),
+        const SizedBox(height: 8),
+        Text(
+          v,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+        ),
+        Text(t),
+      ],
     ),
   );
-}
-  Future<void> _logout(BuildContext context) async{
+
+  Widget _feature(
+    IconData icon,
+    String title,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withValues(alpha: 0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onTap,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 28,
+                backgroundColor: color.withValues(alpha: 0.15),
+                child: Icon(icon, color: color, size: 28),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _logout(BuildContext context) async {
     final ok = await showDialog<bool>(
       context: context,
-      builder: (_)=>AlertDialog(
+      builder: (_) => AlertDialog(
         title: const Text("Logout"),
         content: const Text("Are you sure you want to logout?"),
-        actions:[
-          TextButton(onPressed:()=>Navigator.pop(context,false), child: const Text("Cancel")),
-          ElevatedButton(onPressed:()=>Navigator.pop(context,true), child: const Text("Logout")),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Logout"),
+          ),
         ],
-      )
+      ),
     );
-    if(ok==true){
+    if (ok == true) {
       await FirebaseAuth.instance.signOut();
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_)=> const LoginScreen()),
-        (r)=>false,
-      );
+      if (context.mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (r) => false,
+        );
+      }
     }
   }
 }
