@@ -28,6 +28,7 @@ class NexCampusApp extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => AuthBloc(),
+        
         ),
       ],
       child: MaterialApp(

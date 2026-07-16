@@ -20,20 +20,22 @@ class StudentModel {
   });
 
   factory StudentModel.fromMap(
-    Map<String, dynamic> map,
-    String documentId,
-  ) {
-    return StudentModel(
-      uid: map['uid'] ?? documentId,
-      fullName: map['fullName'] ?? '',
-      email: map['email'] ?? '',
-      department: map['department'] ?? '',
-      semester: map['semester']?.toInt(), 
-      roll: map['roll'] ?? '',
-      role: map['role'] ?? '',
-      photoUrl: map['photoUrl'] ?? '',
-    );
-  }
+  Map<String, dynamic> map,
+  String documentId,
+) {
+  return StudentModel(
+    uid: map['uid'] ?? documentId,
+    fullName: map['fullName'] ?? '',
+    email: map['email'] ?? '',
+    department: map['department'] ?? '',
+    semester: map['semester'] != null
+        ? int.tryParse(map['semester'].toString())
+        : null,
+    roll: map['roll'] ?? '',
+    role: map['role'] ?? '',
+    photoUrl: map['photoUrl'] ?? '',
+  );
+}
 
   Map<String, dynamic> toMap() {
     return {

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -419,10 +420,18 @@ class _AttendanceViewState extends State<_AttendanceView> {
       ],
     );
   }
+=======
+
+import 'package:flutter/material.dart';
+
+class AttendanceScreen extends StatelessWidget {
+  const AttendanceScreen({Key? key}) : super(key: key);
+>>>>>>> 6b8329a011f5b2f160e8ac1edacdc2836bff8ef7
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+<<<<<<< HEAD
       appBar: _buildAppBar(),
       body: BlocConsumer<AttendanceBloc, AttendanceState>(
         listener: (context, state) {
@@ -459,3 +468,14 @@ class _AttendanceViewState extends State<_AttendanceView> {
     );
   }
 }
+=======
+      appBar: AppBar(
+        title: const Text('Attendance'),
+      ),
+      body: const Center(
+        child: Text('Attendance Screen'),
+      ),
+    );
+  }
+}
+>>>>>>> 6b8329a011f5b2f160e8ac1edacdc2836bff8ef7

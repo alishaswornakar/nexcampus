@@ -13,8 +13,10 @@ class DepartmentScreen extends StatelessWidget {
     final repository = ClassesRepository(ClassesService());
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Classes"), centerTitle: true),
-
+      appBar: AppBar(
+        title: const Text("Classes"),
+        centerTitle: true,
+      ),
       body: FutureBuilder<List<int>>(
         future: Future.wait([
           repository.totalStudents("Computer Engineering"),
@@ -23,7 +25,9 @@ class DepartmentScreen extends StatelessWidget {
         ]),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
 
           final counts = snapshot.data!;
@@ -32,7 +36,7 @@ class DepartmentScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             children: [
               DepartmentCard(
-                title: "Computer Engineering",
+                title: "Computer",
                 icon: Icons.computer,
                 color: Colors.blue,
                 totalStudents: counts[0],
@@ -49,7 +53,7 @@ class DepartmentScreen extends StatelessWidget {
               ),
 
               DepartmentCard(
-                title: "Civil Engineering",
+                title: "Civil",
                 icon: Icons.architecture,
                 color: Colors.orange,
                 totalStudents: counts[1],
@@ -57,15 +61,16 @@ class DepartmentScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          const SemesterScreen(department: "Civil Engineering"),
+                      builder: (_) => const SemesterScreen(
+                        department: "Civil Engineering",
+                      ),
                     ),
                   );
                 },
               ),
 
               DepartmentCard(
-                title: "Architecture Engineering",
+                title: "Architecture",
                 icon: Icons.apartment,
                 color: Colors.deepPurple,
                 totalStudents: counts[2],
