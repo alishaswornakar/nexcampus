@@ -10,26 +10,18 @@ class DepartmentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final repository =
-        ClassesRepository(ClassesService());
+    final repository = ClassesRepository(ClassesService());
 
     return Scaffold(
       appBar: AppBar(
         title: const Text("Classes"),
         centerTitle: true,
       ),
-
       body: FutureBuilder<List<int>>(
         future: Future.wait([
-          repository.totalStudents(
-            "Computer",
-          ),
-          repository.totalStudents(
-            "Civil",
-          ),
-          repository.totalStudents(
-            "Architecture",
-          ),
+          repository.totalStudents("Computer Engineering"),
+          repository.totalStudents("Civil Engineering"),
+          repository.totalStudents("Architecture Engineering"),
         ]),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -43,7 +35,6 @@ class DepartmentScreen extends StatelessWidget {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-
               DepartmentCard(
                 title: "Computer",
                 icon: Icons.computer,
@@ -53,10 +44,8 @@ class DepartmentScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          const SemesterScreen(
-                        department:
-                            "Computer Engineering",
+                      builder: (_) => const SemesterScreen(
+                        department: "Computer Engineering",
                       ),
                     ),
                   );
@@ -72,10 +61,8 @@ class DepartmentScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          const SemesterScreen(
-                        department:
-                            "Civil",
+                      builder: (_) => const SemesterScreen(
+                        department: "Civil Engineering",
                       ),
                     ),
                   );
@@ -83,8 +70,7 @@ class DepartmentScreen extends StatelessWidget {
               ),
 
               DepartmentCard(
-                title:
-                    "Architecture",
+                title: "Architecture",
                 icon: Icons.apartment,
                 color: Colors.deepPurple,
                 totalStudents: counts[2],
@@ -92,10 +78,8 @@ class DepartmentScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          const SemesterScreen(
-                        department:
-                            "Architecture Engineering",
+                      builder: (_) => const SemesterScreen(
+                        department: "Architecture Engineering",
                       ),
                     ),
                   );
