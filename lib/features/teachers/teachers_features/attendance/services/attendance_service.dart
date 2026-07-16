@@ -41,23 +41,22 @@ class AttendanceService {
 
   /// Attendance history
   Stream<List<AttendanceModel>> attendanceHistory({
-    required String department,
-    required String semester,
-  }) {
-    return attendanceCollection
-        .where("department", isEqualTo: department)
-        .where("semester", isEqualTo: semester)
-        .orderBy("createdAt", descending: true)
-        .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map(
-                (doc) => AttendanceModel.fromMap(
-                  doc.data() as Map<String, dynamic>,
-                  doc.id,
-                ),
-              )
-              .toList(),
-        );
-  }
+  required String department,
+  required String semester,
+}) {
+  return attendanceCollection
+      .where("department", isEqualTo: department)
+      .where("semester", isEqualTo: semester)
+      .snapshots()
+      .map(
+        (snapshot) => snapshot.docs
+            .map(
+              (doc) => AttendanceModel.fromMap(
+                doc.data() as Map<String, dynamic>,
+                doc.id,
+              ),
+            )
+            .toList(),
+      );
+}
 }
