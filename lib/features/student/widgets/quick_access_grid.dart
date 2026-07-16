@@ -41,11 +41,7 @@ class QuickAccessGrid extends StatelessWidget {
               onTap: () => Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-<<<<<<< HEAD
                   builder: (context) => AttendanceScreen(studentId: studentId),
-=======
-                  builder: (context) =>  AttendanceScreen(),
->>>>>>> 6b8329a011f5b2f160e8ac1edacdc2836bff8ef7
                 ),
               ),
             ),
@@ -149,4 +145,3 @@ class QuickAccessGrid extends StatelessWidget {
     );
   }
 }
-
