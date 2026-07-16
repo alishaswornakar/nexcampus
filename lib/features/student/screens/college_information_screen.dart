@@ -28,9 +28,9 @@ class _CollegeInformationScreenState extends State<CollegeInformationScreen> {
   static const String collegeEmail = 'info@mbman.edu.np';
   static const String collegeWebsite = 'https://mbman.edu.np';
   static const String collegeAboutUrl = 'https://mbman.edu.np/about.php';
-  static const String affiliation = 'Purbanchal University';
-  static const double collegeLat = 26.6619687;
-  static const double collegeLng = 87.599608;
+  static const String affiliation = 'Pokhara University';
+  static const double collegeLat = 26.662031;
+  static const double collegeLng = 87.599602;
 
   final LatLng collegeLocation = const LatLng(collegeLat, collegeLng);
   final MapController _mapController = MapController();
@@ -44,14 +44,6 @@ class _CollegeInformationScreenState extends State<CollegeInformationScreen> {
     _ProgramItem(
       name: 'B.E. in Civil Engineering',
       icon: Icons.foundation_rounded,
-    ),
-    _ProgramItem(
-      name: 'B.E. in Electronics & Communication Engineering',
-      icon: Icons.memory_rounded,
-    ),
-    _ProgramItem(
-      name: 'B.E. in Electrical Engineering',
-      icon: Icons.bolt_rounded,
     ),
   ];
 
@@ -79,14 +71,9 @@ class _CollegeInformationScreenState extends State<CollegeInformationScreen> {
 
   final List<_LeaderItem> _leaders = const [
     _LeaderItem(
-      title: 'Executive Director',
-      name: 'MBMAN Executive Director',
+      title: 'Executive Director & Principal',
+      name: 'Prof. Binod Aryal',
       subtitle: 'Madan Bhandari Memorial Academy Nepal',
-    ),
-    _LeaderItem(
-      title: 'Principal',
-      name: 'MBCOE Principal',
-      subtitle: 'Madan Bhandari College of Engineering',
     ),
   ];
 
