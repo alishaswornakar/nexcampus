@@ -52,16 +52,17 @@ class _StudentProfileCardState extends State<StudentProfileCard> {
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance
-          .collection('students')
+          .collection('users')
           .doc(widget.user.uid)
           .snapshots(),
       builder: (context, snapshot) {
         final data = snapshot.data?.data();
 
-        final name = data?['name'] ?? widget.user.displayName ?? 'Student';
+        final name = data?['fullName'] ?? widget.user.displayName ?? 'Student';
         final email = data?['email'] ?? widget.user.email ?? '';
         final department = data?['department'] ?? 'Not set';
         final semester = data?['semester']?.toString() ?? 'Not set';
+        final roll = data?['roll']?.toString();
         final attendancePercent = data?['attendancePercent'] ?? 0;
 
         return Container(
@@ -100,6 +101,7 @@ class _StudentProfileCardState extends State<StudentProfileCard> {
                       ),
                     ),
                     Text(email),
+                    if (roll != null && roll.isNotEmpty) Text("Roll: $roll"),
                     Text("Department: $department"),
                     Text("Semester: $semester"),
                   ],
