@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+<<<<<<< HEAD
 import 'package:flutter/foundation.dart';
+=======
+>>>>>>> 1802040 (added attendance feature in teacher module)
 import 'package:nexcampus_app/features/teachers/teachers_features/classes/models/student_model.dart';
 
 import '../models/attendance_model.dart';
@@ -11,6 +14,7 @@ class AttendanceService {
       firestore.collection("attendance");
 
   /// Save attendance
+<<<<<<< HEAD
   /// Writes the class-level record (for teacher history screen)
   /// AND fans it out into each student's own subcollection (for student screen)
   Future<void> saveAttendance({required AttendanceModel attendance}) async {
@@ -78,6 +82,36 @@ class AttendanceService {
               .toList(),
         );
   }
+=======
+  Future<void> saveAttendance({
+  required AttendanceModel attendance,
+}) async {
+  await firestore
+      .collection("attendance")
+      .doc(attendance.id)
+      .set(attendance.toMap());
+}
+ 
+  Stream<List<StudentModel>> getStudents({
+  required String department,
+  required int semester,
+}) {
+  return firestore
+      .collection("users")
+      .where("role", isEqualTo: "student")
+      .where("department", isEqualTo: department)
+      .where("semester", isEqualTo: semester.toString())
+      .snapshots()
+      .map(
+        (snapshot) => snapshot.docs
+            .map(
+              (doc) => StudentModel.fromMap(doc.data(),
+                  doc.id),
+            )
+            .toList(),
+      );
+}
+>>>>>>> 1802040 (added attendance feature in teacher module)
 
   /// Attendance history
   Stream<List<AttendanceModel>> attendanceHistory({
@@ -87,6 +121,10 @@ class AttendanceService {
     return attendanceCollection
         .where("department", isEqualTo: department)
         .where("semester", isEqualTo: semester)
+<<<<<<< HEAD
+=======
+        .orderBy("createdAt", descending: true)
+>>>>>>> 1802040 (added attendance feature in teacher module)
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
@@ -99,4 +137,8 @@ class AttendanceService {
               .toList(),
         );
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 1802040 (added attendance feature in teacher module)
