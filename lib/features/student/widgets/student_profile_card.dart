@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +14,6 @@ class StudentProfileCard extends StatefulWidget {
 
 class _StudentProfileCardState extends State<StudentProfileCard> {
   File? _profileImage;
-  //String? _imagePath;
 
   @override
   void initState() {
@@ -30,7 +30,6 @@ class _StudentProfileCardState extends State<StudentProfileCard> {
     if (pickedFile != null) {
       setState(() {
         _profileImage = File(pickedFile.path);
-        // _imagePath = pickedFile.path;
       });
 
       final prefs = await SharedPreferences.getInstance();
@@ -44,7 +43,6 @@ class _StudentProfileCardState extends State<StudentProfileCard> {
 
     if (path != null && File(path).existsSync()) {
       setState(() {
-        // _imagePath = path;
         _profileImage = File(path);
       });
     }
@@ -52,76 +50,82 @@ class _StudentProfileCardState extends State<StudentProfileCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance
+          .collection('students')
+          .doc(widget.user.uid)
+          .snapshots(),
+      builder: (context, snapshot) {
+        final data = snapshot.data?.data();
 
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
+        final name = data?['name'] ?? widget.user.displayName ?? 'Student';
+        final email = data?['email'] ?? widget.user.email ?? '';
+        final department = data?['department'] ?? 'Not set';
+        final semester = data?['semester']?.toString() ?? 'Not set';
+        final attendancePercent = data?['attendancePercent'] ?? 0;
 
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundImage: _profileImage != null
-                ? FileImage(_profileImage!)
-                : (widget.user.photoURL != null
-                          ? NetworkImage(widget.user.photoURL!)
-                          : null)
-                      as ImageProvider?,
-            child: _profileImage == null && widget.user.photoURL == null
-                ? IconButton(
-                    icon: const Icon(Icons.person),
-                    onPressed: _pickImage,
-                  )
-                : null,
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
           ),
-
-          const SizedBox(width: 12),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.user.displayName ?? "Student",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                Text(widget.user.email ?? ""),
-
-                const Text("Department: Computer Science"),
-
-                const Text("Semester: 6"),
-              ],
-            ),
-          ),
-
-          Container(
-            width: 70,
-            height: 70,
-
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xFFE6F0FF),
-            ),
-
-            child: const Center(
-              child: Text(
-                "88%",
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.bold,
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 30,
+                backgroundImage: _profileImage != null
+                    ? FileImage(_profileImage!)
+                    : (widget.user.photoURL != null
+                              ? NetworkImage(widget.user.photoURL!)
+                              : null)
+                          as ImageProvider?,
+                child: _profileImage == null && widget.user.photoURL == null
+                    ? IconButton(
+                        icon: const Icon(Icons.person),
+                        onPressed: _pickImage,
+                      )
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(email),
+                    Text("Department: $department"),
+                    Text("Semester: $semester"),
+                  ],
                 ),
               ),
-            ),
+              Container(
+                width: 70,
+                height: 70,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFFE6F0FF),
+                ),
+                child: Center(
+                  child: Text(
+                    "$attendancePercent%",
+                    style: const TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
