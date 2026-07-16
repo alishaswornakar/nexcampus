@@ -399,7 +399,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/features/authentication/presentation/pages/login_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/attendance/screens/attendance_department_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/department_screen.dart';
-import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/student_list_screen.dart';
+//import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/student_list_screen.dart';
 
 class TeacherDashboard extends StatelessWidget {
   const TeacherDashboard({super.key});

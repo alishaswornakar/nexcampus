@@ -43,19 +43,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     context.read<AuthBloc>().add(
-          SignupRequested(
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
-            fullName: _fullNameController.text.trim(),
-            roll: selectedRole == "student"
-                ? _rollController.text.trim()
-                : "",
-            department: _selectedDepartment!,
-            semester:
-                selectedRole == "student" ? _semester.toString() : "",
-            role: selectedRole,
-          ),
-        );
+      SignupRequested(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+        fullName: _fullNameController.text.trim(),
+        roll: selectedRole == "student" ? _rollController.text.trim() : "",
+        department: _selectedDepartment!,
+        semester: selectedRole == "student" ? _semester.toString() : "",
+        role: selectedRole,
+      ),
+    );
   }
 
   @override
@@ -76,11 +73,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           }
 
           if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-              ),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
 
           if (state is AuthAuthenticated) {
@@ -97,20 +92,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                 /// Role
                 DropdownButtonFormField<String>(
-                  value: selectedRole,
+                  initialValue: selectedRole,
                   decoration: const InputDecoration(
                     labelText: "Select Role",
                     border: OutlineInputBorder(),
                   ),
                   items: const [
-                    DropdownMenuItem(
-                      value: "student",
-                      child: Text("Student"),
-                    ),
-                    DropdownMenuItem(
-                      value: "teacher",
-                      child: Text("Teacher"),
-                    ),
+                    DropdownMenuItem(value: "student", child: Text("Student")),
+                    DropdownMenuItem(value: "teacher", child: Text("Teacher")),
                   ],
                   onChanged: (value) {
                     setState(() {
@@ -192,7 +181,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(height: 12),
 
                   DropdownButtonFormField<int>(
-                    value: _semester,
+                    initialValue: _semester,
                     decoration: const InputDecoration(
                       labelText: "Semester",
                       border: OutlineInputBorder(),
@@ -228,7 +217,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                 /// Department
                 DropdownButtonFormField<String>(
-                  value: _selectedDepartment,
+                  initialValue: _selectedDepartment,
                   decoration: const InputDecoration(
                     labelText: "Department",
                     border: OutlineInputBorder(),
@@ -271,9 +260,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     onPressed: _isLoading ? null : _signup,
                     child: _isLoading
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                          )
+                        ? const CircularProgressIndicator(color: Colors.white)
                         : const Text(
                             "Create Account",
                             style: TextStyle(

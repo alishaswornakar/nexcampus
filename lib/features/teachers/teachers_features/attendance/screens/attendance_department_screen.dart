@@ -8,14 +8,10 @@ class AttendanceDepartmentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Attendance"),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text("Attendance"), centerTitle: true),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-
           _departmentCard(
             context,
             title: "Computer Engineering",
@@ -50,18 +46,14 @@ class AttendanceDepartmentScreen extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => AttendanceSemesterScreen(
-                department: title,
-              ),
+              builder: (_) => AttendanceSemesterScreen(department: title),
             ),
           );
         },
@@ -69,15 +61,10 @@ class AttendanceDepartmentScreen extends StatelessWidget {
           padding: const EdgeInsets.all(18),
           child: Row(
             children: [
-
               CircleAvatar(
                 radius: 30,
-                backgroundColor: color.withOpacity(.15),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 30,
-                ),
+                backgroundColor: color.withValues(alpha: .15),
+                child: Icon(icon, color: color, size: 30),
               ),
 
               const SizedBox(width: 18),
