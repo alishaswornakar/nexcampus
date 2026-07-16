@@ -5,33 +5,55 @@ import '../models/student_model.dart';
 class ClassesService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+  // Stream<List<StudentModel>> studentsBySemester({
+  //   required String department,
+  //   int? semester,
+  // }) {
+  //   Query<Map<String, dynamic>> query = firestore
+  //       .collection("users")
+  //       .where("role", isEqualTo: "student")
+  //       .where("department", isEqualTo: department);
+
+  //   if (semester != null) {
+  //     query = query.where(
+  //       "semester",
+  //       isEqualTo: semester.toString(),
+  //     );
+  //   }
+
+  //   return query.snapshots().map(
+  //         (snapshot) => snapshot.docs
+  //             .map(
+  //              (doc) => StudentModel.fromMap(
+  //         doc.data(),
+  //         doc.id,
+  //       ),
+  //             )
+  //             .toList(),
+  //       );
+  // }
   Stream<List<StudentModel>> studentsBySemester({
-    required String department,
-    int? semester,
-  }) {
-    Query<Map<String, dynamic>> query = firestore
-        .collection("users")
-        .where("role", isEqualTo: "student")
-        .where("department", isEqualTo: department);
+  required String department,
+  int? semester,
+}) {
+  return firestore
+    .collection("users")
+    .where("role", isEqualTo: "student")
+    .where("department", isEqualTo: department)
+    .where(
+      "semester",
+      isEqualTo: semester?.toString(),
+    )
+    .snapshots()
+    .map((snapshot) {
+  print("Department = $department");
+  print("Department filter: ${snapshot.docs.length}");
 
-    if (semester != null) {
-      query = query.where(
-        "semester",
-        isEqualTo: semester.toString(),
-      );
-    }
-
-    return query.snapshots().map(
-          (snapshot) => snapshot.docs
-              .map(
-               (doc) => StudentModel.fromMap(
-          doc.data(),
-          doc.id,
-        ),
-              )
-              .toList(),
-        );
-  }
+  return snapshot.docs
+      .map((doc) => StudentModel.fromMap(doc.data(), doc.id))
+      .toList();
+});
+}
 
   Future<int> totalStudents(
     String department,

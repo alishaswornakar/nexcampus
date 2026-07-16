@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:nexcampus_app/features/authentication/blocs/auth/auth_bloc.dart';
 import 'package:nexcampus_app/features/authentication/blocs/auth/auth_event.dart';
-import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/authentication/blocs/auth/auth_state.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -20,13 +20,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _rollController = TextEditingController();
-  final _departmentController = TextEditingController();
   final _employeeIdController = TextEditingController();
+
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
+
   int _semester = 1;
   String selectedRole = "student";
   String? _selectedDepartment;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -34,7 +35,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _rollController.dispose();
-    _departmentController.dispose();
     _employeeIdController.dispose();
     super.dispose();
   }
@@ -42,19 +42,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void _signup() {
     if (!_formKey.currentState!.validate()) return;
 
-    final role = selectedRole;
-
     context.read<AuthBloc>().add(
-      SignupRequested(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-        fullName: _fullNameController.text.trim(),
-        roll: role == "student" ? _rollController.text.trim() : "",
-        department: _departmentController.text.trim(),
-        semester: role == "student" ? _semester.toString() : "",
-        role: role,
-      ),
-    );
+          SignupRequested(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+            fullName: _fullNameController.text.trim(),
+            roll: selectedRole == "student"
+                ? _rollController.text.trim()
+                : "",
+            department: _selectedDepartment!,
+            semester:
+                selectedRole == "student" ? _semester.toString() : "",
+            role: selectedRole,
+          ),
+        );
   }
 
   @override
@@ -64,10 +65,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       appBar: AppBar(
         backgroundColor: AppTheme.primary,
         foregroundColor: Colors.white,
-        title: const Text(
-          "Account Registration",
-          /*style: TextStyle(fontSize: 14),*/
-        ),
+        title: const Text("Account Registration"),
       ),
       body: BlocListener<AuthBloc, dynamic>(
         listener: (context, state) {
@@ -78,13 +76,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
           }
 
           if (state is AuthError) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+              ),
+            );
           }
 
           if (state is AuthAuthenticated) {
-            Navigator.pop(context); // go back to login
+            Navigator.pop(context);
           }
         },
         child: SingleChildScrollView(
@@ -95,16 +95,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
               children: [
                 const SizedBox(height: 10),
 
-                /// ROLE SELECTOR
+                /// Role
                 DropdownButtonFormField<String>(
-                  initialValue: selectedRole,
+                  value: selectedRole,
                   decoration: const InputDecoration(
                     labelText: "Select Role",
                     border: OutlineInputBorder(),
                   ),
                   items: const [
-                    DropdownMenuItem(value: "student", child: Text("Student")),
-                    DropdownMenuItem(value: "teacher", child: Text("Teacher")),
+                    DropdownMenuItem(
+                      value: "student",
+                      child: Text("Student"),
+                    ),
+                    DropdownMenuItem(
+                      value: "teacher",
+                      child: Text("Teacher"),
+                    ),
                   ],
                   onChanged: (value) {
                     setState(() {
@@ -115,31 +121,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                 const SizedBox(height: 12),
 
-                /// FULL NAME
+                /// Full Name
                 TextFormField(
                   controller: _fullNameController,
                   decoration: const InputDecoration(
                     labelText: "Full Name",
                     border: OutlineInputBorder(),
                   ),
-                  validator: (v) => v == null || v.isEmpty ? "Required" : null,
+                  validator: (value) =>
+                      value == null || value.isEmpty ? "Required" : null,
                 ),
 
                 const SizedBox(height: 12),
 
-                /// EMAIL
+                /// Email
                 TextFormField(
                   controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
                     labelText: "Email",
                     border: OutlineInputBorder(),
                   ),
-                  validator: (v) => v == null || v.isEmpty ? "Required" : null,
+                  validator: (value) =>
+                      value == null || value.isEmpty ? "Required" : null,
                 ),
 
                 const SizedBox(height: 12),
 
-                /// PASSWORD
+                /// Password
                 TextFormField(
                   controller: _passwordController,
                   obscureText: !_isPasswordVisible,
@@ -159,13 +168,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       },
                     ),
                   ),
-                  validator: (v) =>
-                      v != null && v.length < 6 ? "Min 6 chars" : null,
+                  validator: (value) {
+                    if (value == null || value.length < 6) {
+                      return "Password must be at least 6 characters";
+                    }
+                    return null;
+                  },
                 ),
 
                 const SizedBox(height: 12),
 
-                /// STUDENT FIELDS
                 if (selectedRole == "student") ...[
                   TextFormField(
                     controller: _rollController,
@@ -173,30 +185,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       labelText: "Roll Number",
                       border: OutlineInputBorder(),
                     ),
-                    validator: (v) =>
-                        v == null || v.isEmpty ? "Required" : null,
+                    validator: (value) =>
+                        value == null || value.isEmpty ? "Required" : null,
                   ),
 
                   const SizedBox(height: 12),
 
                   DropdownButtonFormField<int>(
-                    initialValue: _semester,
+                    value: _semester,
                     decoration: const InputDecoration(
                       labelText: "Semester",
                       border: OutlineInputBorder(),
                     ),
                     items: List.generate(
-                      10,
-                      (i) => DropdownMenuItem(
-                        value: i + 1,
-                        child: Text("Semester ${i + 1}"),
+                      8,
+                      (index) => DropdownMenuItem(
+                        value: index + 1,
+                        child: Text("Semester ${index + 1}"),
                       ),
                     ),
-                    onChanged: (v) => setState(() => _semester = v ?? 1),
+                    onChanged: (value) {
+                      setState(() {
+                        _semester = value!;
+                      });
+                    },
                   ),
                 ],
 
-                /// TEACHER FIELDS
                 if (selectedRole == "teacher") ...[
                   TextFormField(
                     controller: _employeeIdController,
@@ -204,29 +219,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       labelText: "Employee ID",
                       border: OutlineInputBorder(),
                     ),
-                    validator: (v) =>
-                        v == null || v.isEmpty ? "Required" : null,
+                    validator: (value) =>
+                        value == null || value.isEmpty ? "Required" : null,
                   ),
                 ],
 
                 const SizedBox(height: 12),
 
-                /// DEPARTMENT (COMMON)
+                /// Department
                 DropdownButtonFormField<String>(
-                  initialValue: _selectedDepartment,
+                  value: _selectedDepartment,
                   decoration: const InputDecoration(
-                    labelText: "Select Department",
+                    labelText: "Department",
                     border: OutlineInputBorder(),
                   ),
                   items: const [
-                    DropdownMenuItem(value: "Civil", child: Text("Civil")),
                     DropdownMenuItem(
-                      value: "Computer",
-                      child: Text("Computer"),
+                      value: "Computer Engineering",
+                      child: Text("Computer Engineering"),
                     ),
                     DropdownMenuItem(
-                      value: "Architecture",
-                      child: Text("Architecture"),
+                      value: "Civil Engineering",
+                      child: Text("Civil Engineering"),
+                    ),
+                    DropdownMenuItem(
+                      value: "Architecture Engineering",
+                      child: Text("Architecture Engineering"),
                     ),
                   ],
                   onChanged: (value) {
@@ -235,16 +253,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     });
                   },
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Required";
+                    if (value == null) {
+                      return "Please select a department";
                     }
                     return null;
                   },
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
 
-                /// SIGNUP BUTTON
                 SizedBox(
                   width: double.infinity,
                   height: 50,
@@ -254,10 +271,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     onPressed: _isLoading ? null : _signup,
                     child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
+                        ? const CircularProgressIndicator(
+                            color: Colors.white,
+                          )
                         : const Text(
                             "Create Account",
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                   ),
                 ),
