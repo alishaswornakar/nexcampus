@@ -52,6 +52,7 @@ class AttendanceService {
 
   /// Attendance history
   Stream<List<AttendanceModel>> attendanceHistory({
+<<<<<<< HEAD
     required String department,
     required String semester,
     required String subjectId,
@@ -93,23 +94,37 @@ class AttendanceService {
 }) {
   return firestore
       .collection("subjects")
+=======
+  required String department,
+  required String semester,
+}) {
+  return attendanceCollection
+>>>>>>> ff24d37 (added attendance history and attendance detail screen in the attendance feature of student module)
       .where("department", isEqualTo: department)
       .where("semester", isEqualTo: semester)
       .snapshots()
       .map(
         (snapshot) => snapshot.docs
             .map(
+<<<<<<< HEAD
               (doc) => SubjectModel.fromMap(
                 doc.data(),
+=======
+              (doc) => AttendanceModel.fromMap(
+                doc.data() as Map<String, dynamic>,
+>>>>>>> ff24d37 (added attendance history and attendance detail screen in the attendance feature of student module)
                 doc.id,
               ),
             )
             .toList(),
       );
 }
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 >>>>>>> 84229ac (added attendance feature in teacher module)
 =======
 >>>>>>> 79eb623 (attendance student part 2)
+=======
+>>>>>>> ff24d37 (added attendance history and attendance detail screen in the attendance feature of student module)
 }

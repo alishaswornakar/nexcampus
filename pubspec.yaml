@@ -30,11 +30,14 @@ dependencies:
   bloc: ^9.2.1
   equatable: ^2.0.8
 
+
   # Networking
   dio: ^5.10.0
   http: ^1.6.0
 
   # Storage
+  open_filex: ^4.5.0
+  ff24d37 (added attendance history and attendance detail screen in the attendance feature of student module)
   shared_preferences: ^2.5.5
   path_provider: ^2.1.6
 
