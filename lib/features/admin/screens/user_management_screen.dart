@@ -40,7 +40,6 @@ class UserManagementScreen extends StatelessWidget {
       child: Text("List of all $role records will flow here real-time."),
     );
   }
-
   Widget _buildAdminProfileView() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
