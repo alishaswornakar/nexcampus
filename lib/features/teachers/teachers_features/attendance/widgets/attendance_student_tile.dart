@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1802040 (added attendance feature in teacher module)
 import '../../classes/models/student_model.dart';
 
 class AttendanceStudentTile extends StatelessWidget {
@@ -15,6 +19,7 @@ class AttendanceStudentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -157,3 +162,24 @@ class AttendanceStudentTile extends StatelessWidget {
     );
   }
 }
+=======
+    return Card(
+      child: ListTile(
+        leading: CircleAvatar(
+          child: Text(
+            student.fullName[0],
+          ),
+        ),
+        title: Text(student.fullName),
+        subtitle: Text(
+          "Roll: ${student.roll}",
+        ),
+        trailing: Switch(
+          value: present,
+          onChanged: onChanged,
+        ),
+      ),
+    );
+  }
+}
+>>>>>>> 1802040 (added attendance feature in teacher module)
