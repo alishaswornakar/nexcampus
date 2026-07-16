@@ -520,8 +520,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.12.4+4"
-  hooks:
-    dependency: transitive
+  http:
+    dependency: "direct main"
     description:
       name: hooks
       sha256: "9a62a50b50b769a737bc0a8ff381f333529df3ab746b2f6b02e83760231455ba"
@@ -616,6 +616,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.2"
+ HEAD
+
   intl:
     dependency: "direct main"
     description:
@@ -624,22 +626,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.20.3"
-  jni:
-    dependency: transitive
-    description:
-      name: jni
-      sha256: c2230682d5bc2362c1c9e8d3c7f406d9cbba23ab3f2e203a025dd47e0fb2e68f
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
-  jni_flutter:
-    dependency: transitive
-    description:
-      name: jni_flutter
-      sha256: "8b59e590786050b1cd866677dddaf76b1ade5e7bc751abe04b86e84d379d3ba6"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
+ accb82a (attendance student part1)
   json_annotation:
     dependency: transitive
     description:
@@ -952,6 +939,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
+ HEAD
+
   simple_gesture_detector:
     dependency: transitive
     description:
@@ -960,14 +949,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1"
-  simple_sparse_list:
-    dependency: transitive
-    description:
-      name: simple_sparse_list
-      sha256: aa648fd240fa39b49dcd11c19c266990006006de6699a412de485695910fbc1f
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.4"
+ accb82a (attendance student part1)
   sky_engine:
     dependency: transitive
     description: flutter
@@ -1005,6 +987,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+ HEAD
+
   table_calendar:
     dependency: "direct main"
     description:
@@ -1013,6 +997,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.0"
+ accb82a (attendance student part1)
   term_glyph:
     dependency: transitive
     description:

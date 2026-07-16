@@ -51,14 +51,9 @@ dependencies:
   percent_indicator: ^4.2.5
   http: ^1.6.0
   image_picker: ^1.2.3
-  file_picker: ^11.0.2
-  cloudinary_public: ^0.23.1
-  
-  webview_flutter: ^4.14.1
-  flutter_map: ^8.3.1
-  latlong2: ^0.10.1
-  url_launcher: ^6.3.2
-  google_fonts: ^8.2.0
+  table_calendar: ^3.2.0
+  percent_indicator: ^4.2.5
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1

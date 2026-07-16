@@ -213,15 +213,6 @@ class _AttendanceViewState extends State<_AttendanceView> {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       title: _isSearching ? _buildSearchField() : const Text('Attendance'),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () {
-          Navigator.of(
-            context,
-          ).pop(); //navigates back to the previous screen when the back button is pressed
-          // Handle back button press
-        },
-      ),
       actions: [
         IconButton(
           icon: Icon(_isSearching ? Icons.close : Icons.search),

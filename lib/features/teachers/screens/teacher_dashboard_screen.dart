@@ -402,6 +402,7 @@ import 'package:nexcampus_app/features/authentication/presentation/pages/login_s
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/screens/assignment_department_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/attendance/screens/attendance_department_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/department_screen.dart';
+//import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/student_list_screen.dart';
 
 class TeacherDashboard extends StatelessWidget {
   const TeacherDashboard({super.key});

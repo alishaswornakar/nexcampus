@@ -31,13 +31,9 @@ class AttendanceModel extends Equatable {
       date: (data['date'] as Timestamp).toDate(),
       status: data['status'] ?? '',
       remarks: data['remarks'] ?? '',
-      checkIn:
-          (data['checkIn'] as Timestamp?)?.toDate() ??
-          (data['date'] as Timestamp).toDate(),
-      checkOut:
-          (data['checkOut'] as Timestamp?)?.toDate() ??
-          (data['date'] as Timestamp).toDate(),
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      checkIn: (data['checkIn'] as Timestamp).toDate(),
+      checkOut: (data['checkOut'] as Timestamp).toDate(),
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
     );
   }
 
