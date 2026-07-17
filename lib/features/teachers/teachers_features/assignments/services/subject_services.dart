@@ -9,8 +9,7 @@ class SubjectService {
     required String department,
     required String semester,
   }) {
-    print("Department = $department");
-    print("Semester = $semester");
+    
 
     return firestore
         .collection("subjects")
