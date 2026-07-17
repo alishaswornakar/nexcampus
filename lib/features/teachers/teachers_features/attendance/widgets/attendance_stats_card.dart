@@ -21,29 +21,21 @@ class AttendanceStatisticsCard extends StatelessWidget {
     return Card(
       elevation: 3,
       margin: const EdgeInsets.all(16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-
             const Text(
               "Attendance Statistics",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 20),
 
             Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-
                 _buildItem(
                   "Students",
                   totalStudents.toString(),
@@ -70,13 +62,11 @@ class AttendanceStatisticsCard extends StatelessWidget {
             const SizedBox(height: 25),
 
             ClipRRect(
-              borderRadius:
-                  BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20),
               child: LinearProgressIndicator(
                 value: percentage / 100,
                 minHeight: 12,
-                backgroundColor:
-                    Colors.grey.shade300,
+                backgroundColor: Colors.grey.shade300,
                 color: Colors.green,
               ),
             ),
@@ -97,24 +87,13 @@ class AttendanceStatisticsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildItem(
-    String title,
-    String value,
-    Color color,
-    IconData icon,
-  ) {
+  Widget _buildItem(String title, String value, Color color, IconData icon) {
     return Column(
       children: [
-
         CircleAvatar(
           radius: 25,
-          backgroundColor:
-              color.withOpacity(0.15),
-          child: Icon(
-            icon,
-            color: color,
-            size: 28,
-          ),
+          backgroundColor: color.withValues(alpha: 0.15),
+          child: Icon(icon, color: color, size: 28),
         ),
 
         const SizedBox(height: 10),
@@ -130,13 +109,7 @@ class AttendanceStatisticsCard extends StatelessWidget {
 
         const SizedBox(height: 5),
 
-        Text(
-          title,
-          style: const TextStyle(
-            color: Colors.grey,
-            fontSize: 14,
-          ),
-        ),
+        Text(title, style: const TextStyle(color: Colors.grey, fontSize: 14)),
       ],
     );
   }

@@ -46,20 +46,15 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     ListenAttendance event,
     Emitter<AttendanceState> emit,
   ) async {
-    emit(const AttendanceLoading());
+    emit(const AttendanceLoading()); // added const, fixes the lint too
 
-    await _attendanceSubscription?.cancel();
-
-    _attendanceSubscription = repository
-        .attendanceStream(event.studentId)
-        .listen(
-          (attendance) {
-            add(_AttendanceUpdated(attendance));
-          },
-          onError: (error) {
-            emit(AttendanceError(error.toString()));
-          },
-        );
+    await emit.forEach<List<AttendanceModel>>(
+      repository.attendanceStream(
+        event.studentId,
+      ), // fixed: was watchAttendance
+      onData: (list) => AttendanceLoaded(list),
+      onError: (error, stackTrace) => AttendanceError(error.toString()),
+    );
   }
 
   /// Add attendance

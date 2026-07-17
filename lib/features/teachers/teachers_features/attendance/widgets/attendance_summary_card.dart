@@ -26,28 +26,21 @@ class AttendanceSummaryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(.15),
+            color: Colors.grey.withValues(alpha: 0.15),
             blurRadius: 10,
             offset: const Offset(0, 4),
-          )
+          ),
         ],
       ),
       child: Column(
         children: [
-
           const Row(
             children: [
-              Icon(
-                Icons.fact_check,
-                color: Colors.blue,
-              ),
+              Icon(Icons.fact_check, color: Colors.blue),
               SizedBox(width: 8),
               Text(
                 "Today's Attendance",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -56,7 +49,6 @@ class AttendanceSummaryCard extends StatelessWidget {
 
           Row(
             children: [
-
               Expanded(
                 child: _SummaryItem(
                   title: "Students",
@@ -74,7 +66,6 @@ class AttendanceSummaryCard extends StatelessWidget {
                   icon: Icons.check_circle,
                 ),
               ),
-
             ],
           ),
 
@@ -82,7 +73,6 @@ class AttendanceSummaryCard extends StatelessWidget {
 
           Row(
             children: [
-
               Expanded(
                 child: _SummaryItem(
                   title: "Absent",
@@ -127,19 +117,15 @@ class _SummaryItem extends StatelessWidget {
       margin: const EdgeInsets.all(6),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: color.withOpacity(.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         children: [
-
           CircleAvatar(
             radius: 20,
-            backgroundColor: color.withOpacity(.15),
-            child: Icon(
-              icon,
-              color: color,
-            ),
+            backgroundColor: color.withValues(alpha: 0.15),
+            child: Icon(icon, color: color),
           ),
 
           const SizedBox(height: 10),
@@ -155,12 +141,7 @@ class _SummaryItem extends StatelessWidget {
 
           const SizedBox(height: 4),
 
-          Text(
-            title,
-            style: const TextStyle(
-              color: Colors.grey,
-            ),
-          ),
+          Text(title, style: const TextStyle(color: Colors.grey)),
         ],
       ),
     );

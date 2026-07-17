@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/student_model.dart';
 
@@ -33,31 +34,26 @@ class ClassesService {
   //       );
   // }
   Stream<List<StudentModel>> studentsBySemester({
-  required String department,
-  int? semester,
-}) {
-  return firestore
-    .collection("users")
-    .where("role", isEqualTo: "student")
-    .where("department", isEqualTo: department)
-    .where(
-      "semester",
-      isEqualTo: semester?.toString(),
-    )
-    .snapshots()
-    .map((snapshot) {
-  print("Department = $department");
-  print("Department filter: ${snapshot.docs.length}");
+    required String department,
+    int? semester,
+  }) {
+    return firestore
+        .collection("users")
+        .where("role", isEqualTo: "student")
+        .where("department", isEqualTo: department)
+        .where("semester", isEqualTo: semester?.toString())
+        .snapshots()
+        .map((snapshot) {
+          debugPrint("Department = $department");
+          debugPrint("Department filter: ${snapshot.docs.length}");
 
-  return snapshot.docs
-      .map((doc) => StudentModel.fromMap(doc.data(), doc.id))
-      .toList();
-});
-}
+          return snapshot.docs
+              .map((doc) => StudentModel.fromMap(doc.data(), doc.id))
+              .toList();
+        });
+  }
 
-  Future<int> totalStudents(
-    String department,
-  ) async {
+  Future<int> totalStudents(String department) async {
     final data = await firestore
         .collection("users")
         .where("role", isEqualTo: "student")
