@@ -344,6 +344,8 @@
 
 //   // ---------------- FEATURE CARD ----------------
 
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 //   Widget featureCard(
 //     IconData icon,
 //     String title,
@@ -397,15 +399,17 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/features/authentication/presentation/pages/login_screen.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/assignments/screens/assignment_department_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/attendance/screens/attendance_department_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/department_screen.dart';
-//import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/student_list_screen.dart';
 
 class TeacherDashboard extends StatelessWidget {
   const TeacherDashboard({super.key});
+  
 
   @override
   Widget build(BuildContext context) {
+   
     return Scaffold(
       backgroundColor: const Color(0xffF5F7FA),
       appBar: AppBar(
@@ -515,9 +519,21 @@ class TeacherDashboard extends StatelessWidget {
   },
 ),
 
-                _feature(Icons.assignment, "Assignments", Colors.green, () {
-                  // TODO: Assignment Screen
-                }),
+                _feature(
+  Icons.assignment,
+  "Assignments",
+  Colors.green,
+  () {
+   
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>  // Replace with the actual subject
+            AssignmentDepartmentScreen(), 
+      ),
+    );
+  },
+),
 
                 _feature(Icons.grade, "Grades", Colors.orange, () {
                   // TODO: Grades Screen
