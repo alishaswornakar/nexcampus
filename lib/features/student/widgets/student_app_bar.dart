@@ -52,6 +52,7 @@ class StudentAppBar extends StatelessWidget implements PreferredSizeWidget {
         actions: [
           TextButton(
             onPressed: () async {
+              Navigator.of(context, rootNavigator: true).pop();
               await AuthService().signOut();
 
               if (context.mounted) {

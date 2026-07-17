@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'web_view_screen.dart';
 
 /// -----------------------------------------------------------------------
 /// NexCampus - College Information Screen
@@ -45,6 +46,7 @@ class _CollegeInformationScreenState extends State<CollegeInformationScreen> {
       name: 'B.E. in Civil Engineering',
       icon: Icons.foundation_rounded,
     ),
+    _ProgramItem(name: 'B. Architecture', icon: Icons.foundation_rounded),
   ];
 
   final List<_FacilityItem> _facilities = const [
@@ -86,7 +88,16 @@ class _CollegeInformationScreenState extends State<CollegeInformationScreen> {
     }
   }
 
-  Future<void> _openWebsite() => _launchUri(Uri.parse(collegeWebsite));
+  Future<void> _openWebsite() async {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const InAppWebViewScreen(
+          url: collegeWebsite,
+          title: collegeShortName,
+        ),
+      ),
+    );
+  }
 
   Future<void> _callCollege() =>
       _launchUri(Uri(scheme: 'tel', path: collegePhone));
@@ -217,9 +228,9 @@ class _CollegeInformationScreenState extends State<CollegeInformationScreen> {
                   _buildSectionTitle('Core Values', Icons.diamond_outlined),
                   _buildInfoCard(
                     scheme: scheme,
-                    child: Column(
+                    child: const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         _CoreValueRow(
                           icon: Icons.emoji_events_rounded,
                           label: 'Excellence in academics and research',

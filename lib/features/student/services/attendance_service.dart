@@ -8,8 +8,7 @@ class AttendanceService {
   AttendanceService({FirebaseFirestore? firestore})
     : _firestore = firestore ?? FirebaseFirestore.instance;
 
-  /// Reference to:
-  /// students/{studentId}/attendance
+  /// Reference to: students/{studentId}/attendance
   CollectionReference<Map<String, dynamic>> _attendanceCollection(
     String studentId,
   ) {
@@ -19,7 +18,6 @@ class AttendanceService {
         .collection('attendance');
   }
 
-  /// Get all attendance records
   Future<List<AttendanceModel>> getAttendanceRecords(String studentId) async {
     final snapshot = await _attendanceCollection(
       studentId,
@@ -30,7 +28,6 @@ class AttendanceService {
         .toList();
   }
 
-  /// Listen to attendance records in real time
   Stream<List<AttendanceModel>> attendanceStream(String studentId) {
     return _attendanceCollection(studentId)
         .orderBy('date', descending: true)
@@ -42,21 +39,15 @@ class AttendanceService {
         );
   }
 
-  /// Get a single attendance record
   Future<AttendanceModel?> getAttendanceById(
     String studentId,
     String attendanceId,
   ) async {
     final doc = await _attendanceCollection(studentId).doc(attendanceId).get();
-
-    if (!doc.exists) {
-      return null;
-    }
-
+    if (!doc.exists) return null;
     return AttendanceModel.fromFirestore(doc);
   }
 
-  /// Add attendance
   Future<void> addAttendance(
     String studentId,
     AttendanceModel attendance,
@@ -66,7 +57,6 @@ class AttendanceService {
     ).doc(attendance.id).set(attendance.toMap());
   }
 
-  /// Update attendance
   Future<void> updateAttendance(
     String studentId,
     AttendanceModel attendance,
@@ -76,7 +66,6 @@ class AttendanceService {
     ).doc(attendance.id).update(attendance.toMap());
   }
 
-  /// Delete attendance
   Future<void> deleteAttendance(String studentId, String attendanceId) async {
     await _attendanceCollection(studentId).doc(attendanceId).delete();
   }
