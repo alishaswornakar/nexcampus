@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/repository/assignment_repository.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/assignments/screens/teacher_submission_list_screen.dart';
 
 import '../models/assignment_model.dart';
 
@@ -324,8 +325,15 @@ class AssignmentDetailScreen extends StatelessWidget {
                 label: const Text(
                     "View Submissions"),
                 onPressed: () {
-                  // Next module
-                },
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => TeacherSubmissionListScreen(
+        assignment: assignment,
+      ),
+    ),
+  );
+},
               ),
             ),
           ],
