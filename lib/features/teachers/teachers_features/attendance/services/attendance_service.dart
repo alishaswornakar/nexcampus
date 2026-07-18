@@ -1,15 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 import 'package:flutter/foundation.dart';
-<<<<<<< HEAD
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/models/subject_model.dart';
-=======
-=======
->>>>>>> 1802040 (added attendance feature in teacher module)
->>>>>>> 84229ac (added attendance feature in teacher module)
-=======
->>>>>>> 79eb623 (attendance student part 2)
+
 import 'package:nexcampus_app/features/teachers/teachers_features/classes/models/student_model.dart';
 
 import '../models/attendance_model.dart';
@@ -52,7 +45,7 @@ class AttendanceService {
 
   /// Attendance history
   Stream<List<AttendanceModel>> attendanceHistory({
-<<<<<<< HEAD
+
     required String department,
     required String semester,
     required String subjectId,
@@ -60,17 +53,14 @@ class AttendanceService {
   }) {
     return attendanceCollection
         .where("department", isEqualTo: department)
-<<<<<<< HEAD
+
 .where("semester", isEqualTo: semester)
 .where("subjectId", isEqualTo: subjectId)
-=======
+
         .where("semester", isEqualTo: semester)
         .orderBy("createdAt", descending: true)
-<<<<<<< HEAD
->>>>>>> 1802040 (added attendance feature in teacher module)
->>>>>>> 84229ac (added attendance feature in teacher module)
-=======
->>>>>>> 79eb623 (attendance student part 2)
+
+
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
@@ -85,8 +75,7 @@ class AttendanceService {
               .toList(),
         );
   }
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 
   Stream<List<SubjectModel>> getSubjects({
   required String department,
@@ -94,37 +83,24 @@ class AttendanceService {
 }) {
   return firestore
       .collection("subjects")
-=======
+
   required String department,
   required String semester,
 }) {
   return attendanceCollection
->>>>>>> ff24d37 (added attendance history and attendance detail screen in the attendance feature of student module)
       .where("department", isEqualTo: department)
       .where("semester", isEqualTo: semester)
       .snapshots()
       .map(
         (snapshot) => snapshot.docs
             .map(
-<<<<<<< HEAD
               (doc) => SubjectModel.fromMap(
                 doc.data(),
-=======
-              (doc) => AttendanceModel.fromMap(
-                doc.data() as Map<String, dynamic>,
->>>>>>> ff24d37 (added attendance history and attendance detail screen in the attendance feature of student module)
                 doc.id,
               ),
             )
             .toList(),
       );
 }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 84229ac (added attendance feature in teacher module)
-=======
->>>>>>> 79eb623 (attendance student part 2)
-=======
->>>>>>> ff24d37 (added attendance history and attendance detail screen in the attendance feature of student module)
+
 }
