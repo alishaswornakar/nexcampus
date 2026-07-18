@@ -37,14 +37,12 @@ dependencies:
 
   # Storage
   open_filex: ^4.5.0
-  ff24d37 (added attendance history and attendance detail screen in the attendance feature of student module)
   shared_preferences: ^2.5.5
   path_provider: ^2.1.6
 
   # File & Image
   image_picker: ^1.2.3
   file_picker: ^11.0.2
-  open_filex: ^4.5.0
   flutter_file_dialog: ^3.0.2
 
   # Cloudinary
