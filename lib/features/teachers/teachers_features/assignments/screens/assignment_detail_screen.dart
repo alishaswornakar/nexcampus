@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/repository/assignment_repository.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/screens/teacher_submission_list_screen.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/assignments/services/file_download_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/assignment_model.dart';
 
@@ -194,41 +195,63 @@ class AssignmentDetailScreen extends StatelessWidget {
               ),
             ),
 if (assignment.pdfUrl != null && assignment.pdfUrl!.isNotEmpty)
-  Card(
-    elevation: 2,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
-    ),
-    child: ListTile(
-      leading: const CircleAvatar(
-        backgroundColor: Color(0xffFDECEC),
-        child: Icon(
-          Icons.picture_as_pdf,
-          color: Colors.red,
-        ),
-      ),
-      title: Text(
-        assignment.pdfName ?? "Assignment PDF",
-      ),
-      subtitle: const Text("Tap to view PDF"),
-      trailing: const Icon(Icons.open_in_new),
-     
-        onTap: () async {
-
-
-  final uri = Uri.parse(assignment.pdfUrl!);
-
-await launchUrl(
-  uri,
-  mode: LaunchMode.externalApplication,
-);
-
-
-},
-        // Open PDF
-      
-    ),
+ Card(
+  elevation: 2,
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(16),
   ),
+  child: ListTile(
+    leading: const CircleAvatar(
+      backgroundColor: Color(0xffFDECEC),
+      child: Icon(
+        Icons.picture_as_pdf,
+        color: Colors.red,
+      ),
+    ),
+    title: Text(
+      assignment.pdfName ?? "Assignment PDF",
+    ),
+    subtitle: const Text(
+      "Download Assignment PDF",
+    ),
+    trailing: const Icon(
+      Icons.download,
+    ),
+    onTap: () async {
+      try {
+        final downloaded =
+            await FileDownloadService.downloadFile(
+          url: assignment.pdfUrl!,
+          fileName:
+              assignment.pdfName ?? "assignment.pdf",
+        );
+
+        if (!context.mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor:
+                downloaded ? Colors.green : Colors.orange,
+            content: Text(
+              downloaded
+                  ? "PDF downloaded successfully."
+                  : "Download cancelled.",
+            ),
+          ),
+        );
+      } catch (e) {
+        if (!context.mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(e.toString()),
+          ),
+        );
+      }
+    },
+  ),
+),
             const SizedBox(height: 30),
 
             /// Buttons
