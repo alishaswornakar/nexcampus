@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -14,14 +15,18 @@ import 'package:nexcampus_app/features/teachers/teachers_features/attendance/wid
 import 'package:nexcampus_app/features/teachers/teachers_features/classes/models/student_model.dart';
 
 class MarkAttendanceScreen extends StatefulWidget {
-  final String department;
-  final int semester;
+final String department;
+final int semester;
+final String subjectId;
+final String subjectName;
 
-  const MarkAttendanceScreen({
-    super.key,
-    required this.department,
-    required this.semester,
-  });
+ const MarkAttendanceScreen({
+  super.key,
+  required this.department,
+  required this.semester,
+  required this.subjectId,
+  required this.subjectName,
+});
 
   @override
   State<MarkAttendanceScreen> createState() => _MarkAttendanceScreenState();
@@ -66,18 +71,20 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
         centerTitle: true,
 
         title: Column(
-          children: [
-            Text(
-              widget.department,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-            ),
-            Text(
-              "Semester ${widget.semester}",
-              style: const TextStyle(fontSize: 14),
-            ),
-          ],
-        ),
-
+  children: [
+    Text(
+      widget.subjectName,
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 20,
+      ),
+    ),
+    Text(
+      "${widget.department} • Semester ${widget.semester}",
+      style: const TextStyle(fontSize: 14),
+    ),
+  ],
+),
         actions: [
           IconButton(
             tooltip: "Attendance History",
@@ -87,9 +94,10 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => AttendanceHistoryScreen(
-                    department: widget.department,
-                    semester: widget.semester.toString(),
-                  ),
+  department: widget.department,
+  semester: widget.semester.toString(),
+  subjectId: widget.subjectId,
+),
                 ),
               );
             },
@@ -289,14 +297,16 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                     );
                   }).toList();
 
-                  final attendanceModel = AttendanceModel(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    department: widget.department,
-                    semester: widget.semester.toString(),
-                    date: DateTime.now(),
-                    students: attendanceStudents,
-                  );
-
+                final attendanceModel = AttendanceModel(
+  id: DateTime.now().millisecondsSinceEpoch.toString(),
+  department: widget.department,
+  semester: widget.semester.toString(),
+  subjectId: widget.subjectId,
+  subjectName: widget.subjectName,
+  teacherId: FirebaseAuth.instance.currentUser!.uid,
+  date: DateTime.now(),
+  students: attendanceStudents,
+);
                   final save =
                       await showDialog<bool>(
                         context: context,

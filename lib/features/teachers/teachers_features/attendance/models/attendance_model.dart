@@ -5,6 +5,11 @@ class AttendanceModel {
   final String id;
   final String department;
   final String semester;
+
+  final String subjectId;
+  final String subjectName;
+  final String teacherId;
+
   final DateTime date;
   final List<AttendanceStudentModel> students;
 
@@ -12,23 +17,29 @@ class AttendanceModel {
     required this.id,
     required this.department,
     required this.semester,
+    required this.subjectId,
+    required this.subjectName,
+    required this.teacherId,
     required this.date,
     required this.students,
   });
 
   factory AttendanceModel.fromMap(
-    Map<String, dynamic> map,
     String id,
+    Map<String, dynamic> map,
   ) {
     return AttendanceModel(
       id: id,
       department: map["department"] ?? "",
       semester: map["semester"] ?? "",
+      subjectId: map["subjectId"] ?? "",
+      subjectName: map["subjectName"] ?? "",
+      teacherId: map["teacherId"] ?? "",
       date: (map["date"] as Timestamp).toDate(),
-      students: (map["students"] as List<dynamic>? ?? [])
+      students: (map["students"] as List)
           .map(
             (e) => AttendanceStudentModel.fromMap(
-              e as Map<String, dynamic>,
+              Map<String, dynamic>.from(e),
             ),
           )
           .toList(),
@@ -39,11 +50,11 @@ class AttendanceModel {
     return {
       "department": department,
       "semester": semester,
+      "subjectId": subjectId,
+      "subjectName": subjectName,
+      "teacherId": teacherId,
       "date": Timestamp.fromDate(date),
-      "createdAt": FieldValue.serverTimestamp(),
-      "students": students
-          .map((e) => e.toMap())
-          .toList(),
+      "students": students.map((e) => e.toMap()).toList(),
     };
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexcampus_app/features/teachers/teachers_features/attendance/screens/attendance_mark_screen.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/attendance/screens/attendance_subject_screen.dart';
 
 
 class AttendanceSemesterScreen extends StatelessWidget {
@@ -36,16 +36,16 @@ class AttendanceSemesterScreen extends StatelessWidget {
                 Icons.arrow_forward_ios,
               ),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => MarkAttendanceScreen(
-                      department: department,
-                      semester: semester,
-                    ),
-                  ),
-                );
-              },
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => AttendanceSubjectScreen(
+        department: department,
+        semester: semester.toString(),
+      ),
+    ),
+  );
+},
             ),
           );
         },

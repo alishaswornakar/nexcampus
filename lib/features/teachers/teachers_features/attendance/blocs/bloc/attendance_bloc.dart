@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/assignments/models/subject_model.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/attendance/models/attendance_model.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/attendance/repositories/attendance_repository.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/classes/models/student_model.dart';
@@ -11,8 +12,9 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
 
   AttendanceBloc(this.repository) : super(AttendanceInitial()) {
     on<LoadStudents>(_loadStudents);
-    on<SaveAttendance>(_saveAttendance);
-    on<LoadAttendanceHistory>(_loadHistory);
+    on<LoadSubjectsEvent>(_loadSubjects);
+    on<SaveAttendanceEvent>(_saveAttendance);
+    on<LoadAttendanceHistoryEvent>(_loadHistory);
   }
 
   Future<void> _loadStudents(
@@ -31,15 +33,30 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     );
   }
 
+  Future<void> _loadSubjects(
+    LoadSubjectsEvent event,
+    Emitter<AttendanceState> emit,
+  ) async {
+    emit(AttendanceLoading());
+
+    await emit.forEach<List<SubjectModel>>(
+      repository.getSubjects(
+        department: event.department,
+        semester: event.semester,
+      ),
+      onData: (subjects) => AttendanceSubjectsLoaded(subjects),
+      onError: (error, _) => AttendanceError(error.toString()),
+    );
+  }
+
   Future<void> _saveAttendance(
-    SaveAttendance event,
+    SaveAttendanceEvent event,
     Emitter<AttendanceState> emit,
   ) async {
     emit(AttendanceLoading());
 
     try {
       await repository.saveAttendance(event.attendance);
-
       emit(AttendanceSaved());
     } catch (e) {
       emit(AttendanceError(e.toString()));
@@ -47,7 +64,7 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
   }
 
   Future<void> _loadHistory(
-    LoadAttendanceHistory event,
+    LoadAttendanceHistoryEvent event,
     Emitter<AttendanceState> emit,
   ) async {
     emit(AttendanceLoading());
@@ -56,11 +73,10 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
       repository.attendanceHistory(
         department: event.department,
         semester: event.semester,
+        subjectId: event.subjectId,
       ),
-      onData: (attendance) =>
-          AttendanceHistoryLoaded(attendance),
-      onError: (error, _) =>
-          AttendanceError(error.toString()),
+      onData: (history) => AttendanceHistoryLoaded(history),
+      onError: (error, _) => AttendanceError(error.toString()),
     );
   }
 }

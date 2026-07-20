@@ -13,6 +13,7 @@ class PdfViewerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: avoid_print
     print(pdfUrl);
 
     return Scaffold(

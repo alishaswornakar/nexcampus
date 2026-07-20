@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/assignments/models/subject_model.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/classes/models/student_model.dart';
 
 import '../models/attendance_model.dart';
@@ -83,20 +84,46 @@ class AttendanceService {
   Stream<List<AttendanceModel>> attendanceHistory({
     required String department,
     required String semester,
+    required String subjectId,
+
   }) {
     return attendanceCollection
         .where("department", isEqualTo: department)
-        .where("semester", isEqualTo: semester)
+.where("semester", isEqualTo: semester)
+.where("subjectId", isEqualTo: subjectId)
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
               .map(
                 (doc) => AttendanceModel.fromMap(
+                   doc.id,
                   doc.data() as Map<String, dynamic>,
-                  doc.id,
+                 
+
                 ),
               )
               .toList(),
         );
   }
+
+  Stream<List<SubjectModel>> getSubjects({
+  required String department,
+  required String semester,
+}) {
+  return firestore
+      .collection("subjects")
+      .where("department", isEqualTo: department)
+      .where("semester", isEqualTo: semester)
+      .snapshots()
+      .map(
+        (snapshot) => snapshot.docs
+            .map(
+              (doc) => SubjectModel.fromMap(
+                doc.data(),
+                doc.id,
+              ),
+            )
+            .toList(),
+      );
+}
 }

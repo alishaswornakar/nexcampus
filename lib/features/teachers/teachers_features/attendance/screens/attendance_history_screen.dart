@@ -10,11 +10,13 @@ import 'attendance_detail_screen.dart';
 class AttendanceHistoryScreen extends StatelessWidget {
   final String department;
   final String semester;
+  final String subjectId;
 
   const AttendanceHistoryScreen({
     super.key,
     required this.department,
     required this.semester,
+    required this.subjectId,
   });
 
   @override
@@ -25,11 +27,12 @@ class AttendanceHistoryScreen extends StatelessWidget {
           AttendanceService(),
         ),
       )..add(
-          LoadAttendanceHistory(
-            department: department,
-            semester: semester,
-          ),
-        ),
+  LoadAttendanceHistoryEvent(
+    department: department,
+    semester: semester,
+    subjectId: subjectId,
+  ),
+),
       child: Scaffold(
         backgroundColor: const Color(0xffF5F7FA),
 
@@ -96,11 +99,13 @@ class AttendanceHistoryScreen extends StatelessWidget {
                       .read<
                           AttendanceBloc>()
                       .add(
-                        LoadAttendanceHistory(
+                        LoadAttendanceHistoryEvent(
                           department:
                               department,
                           semester:
                               semester,
+                          subjectId:
+                              subjectId,
                         ),
                       );
                 },
