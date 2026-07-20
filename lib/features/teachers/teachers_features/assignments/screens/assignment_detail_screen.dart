@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/repository/assignment_repository.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/assignments/screens/pdf_viewer_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/screens/teacher_submission_list_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/services/file_download_service.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/assignments/widgets/pdf_attachment_card.dart';
+// ignore: unused_import
 import 'package:url_launcher/url_launcher.dart';
 import '../models/assignment_model.dart';
 
@@ -195,63 +198,118 @@ class AssignmentDetailScreen extends StatelessWidget {
               ),
             ),
 if (assignment.pdfUrl != null && assignment.pdfUrl!.isNotEmpty)
- Card(
-  elevation: 2,
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(16),
-  ),
-  child: ListTile(
-    leading: const CircleAvatar(
-      backgroundColor: Color(0xffFDECEC),
-      child: Icon(
-        Icons.picture_as_pdf,
-        color: Colors.red,
+PdfAttachmentCard(
+  fileName:
+      assignment.pdfName ?? "Assignment.pdf",
+
+  onView: () async {
+    
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => PdfViewerScreen(
+        pdfUrl: assignment.pdfUrl!,
+        title: assignment.pdfName ?? "Assignment PDF",
       ),
     ),
-    title: Text(
-      assignment.pdfName ?? "Assignment PDF",
-    ),
-    subtitle: const Text(
-      "Download Assignment PDF",
-    ),
-    trailing: const Icon(
-      Icons.download,
-    ),
-    onTap: () async {
-      try {
-        final downloaded =
-            await FileDownloadService.downloadFile(
-          url: assignment.pdfUrl!,
-          fileName:
-              assignment.pdfName ?? "assignment.pdf",
-        );
+  );
 
-        if (!context.mounted) return;
+    // Open PDF
+  },
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor:
-                downloaded ? Colors.green : Colors.orange,
-            content: Text(
+  onDownload: () async {
+    try {
+      final downloaded =
+          await FileDownloadService.downloadFile(
+        url: assignment.pdfUrl!,
+        fileName:
+            assignment.pdfName ?? "Assignment.pdf",
+      );
+
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor:
               downloaded
-                  ? "PDF downloaded successfully."
-                  : "Download cancelled.",
-            ),
+                  ? Colors.green
+                  : Colors.orange,
+          content: Text(
+            downloaded
+                ? "PDF downloaded successfully."
+                : "Download cancelled.",
           ),
-        );
-      } catch (e) {
-        if (!context.mounted) return;
+        ),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.red,
-            content: Text(e.toString()),
-          ),
-        );
-      }
-    },
-  ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(e.toString()),
+        ),
+      );
+    }
+  },
 ),
+//  Card(
+//   elevation: 2,
+//   shape: RoundedRectangleBorder(
+//     borderRadius: BorderRadius.circular(16),
+//   ),
+//   child: ListTile(
+//     leading: const CircleAvatar(
+//       backgroundColor: Color(0xffFDECEC),
+//       child: Icon(
+//         Icons.picture_as_pdf,
+//         color: Colors.red,
+//       ),
+//     ),
+//     title: Text(
+//       assignment.pdfName ?? "Assignment PDF",
+//     ),
+//     subtitle: const Text(
+//       "Download Assignment PDF",
+//     ),
+//     trailing: const Icon(
+//       Icons.download,
+//     ),
+//     onTap: () async {
+//       try {
+//         final downloaded =
+//             await FileDownloadService.downloadFile(
+//           url: assignment.pdfUrl!,
+//           fileName:
+//               assignment.pdfName ?? "assignment.pdf",
+//         );
+
+//         if (!context.mounted) return;
+
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(
+//             backgroundColor:
+//                 downloaded ? Colors.green : Colors.orange,
+//             content: Text(
+//               downloaded
+//                   ? "PDF downloaded successfully."
+//                   : "Download cancelled.",
+//             ),
+//           ),
+//         );
+//       } catch (e) {
+//         if (!context.mounted) return;
+
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(
+//             backgroundColor: Colors.red,
+//             content: Text(e.toString()),
+//           ),
+//         );
+//       }
+//     },
+//   ),
+// ),
             const SizedBox(height: 30),
 
             /// Buttons
@@ -286,6 +344,7 @@ if (assignment.pdfUrl != null && assignment.pdfUrl!.isNotEmpty)
   ),
 );
 
+// ignore: unrelated_type_equality_checks
 if (updated == true && context.mounted) {
   Navigator.pop(context, true);
 }

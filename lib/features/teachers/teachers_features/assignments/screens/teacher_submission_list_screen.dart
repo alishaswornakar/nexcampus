@@ -7,7 +7,6 @@ import '../models/assignment_submission_model.dart';
 import '../repository/assignment_submission_repository.dart';
 import '../services/assignment_submission_service.dart';
 
-import '../widgets/submission_card.dart';
 
 class TeacherSubmissionListScreen extends StatelessWidget {
   final AssignmentModel assignment;
@@ -71,6 +70,7 @@ class TeacherSubmissionListScreen extends StatelessWidget {
   return ListView.builder(
     padding: const EdgeInsets.all(16),
     itemCount: submissions.length,
+    // ignore: body_might_complete_normally_nullable
     itemBuilder: (context, index) {
 
       final submission =

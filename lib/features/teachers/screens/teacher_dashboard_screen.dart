@@ -22,7 +22,7 @@
 //         actions: [
 //           IconButton(
 //             onPressed: () {
-//               // TODO: Notifications
+//              
 //             },
 //             icon: const Icon(Icons.notifications, color: Colors.white),
 //           ),
@@ -354,7 +354,7 @@
 //     return InkWell(
 //       borderRadius: BorderRadius.circular(18),
 //       onTap: () {
-//         // TODO: Navigate to the corresponding screen
+//         
 //       },
 //       child: Container(
 //         decoration: BoxDecoration(
@@ -529,7 +529,7 @@ class TeacherDashboard extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (_) =>  // Replace with the actual subject
-            AssignmentDepartmentScreen(), 
+            const AssignmentDepartmentScreen(), 
       ),
     );
   },

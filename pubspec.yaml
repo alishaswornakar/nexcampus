@@ -61,6 +61,10 @@ dependencies:
   latlong2: ^0.10.1
   url_launcher: ^6.3.2
   google_fonts: ^8.2.0
+  syncfusion_flutter_pdfviewer: ^29.2.11
+
+  device_info_plus: ^11.5.0
+  
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
