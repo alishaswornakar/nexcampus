@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AssignmentSubmissionModel {
   final String id;
+
   final String assignmentId;
 
   final String studentId;
@@ -18,11 +19,13 @@ class AssignmentSubmissionModel {
 
   final DateTime submittedAt;
 
+  // NEW
   final String grade;
   final String feedback;
   final String status;
+  final DateTime? gradedAt;
 
-  const AssignmentSubmissionModel({
+  AssignmentSubmissionModel({
     required this.id,
     required this.assignmentId,
     required this.studentId,
@@ -34,9 +37,11 @@ class AssignmentSubmissionModel {
     required this.pdfName,
     required this.remarks,
     required this.submittedAt,
+
     this.grade = "",
     this.feedback = "",
-    this.status = "Submitted",
+    this.status = "Pending",
+    this.gradedAt,
   });
 
   factory AssignmentSubmissionModel.fromMap(
@@ -60,12 +65,15 @@ class AssignmentSubmissionModel {
       remarks: map["remarks"] ?? "",
 
       submittedAt:
-          (map["submittedAt"] as Timestamp)
-              .toDate(),
+          (map["submittedAt"] as Timestamp).toDate(),
 
       grade: map["grade"] ?? "",
       feedback: map["feedback"] ?? "",
-      status: map["status"] ?? "Submitted",
+      status: map["status"] ?? "Pending",
+
+      gradedAt: map["gradedAt"] == null
+          ? null
+          : (map["gradedAt"] as Timestamp).toDate(),
     );
   }
 
@@ -85,12 +93,15 @@ class AssignmentSubmissionModel {
 
       "remarks": remarks,
 
-      "submittedAt":
-          Timestamp.fromDate(submittedAt),
+      "submittedAt": Timestamp.fromDate(submittedAt),
 
       "grade": grade,
       "feedback": feedback,
       "status": status,
+
+      "gradedAt": gradedAt == null
+          ? null
+          : Timestamp.fromDate(gradedAt!),
     };
   }
 }

@@ -67,14 +67,16 @@ class AssignmentSubmissionRepository {
 
   /// Grade Submission
   Future<void> gradeSubmission({
-    required String submissionId,
-    required String grade,
-    required String feedback,
-  }) {
-    return service.gradeSubmission(
-      submissionId: submissionId,
-      grade: grade,
-      feedback: feedback,
-    );
-  }
+  required String submissionId,
+  required String grade,
+  required String feedback,
+  required String status,
+}) {
+  return service.gradeSubmission(
+    submissionId: submissionId,
+    grade: grade,
+    feedback: feedback,
+    status: status,
+  );
+}
 }

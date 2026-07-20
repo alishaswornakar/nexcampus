@@ -3,13 +3,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:nexcampus_app/features/teachers/teachers_features/assignments/widgets/ssignment_form.dart';
 
 import '../models/assignment_model.dart';
 import '../repository/assignment_repository.dart';
 import '../services/assignment_service.dart';
 import '../services/cloudinary_service.dart';
 
+import '../widgets/assignment_form.dart';
 import '../widgets/create_assignment_button.dart';
 import '../widgets/pdf_upload_card.dart';
 
@@ -18,11 +18,16 @@ class CreateAssignmentScreen extends StatefulWidget {
   final int semester;
   final String selectedSubject;
 
+  /// null = Create
+  /// not null = Edit
+  final AssignmentModel? assignment;
+
   const CreateAssignmentScreen({
     super.key,
     required this.department,
     required this.semester,
     required this.selectedSubject,
+    this.assignment,
   });
 
   @override
@@ -56,6 +61,28 @@ class _CreateAssignmentScreenState
   String? pdfName;
 
   @override
+  void initState() {
+    super.initState();
+
+    if (widget.assignment != null) {
+      titleController.text =
+          widget.assignment!.title;
+
+      descriptionController.text =
+          widget.assignment!.description;
+
+      dueDate =
+          widget.assignment!.dueDate;
+
+      pdfUrl =
+          widget.assignment!.pdfUrl;
+
+      pdfName =
+          widget.assignment!.pdfName;
+    }
+  }
+
+  @override
   void dispose() {
     titleController.dispose();
     descriptionController.dispose();
@@ -66,9 +93,10 @@ class _CreateAssignmentScreenState
     final picked = await showDatePicker(
       context: context,
       initialDate:
-          DateTime.now().add(
-        const Duration(days: 7),
-      ),
+          dueDate ??
+              DateTime.now().add(
+                const Duration(days: 7),
+              ),
       firstDate: DateTime.now(),
       lastDate: DateTime(2035),
     );
@@ -121,15 +149,11 @@ class _CreateAssignmentScreenState
   }
 
   Future<void> saveAssignment() async {
-    if (titleController.text
-        .trim()
-        .isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
+    if (titleController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            "Please enter assignment title.",
-          ),
+          content:
+              Text("Please enter assignment title."),
         ),
       );
       return;
@@ -138,24 +162,20 @@ class _CreateAssignmentScreenState
     if (descriptionController.text
         .trim()
         .isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            "Please enter description.",
-          ),
+          content:
+              Text("Please enter description."),
         ),
       );
       return;
     }
 
     if (dueDate == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            "Please select due date.",
-          ),
+          content:
+              Text("Please select due date."),
         ),
       );
       return;
@@ -165,14 +185,6 @@ class _CreateAssignmentScreenState
         FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content: Text(
-            "User not logged in.",
-          ),
-        ),
-      );
       return;
     }
 
@@ -181,62 +193,65 @@ class _CreateAssignmentScreenState
     });
 
     try {
-      final doc = FirebaseFirestore.instance
-          .collection("assignments")
-          .doc();
+      final assignmentId =
+          widget.assignment?.id ??
+              FirebaseFirestore.instance
+                  .collection("assignments")
+                  .doc()
+                  .id;
 
       final assignment =
           AssignmentModel(
-        id: doc.id,
-        title: titleController.text
-            .trim(),
+        id: assignmentId,
+        title: titleController.text.trim(),
         description:
-            descriptionController.text
-                .trim(),
-        department:
-            widget.department,
-        semester:
-            widget.semester.toString(),
-        subject:
-            widget.selectedSubject,
+            descriptionController.text.trim(),
+        department: widget.department,
+        semester: widget.semester.toString(),
+        subject: widget.selectedSubject,
         teacherId: user.uid,
         teacherName:
-            user.displayName ??
-                "Teacher",
+            user.displayName ?? "Teacher",
         dueDate: dueDate!,
-        createdAt: DateTime.now(),
+        createdAt:
+            widget.assignment?.createdAt ??
+                DateTime.now(),
         pdfUrl: pdfUrl,
         pdfName: pdfName,
-        submissionCount: 0,
+        submissionCount:
+            widget.assignment?.submissionCount ??
+                0,
       );
-
-      await repository
-          .createAssignment(
-        assignment,
-      );
+            if (widget.assignment == null) {
+        await repository.createAssignment(
+          assignment,
+        );
+      } else {
+        await repository.updateAssignment(
+          assignment,
+        );
+      }
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          backgroundColor:
-              Colors.green,
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.green,
           content: Text(
-            "Assignment Created Successfully",
+            widget.assignment == null
+                ? "Assignment Created Successfully"
+                : "Assignment Updated Successfully",
           ),
         ),
       );
 
-      Navigator.pop(context);
+      Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor:
-              Colors.red,
+          backgroundColor: Colors.red,
           content: Text(
             e.toString(),
           ),
@@ -250,7 +265,8 @@ class _CreateAssignmentScreenState
       }
     }
   }
-    @override
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffF5F7FA),
@@ -259,8 +275,10 @@ class _CreateAssignmentScreenState
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         centerTitle: true,
-        title: const Text(
-          "Create Assignment",
+        title: Text(
+          widget.assignment == null
+              ? "Create Assignment"
+              : "Edit Assignment",
         ),
       ),
 
@@ -288,9 +306,7 @@ class _CreateAssignmentScreenState
                   pickDueDate,
             ),
 
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20),
 
             PdfUploadCard(
               isUploading:
@@ -301,9 +317,7 @@ class _CreateAssignmentScreenState
                   uploadPdf,
             ),
 
-            const SizedBox(
-              height: 30,
-            ),
+            const SizedBox(height: 30),
 
             CreateAssignmentButton(
               isSaving:
@@ -312,9 +326,7 @@ class _CreateAssignmentScreenState
                   saveAssignment,
             ),
 
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),

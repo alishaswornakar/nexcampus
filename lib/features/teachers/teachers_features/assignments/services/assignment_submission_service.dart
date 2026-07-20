@@ -144,16 +144,27 @@ class AssignmentSubmissionService {
   }
 
   /// Teacher: Grade Submission
-  Future<void> gradeSubmission({
-    required String submissionId,
-    required String grade,
-    required String feedback,
-  }) async {
-    await submissionCollection
+  /// Grade Assignment
+Future<void> gradeSubmission({
+  required String submissionId,
+  required String grade,
+  required String feedback,
+  required String status,
+}) async {
+  try {
+    await firestore
+        .collection("assignment_submissions")
         .doc(submissionId)
         .update({
       "grade": grade,
       "feedback": feedback,
+      "status": status,
+      "gradedAt": Timestamp.now(),
     });
+  } catch (e) {
+    throw Exception(
+      "Failed to grade submission: $e",
+    );
   }
+}
 }

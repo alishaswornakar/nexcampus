@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/assignments/screens/grade_submission_screen.dart';
 
 import '../models/assignment_model.dart';
 import '../models/assignment_submission_model.dart';
@@ -75,16 +76,69 @@ class TeacherSubmissionListScreen extends StatelessWidget {
       final submission =
           submissions[index];
 
-      return SubmissionCard(
-        submission: submission,
+     Card(
+  margin: const EdgeInsets.only(bottom: 14),
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(16),
+  ),
+  child: ListTile(
+    contentPadding: const EdgeInsets.all(16),
 
-        onTap: () {
+    leading: CircleAvatar(
+      backgroundColor: Colors.blue.shade100,
+      child: const Icon(
+        Icons.person,
+        color: Colors.blue,
+      ),
+    ),
 
-          // Next screen:
-          // Grade Submission Screen
+    title: Text(
+      submission.studentName,
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+      ),
+    ),
 
-        },
+    subtitle: Column(
+      crossAxisAlignment:
+          CrossAxisAlignment.start,
+      children: [
+
+        const SizedBox(height: 6),
+
+        Text(
+          "Roll: ${submission.roll}",
+        ),
+
+        Text(
+          "Status: ${submission.status}",
+        ),
+
+        if (submission.grade.isNotEmpty)
+          Text(
+            "Marks: ${submission.grade}",
+          ),
+      ],
+    ),
+
+    trailing: const Icon(
+      Icons.arrow_forward_ios,
+      size: 18,
+    ),
+
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              GradeSubmissionScreen(
+            submission: submission,
+          ),
+        ),
       );
+    },
+  ),
+);
     },
   );
 },

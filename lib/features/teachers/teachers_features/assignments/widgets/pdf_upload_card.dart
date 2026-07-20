@@ -91,7 +91,9 @@ class PdfUploadCard extends StatelessWidget {
                           style: TextStyle(
                             color: Colors.grey.shade600,
                           ),
+                        
                         ),
+                        
                       ],
                     ),
                   ),

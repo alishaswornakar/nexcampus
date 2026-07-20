@@ -33,9 +33,10 @@ class CloudinaryService {
       });
 
       final response = await _dio.post(
-        "https://console.cloudinary.com/app/c-46a97aa5001c5c1d382026a0398fd7/settings/upload",
+        "https://api.cloudinary.com/v1_1/rjij8wao/raw/upload",
         data: formData,
       );
+      print(response.data);
 
       if (response.statusCode == 200) {
         return {
