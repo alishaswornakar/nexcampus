@@ -11,11 +11,13 @@ import '../screens/fees_screen.dart';
 import '../screens/notices_screen.dart';
 import '../screens/issue_reporting_screen.dart';
 import '../screens/team_finder_screen.dart';
-import '../screens/tasks_screen.dart';
 import '../screens/library_screen.dart';
+import '../screens/tasks_screen.dart';
 
+// import '../models/assignment_model.dart';
 class QuickAccessGrid extends StatelessWidget {
-  const QuickAccessGrid({super.key});
+  final String studentId;
+  const QuickAccessGrid({required this.studentId, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +54,13 @@ class QuickAccessGrid extends StatelessWidget {
               label: "Tasks",
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const TasksScreen()),
+                MaterialPageRoute(
+                  builder: (_) => TasksScreen(
+                    department: '',
+                    semester: '',
+                    studentId: studentId,
+                  ),
+                ),
               ),
             ),
             QuickTile(

@@ -56,127 +56,71 @@
 import '../models/assignment_model.dart';
 import '../services/assignment_service.dart';
 
-
 class AssignmentRepository {
-
   final AssignmentService service;
 
-
-  AssignmentRepository(
-    this.service,
-  );
-
-
+  AssignmentRepository(this.service);
 
   /// Create Assignment
-  Future<void> createAssignment(
-    AssignmentModel assignment,
-  ) {
-
-    return service.createAssignment(
-      assignment: assignment,
-    );
-
+  Future<void> createAssignment(AssignmentModel assignment) {
+    return service.createAssignment(assignment: assignment);
   }
-
-
-
-
 
   /// Update Assignment
-  Future<void> updateAssignment(
-    AssignmentModel assignment,
-  ) {
-
-    return service.updateAssignment(
-      assignment: assignment,
-    );
-
+  Future<void> updateAssignment(AssignmentModel assignment) {
+    return service.updateAssignment(assignment: assignment);
   }
 
-
-
-
-
   /// Delete Assignment
-  Future<void> deleteAssignment(
-  String id,
-) {
-  return service.deleteAssignment(id);
-}
-
-
-
-
+  Future<void> deleteAssignment(String id) {
+    return service.deleteAssignment(id);
+  }
 
   /// Get Assignments
-Stream<List<AssignmentModel>> getAssignments({
-  required String department,
-  required String semester,
-  required String subject,
-}) {
-  return service.getAssignments(
-    department: department,
-    semester: semester,
-    subject: subject,
-  );
-}
+  Stream<List<AssignmentModel>> getAssignments({
+    required String department,
+    required String semester,
+    required String subject,
+  }) {
+    return service.getAssignments(
+      department: department,
+      semester: semester,
+      subject: subject,
+    );
+  }
 
-
-
+  /// Student - Get all assignments of a semester
+  Stream<List<AssignmentModel>> getStudentAssignments({
+    required String department,
+    required String semester,
+  }) {
+    return service.getStudentAssignments(
+      department: department,
+      semester: semester,
+    );
+  }
 
   /// Get Teacher Assignments
   Stream<List<AssignmentModel>> getTeacherAssignments({
-
     required String teacherId,
-
   }) {
-
-
-    return service.getTeacherAssignments(
-      teacherId: teacherId,
-    );
-
+    return service.getTeacherAssignments(teacherId: teacherId);
   }
-
-
-
-
 
   /// Get Single Assignment
-  Future<AssignmentModel?> getAssignment(
-
-    String assignmentId,
-
-  ) {
-
-
-    return service.getAssignment(
-      assignmentId,
-    );
-
+  Future<AssignmentModel?> getAssignment(String assignmentId) {
+    return service.getAssignment(assignmentId);
   }
-
-
-
-
 
   /// Update Submission Count
   Future<void> updateSubmissionCount({
-
     required String assignmentId,
 
     required int count,
-
   }) {
-
-
     return service.updateSubmissionCount(
       assignmentId: assignmentId,
       count: count,
     );
-
   }
-
-
 }

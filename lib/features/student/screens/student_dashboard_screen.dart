@@ -28,7 +28,7 @@ class StudentDashboardScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            const QuickAccessGrid(),
+            const QuickAccessGrid(studentId: ''),
 
             const SizedBox(height: 20),
 
