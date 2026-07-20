@@ -44,19 +44,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     context.read<AuthBloc>().add(
-          SignupRequested(
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
-            fullName: _fullNameController.text.trim(),
-            roll: selectedRole == "student"
-                ? _rollController.text.trim()
-                : "",
-            department: _selectedDepartment!,
-            semester:
-                selectedRole == "student" ? _semester.toString() : "",
-            role: selectedRole,
-          ),
-        );
+      SignupRequested(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+        fullName: _fullNameController.text.trim(),
+        roll: selectedRole == "student" ? _rollController.text.trim() : "",
+        department: _selectedDepartment!,
+        semester: selectedRole == "student" ? _semester.toString() : "",
+        role: selectedRole,
+      ),
+    );
   }
 
   @override
@@ -74,9 +71,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
         }
 
         if (state is AuthError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
         }
 
         if (state is AuthAuthenticated) {
@@ -100,7 +97,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(.05),
+                      color: Colors.black.withValues(alpha: (0.05)),
                       blurRadius: 20,
                       offset: const Offset(0, 5),
                     ),
@@ -144,9 +141,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const Center(
                         child: Text(
                           "Join the NexCampus ecosystem",
-                          style: TextStyle(
-                            color: Colors.grey,
-                          ),
+                          style: TextStyle(color: Colors.grey),
                         ),
                       ),
 
@@ -154,21 +149,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                       const Text(
                         "Select Role",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
 
                       const SizedBox(height: 8),
 
                       DropdownButtonFormField<String>(
-                        value: selectedRole,
+                        initialValue: selectedRole,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                         items: const [
@@ -192,9 +184,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                       const Text(
                         "Full Name",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
 
                       const SizedBox(height: 8),
@@ -209,11 +199,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         },
                         decoration: InputDecoration(
                           hintText: "John Doe",
-                          prefixIcon:
-                              const Icon(Icons.person_outline),
+                          prefixIcon: const Icon(Icons.person_outline),
                           border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                       ),
@@ -223,9 +211,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       if (selectedRole == "student") ...[
                         const Text(
                           "Roll Number",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: TextStyle(fontWeight: FontWeight.w600),
                         ),
 
                         const SizedBox(height: 8),
@@ -233,8 +219,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         TextFormField(
                           controller: _rollController,
                           validator: (value) {
-                            if (value == null ||
-                                value.isEmpty) {
+                            if (value == null || value.isEmpty) {
                               return "Required";
                             }
                             return null;
@@ -243,8 +228,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             hintText: "NX-2024-001",
                             prefixIcon: const Icon(Icons.badge),
                             border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.circular(14),
+                              borderRadius: BorderRadius.circular(14),
                             ),
                           ),
                         ),
@@ -255,9 +239,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       if (selectedRole == "teacher") ...[
                         const Text(
                           "Employee ID",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: TextStyle(fontWeight: FontWeight.w600),
                         ),
 
                         const SizedBox(height: 8),
@@ -265,8 +247,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         TextFormField(
                           controller: _employeeIdController,
                           validator: (value) {
-                            if (value == null ||
-                                value.isEmpty) {
+                            if (value == null || value.isEmpty) {
                               return "Required";
                             }
                             return null;
@@ -275,8 +256,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             hintText: "EMP-001",
                             prefixIcon: const Icon(Icons.badge),
                             border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.circular(14),
+                              borderRadius: BorderRadius.circular(14),
                             ),
                           ),
                         ),
@@ -286,47 +266,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                       const Text(
                         "Email",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
 
                       const SizedBox(height: 8),
 
                       TextFormField(
                         controller: _emailController,
-                        keyboardType:
-                            TextInputType.emailAddress,
+                        keyboardType: TextInputType.emailAddress,
                         validator: (value) {
-                          if (value == null ||
-                              value.isEmpty) {
+                          if (value == null || value.isEmpty) {
                             return "Required";
                           }
                           return null;
                         },
                         decoration: InputDecoration(
                           hintText: "example@gmail.com",
-                          prefixIcon:
-                              const Icon(Icons.email_outlined),
+                          prefixIcon: const Icon(Icons.email_outlined),
                           border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                       ),
-                                            const SizedBox(height: 18),
+                      const SizedBox(height: 18),
 
                       const Text(
                         "Department",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
 
                       const SizedBox(height: 8),
 
                       DropdownButtonFormField<String>(
-                        value: _selectedDepartment,
+                        initialValue: _selectedDepartment,
                         validator: (value) {
                           if (value == null) {
                             return "Please select department";
@@ -366,15 +338,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                         const Text(
                           "Semester",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: TextStyle(fontWeight: FontWeight.w600),
                         ),
 
                         const SizedBox(height: 8),
 
                         DropdownButtonFormField<int>(
-                          value: _semester,
+                          initialValue: _semester,
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.school_outlined),
                             border: OutlineInputBorder(
@@ -385,9 +355,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             8,
                             (index) => DropdownMenuItem(
                               value: index + 1,
-                              child: Text(
-                                "Semester ${index + 1}",
-                              ),
+                              child: Text("Semester ${index + 1}"),
                             ),
                           ),
                           onChanged: (value) {
@@ -402,9 +370,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                       const Text(
                         "Password",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
 
                       const SizedBox(height: 8),
@@ -429,8 +395,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             onPressed: () {
                               setState(() {
-                                _isPasswordVisible =
-                                    !_isPasswordVisible;
+                                _isPasswordVisible = !_isPasswordVisible;
                               });
                             },
                           ),
@@ -451,16 +416,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             backgroundColor: AppTheme.primary,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(14),
+                              borderRadius: BorderRadius.circular(14),
                             ),
                           ),
                           child: _isLoading
                               ? const SizedBox(
                                   width: 24,
                                   height: 24,
-                                  child:
-                                      CircularProgressIndicator(
+                                  child: CircularProgressIndicator(
                                     color: Colors.white,
                                     strokeWidth: 2,
                                   ),
@@ -478,12 +441,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(height: 24),
 
                       Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                            "Already have an account?",
-                          ),
+                          const Text("Already have an account?"),
                           TextButton(
                             onPressed: () {
                               Navigator.pop(context);
