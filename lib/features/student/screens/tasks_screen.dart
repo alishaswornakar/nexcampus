@@ -114,13 +114,19 @@ class _TasksScreenBodyState extends State<_TasksScreenBody>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Assignments'),
+        title: const Text('Assignments', style: TextStyle(color: Colors.white)),
         backgroundColor: AppTheme.secondary,
         foregroundColor: Colors.white,
         bottom: TabBar(
           controller: _tabController,
           isScrollable: false,
           tabs: _tabLabels.map((label) => Tab(text: label)).toList(),
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white,
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 10,
+          ),
         ),
       ),
       body: BlocBuilder<AssignmentBloc, AssignmentState>(

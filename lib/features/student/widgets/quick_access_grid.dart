@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'quick_tile.dart';
 import '../screens/alerts_screen.dart';
 import '../screens/attendance_screen.dart';
-import '../screens/digital_queue_screen.dart';
+import '../../../features/student/blocs/digital_queue/screens/digital_queue_home_screen.dart';
 import '../screens/notes_screen.dart';
 import '../screens/syllabus_screen.dart';
 import '../screens/schedule_screen.dart';
@@ -17,11 +17,20 @@ import '../screens/tasks_screen.dart';
 // import '../models/assignment_model.dart';
 class QuickAccessGrid extends StatelessWidget {
   final String studentId;
+
   const QuickAccessGrid({required this.studentId, super.key});
 
   @override
   Widget build(BuildContext context) {
     final studentId = FirebaseAuth.instance.currentUser!.uid; // add this
+    final currentStudent = CurrentStudent(
+      studentId: studentId,
+      studentName: "Loknath Regmi", // Replace with actual student name
+      studentEmail: "loknath.regmi.319gmail.com", // Replace with actual email
+      rollNumber: "22070024", // Replace with actual roll no.
+      department: "Computer Engineering", // Replace with actual department
+      semester: "8", // Replace with actual semester
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -69,7 +78,8 @@ class QuickAccessGrid extends StatelessWidget {
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const DigitalQueueScreen(),
+                  builder: (context) =>
+                      DigitalQueueHomeScreen(student: currentStudent),
                 ),
               ),
             ),

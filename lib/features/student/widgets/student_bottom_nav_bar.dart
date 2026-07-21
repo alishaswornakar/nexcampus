@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../screens/results_screen.dart';
 import '../screens/student_dashboard_screen.dart';
-import 'package:nexcampus_app/features/student/screens/college_information_screen.dart';
 
 class StudentBottomNavBar extends StatefulWidget {
   const StudentBottomNavBar({super.key});
@@ -40,13 +39,13 @@ class _StudentBottomNavBarState extends State<StudentBottomNavBar> {
         // Home
         break;
 
-      case 1:
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const CollegeInformationScreen()),
-        );
-        // MBCOE
-        break;
+      // case 1:
+      //   Navigator.push(
+      //     context,
+      //     MaterialPageRoute(builder: (_) => const
+      //   );
+      //   // MBCOE
+      //   break;
 
       case 3:
         // Profile

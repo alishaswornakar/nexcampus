@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:flutter/foundation.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/models/assignment_model.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/models/assignment_submission_model.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/repository/assignment_repository.dart';
@@ -191,6 +191,10 @@ class AssignmentBloc extends Bloc<AssignmentEvent, AssignmentState> {
         .listen(
           (assignments) => add(_AssignmentsUpdated(assignments)),
           onError: (Object error, StackTrace stackTrace) {
+            debugPrint("Assignment Stream Error:");
+            debugPrint(error.toString());
+            debugPrint(stackTrace.toString());
+
             add(_StreamFailed(error.toString()));
           },
         );

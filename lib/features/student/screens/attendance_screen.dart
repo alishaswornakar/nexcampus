@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:nexcampus_app/core/constants/app_theme.dart ';
 import 'package:nexcampus_app/features/student/models/attendance_model.dart';
 import '../../student/blocs/attendance/attendance_bloc.dart';
 import 'package:nexcampus_app/features/student/blocs/attendance/attendance_event.dart';
@@ -212,7 +212,11 @@ class _AttendanceViewState extends State<_AttendanceView> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      title: _isSearching ? _buildSearchField() : const Text('Attendance'),
+      title: _isSearching
+          ? _buildSearchField()
+          : const Text('Attendance', style: TextStyle(color: Colors.white)),
+      backgroundColor: AppTheme.secondary,
+      foregroundColor: Colors.white,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () {

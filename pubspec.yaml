@@ -64,6 +64,8 @@ dependencies:
   syncfusion_flutter_pdfviewer: ^29.2.11
 
   device_info_plus: ^11.5.0
+  bloc: ^9.2.1
+  qr_flutter: ^4.1.0
   
 
 dev_dependencies:
