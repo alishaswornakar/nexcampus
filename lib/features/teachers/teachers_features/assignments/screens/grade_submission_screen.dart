@@ -206,7 +206,7 @@ Widget build(BuildContext context) {
 
           DropdownButtonFormField<String>(
             // ignore: deprecated_member_use
-            value: status,
+            initialValue: status,
             decoration: InputDecoration(
               filled: true,
               fillColor: Colors.white,
@@ -215,7 +215,7 @@ Widget build(BuildContext context) {
                     BorderRadius.circular(12),
               ),
             ),
-            items: const [
+            items:  const [
               DropdownMenuItem(
                 value: "Reviewed",
                 child: Text("Reviewed"),
