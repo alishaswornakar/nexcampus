@@ -5,7 +5,7 @@ import '../widgets/student_app_bar.dart';
 import '../widgets/student_profile_card.dart';
 import '../widgets/quick_access_grid.dart';
 import '../widgets/announcements_section.dart';
-import '../widgets/student_bottom_nav_bar.dart';
+import 'package:nexcampus_app/features/student/widgets/bottom_nav_bar.dart';
 import '../widgets/schedule_card.dart';
 
 class StudentDashboardScreen extends StatelessWidget {
@@ -69,7 +69,9 @@ class StudentDashboardScreen extends StatelessWidget {
         ),
       ),
 
-      bottomNavigationBar: const StudentBottomNavBar(),
+      bottomNavigationBar:  AppBottomNavBar(
+        currentIndex: 0,
+      ),
     );
   }
 }

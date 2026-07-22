@@ -66,6 +66,7 @@ dependencies:
   device_info_plus: ^11.5.0
   bloc: ^9.2.1
   qr_flutter: ^4.1.0
+  flutter_pdfview: ^1.4.4
   
 
 dev_dependencies:
@@ -95,6 +96,7 @@ flutter:
     - assets/images/App_icon.png
     - assets/images/google_logo.png
     - assets/images/mbman_app_icon.png
+    - assets/images/App_image.png
     
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

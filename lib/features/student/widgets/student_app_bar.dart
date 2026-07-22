@@ -12,7 +12,7 @@ class StudentAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: AppTheme.primary,
+      backgroundColor: AppTheme.secondary,
       elevation: 0,
       title: const Text(
         "NexCampus",

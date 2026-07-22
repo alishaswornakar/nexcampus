@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import '../bloc/digital_queue_bloc.dart';
 import '../bloc/digital_queue_event.dart';
@@ -78,7 +79,11 @@ class _DigitalQueueView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Digital Queue'),
+        title: const Text(
+          'Digital Queue',
+          style: TextStyle(fontSize: 18, color: Colors.white),
+        ),
+        backgroundColor: AppTheme.secondary,
         actions: [
           IconButton(
             icon: const Icon(Icons.history),
