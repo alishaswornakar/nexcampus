@@ -8,78 +8,70 @@ class ProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      elevation: 0,
-      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Expanded(
-              child: _StatItem(
-                label: 'Department',
-                value: profile.department ?? '-',
-              ),
-            ),
-            _Divider(),
-            Expanded(
-              child: _StatItem(
-                label: 'Semester',
-                value: profile.semester ?? '-',
-              ),
-            ),
-            _Divider(),
-            Expanded(
-              child: _StatItem(label: 'Section', value: profile.section ?? '-'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _StatItem extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _StatItem({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Column(
+    return Row(
       children: [
-        Text(
-          value,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-          textAlign: TextAlign.center,
+        Expanded(
+          child: _StatBox(value: profile.semester ?? '-', label: 'Semester'),
         ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+        const SizedBox(width: 12),
+        Expanded(
+          child: _StatBox(value: profile.section ?? '-', label: 'Section'),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _StatBox(
+            value: _shortDepartment(profile.department),
+            label: 'Department',
           ),
-          textAlign: TextAlign.center,
         ),
       ],
     );
   }
 }
 
-class _Divider extends StatelessWidget {
+String _shortDepartment(String? department) {
+  if (department == null || department.trim().isEmpty) return '-';
+  return department.trim().split(RegExp(r'\s+')).first;
+}
+
+class _StatBox extends StatelessWidget {
+  final String value;
+  final String label;
+
+  const _StatBox({required this.value, required this.label});
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
-      height: 32,
-      width: 1,
-      color: Theme.of(context).colorScheme.outlineVariant,
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 1,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 }

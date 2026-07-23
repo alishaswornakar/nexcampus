@@ -32,6 +32,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   DateTime? _dateOfBirth;
   bool _isSaving = false;
+  // add near your other state vars
+  DateTime? _joinedDate;
+  late final bool
+  _isBatchLocked; // computed once, doesn't change during this screen's life
+  Future<void> _pickBatchYear() async {
+    if (_isBatchLocked) return; // safety net, button is also disabled
+    final now = DateTime.now();
+    final selectedYear = await showDialog<int>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Select Batch Year'),
+          content: SizedBox(
+            height: 300,
+            width: 300,
+            child: YearPicker(
+              firstDate: DateTime(now.year - 15),
+              lastDate: DateTime(now.year + 1),
+              selectedDate: _joinedDate ?? now,
+              onChanged: (date) => Navigator.of(context).pop(date.year),
+            ),
+          ),
+        );
+      },
+    );
+    if (selectedYear != null) {
+      setState(() => _joinedDate = DateTime(selectedYear, 1, 1));
+    }
+  }
 
   static const Color _skyBlue = Color(0xFF1E88E5);
 
@@ -52,6 +81,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       text: p.guardianPhone ?? '',
     );
     _dateOfBirth = p.dateOfBirth;
+    _joinedDate = p.joinedDate;
+    _isBatchLocked = p.joinedDate != null; //added this line.
   }
 
   @override
@@ -108,7 +139,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       'guardianPhone': _emptyToNull(_guardianPhoneController.text),
       'dateOfBirth': _dateOfBirth?.toIso8601String(),
     };
-
+    if (!_isBatchLocked && _joinedDate != null) {
+      updatedFields['joinedDate'] = _joinedDate!.toIso8601String();
+    }
     setState(() => _isSaving = true);
 
     context.read<UserProfileBloc>().add(
@@ -166,7 +199,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<UserProfileBloc, UserProfileState>(
-      listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (!_isSaving) return;
 
@@ -190,6 +222,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         }
       },
       child: Scaffold(
+        // ...unchanged, everything below this line stays exactly the same
         backgroundColor: Colors.grey.shade100,
         appBar: AppBar(
           backgroundColor: _skyBlue,
@@ -307,7 +340,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   controller: _rollNumberController,
                   decoration: _decoration(
                     'Roll Number',
+
                     icon: Icons.badge_outlined,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                InkWell(
+                  onTap: _isBatchLocked ? null : _pickBatchYear,
+                  borderRadius: BorderRadius.circular(14),
+                  child: InputDecorator(
+                    decoration:
+                        _decoration(
+                          'Batch (Joined Year)',
+                          icon: Icons.event_available_outlined,
+                        ).copyWith(
+                          fillColor: _isBatchLocked
+                              ? Colors.grey.shade200
+                              : Colors.grey.shade50,
+                          suffixIcon: _isBatchLocked
+                              ? Tooltip(
+                                  message: 'Batch can only be set once',
+                                  child: Icon(
+                                    Icons.lock_outline,
+                                    size: 18,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                )
+                              : null,
+                        ),
+                    child: Text(
+                      _joinedDate == null
+                          ? 'Select batch year'
+                          : '${_joinedDate!.year}',
+                      style: TextStyle(
+                        color: _joinedDate == null
+                            ? Colors.grey.shade500
+                            : Colors.black87,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),

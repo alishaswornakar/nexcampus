@@ -7,9 +7,20 @@ class ProfileHeader extends StatelessWidget {
 
   const ProfileHeader({super.key, required this.profile});
 
+  String? get _subtitle {
+    final dept = profile.department?.trim();
+    final sem = profile.semester?.trim();
+    if (dept == null || dept.isEmpty) {
+      return (sem != null && sem.isNotEmpty) ? 'SEMESTER $sem' : null;
+    }
+    if (sem == null || sem.isEmpty) return dept.toUpperCase();
+    return '${dept.toUpperCase()} - SEMESTER $sem';
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final subtitle = _subtitle;
 
     return Container(
       width: double.infinity,
@@ -18,10 +29,7 @@ class ProfileHeader extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF4FC3F7), // sky blue
-            Color(0xFF1E88E5), // deeper blue
-          ],
+          colors: [Color(0xFF4FC3F7), Color(0xFF1E88E5)],
         ),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(28),
@@ -48,72 +56,20 @@ class ProfileHeader extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            profile.email,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: Colors.white.withValues(alpha: 0.85),
+          if (subtitle != null) ...[
+            const SizedBox(height: 6),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: Colors.white.withValues(alpha: 0.85),
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.5,
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (profile.department != null) ...[
-                  _InfoChip(icon: Icons.school, label: profile.department!),
-                  const SizedBox(width: 16),
-                ],
-                if (profile.semester != null) ...[
-                  _InfoChip(
-                    icon: Icons.calendar_month,
-                    label: 'Sem ${profile.semester}',
-                  ),
-                  const SizedBox(width: 16),
-                ],
-                if (profile.rollNumber != null)
-                  _InfoChip(
-                    icon: Icons.badge,
-                    label: 'Roll ${profile.rollNumber}',
-                  ),
-              ],
-            ),
-          ),
+          ],
         ],
       ),
-    );
-  }
-}
-
-class _InfoChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _InfoChip({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 14, color: Colors.white.withValues(alpha: 0.9)),
-        const SizedBox(width: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
     );
   }
 }
