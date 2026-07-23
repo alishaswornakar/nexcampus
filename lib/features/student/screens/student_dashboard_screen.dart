@@ -69,9 +69,7 @@ class StudentDashboardScreen extends StatelessWidget {
         ),
       ),
 
-      bottomNavigationBar:  AppBottomNavBar(
-        currentIndex: 0,
-      ),
+      bottomNavigationBar: const AppBottomNavBar(currentIndex: 0),
     );
   }
 }

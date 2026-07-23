@@ -14,7 +14,17 @@ class QuestionBankSubjectScreen extends StatelessWidget {
     final subjects = semesterSubjects[semester] ?? [];
 
     return Scaffold(
-      appBar: AppBar(title: Text("Semester $semester"), centerTitle: true),
+      appBar: AppBar(
+        backgroundColor: AppTheme.secondary,
+        title: Text(
+          "Semester $semester",
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: subjects.isEmpty
           ? const Center(
               child: Text(
@@ -66,15 +76,15 @@ class QuestionBankSubjectScreen extends StatelessWidget {
                           onPressed: qnbLink.isEmpty
                               ? null
                               : () {
-                                 Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (_) => DriveWebViewScreen(
-      title: "$subjectName Question Bank",
-      url: qnbLink,
-    ),
-  ),
-);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => DriveWebViewScreen(
+                                        title: "$subjectName Question Bank",
+                                        url: qnbLink,
+                                      ),
+                                    ),
+                                  );
                                 },
                           icon: const Icon(
                             Icons.description_outlined,

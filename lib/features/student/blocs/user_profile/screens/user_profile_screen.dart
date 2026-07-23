@@ -11,19 +11,35 @@ import '../widgets/account_information_card.dart';
 import '../widgets/edit_profile_button.dart';
 import '../widgets/logout_tile.dart';
 import '../widgets/loading_shimmer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 class UserProfileScreen extends StatelessWidget {
-  final String uid;
-
-  const UserProfileScreen({super.key, required this.uid});
+  const UserProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      return const Scaffold(body: Center(child: Text("User not logged in")));
+    }
     return BlocProvider(
       create: (_) =>
-          UserProfileBloc()..add(UserProfileSubscriptionRequested(uid)),
+          UserProfileBloc()..add(UserProfileSubscriptionRequested(user.uid)),
       child: Scaffold(
-        appBar: AppBar(title: const Text('My Profile'), centerTitle: true),
+        appBar: AppBar(
+          title: const Text(
+            'Student Profile',
+            style: TextStyle(color: Colors.white),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
+          ),
+          backgroundColor: AppTheme.secondary,
+        ),
         body: BlocBuilder<UserProfileBloc, UserProfileState>(
           builder: (context, state) {
             if (state.status == UserProfileStatus.loading &&
@@ -49,7 +65,7 @@ class UserProfileScreen extends StatelessWidget {
             return RefreshIndicator(
               onRefresh: () async {
                 context.read<UserProfileBloc>().add(
-                  UserProfileSubscriptionRequested(uid),
+                  UserProfileSubscriptionRequested(user.uid),
                 );
               },
               child: ListView(

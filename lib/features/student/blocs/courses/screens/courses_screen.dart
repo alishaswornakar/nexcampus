@@ -33,7 +33,7 @@ class CoursesScreen extends StatelessWidget {
           backgroundColor: AppTheme.secondary,
           foregroundColor: Colors.white,
         ),
-        bottomNavigationBar:  AppBottomNavBar(
+        bottomNavigationBar:  const AppBottomNavBar(
           currentIndex: 1
         ),
         body: ListView.separated(
@@ -117,7 +117,7 @@ class _SubjectsScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF1B4F9B),
         foregroundColor: Colors.white,
       ),
-      bottomNavigationBar: AppBottomNavBar(
+      bottomNavigationBar: const AppBottomNavBar(
         currentIndex: 1,
       ),
       body: ListView.separated(
@@ -237,7 +237,7 @@ class _SyllabusPdfScreenState extends State<_SyllabusPdfScreen> {
         backgroundColor: const Color(0xFF1B4F9B),
         foregroundColor: Colors.white,
       ),
-      bottomNavigationBar: AppBottomNavBar(
+      bottomNavigationBar: const AppBottomNavBar(
         currentIndex: 1,
       ),
       body: _error != null

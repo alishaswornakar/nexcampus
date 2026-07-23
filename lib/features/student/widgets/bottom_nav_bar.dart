@@ -2,55 +2,47 @@ import 'package:flutter/material.dart';
 import '../../student/screens/student_dashboard_screen.dart';
 import 'package:nexcampus_app/features/student/blocs/question_bank/screens/question_bank_screen.dart';
 import 'package:nexcampus_app/features/student/blocs/courses/screens/courses_screen.dart';
-import 'package:nexcampus_app/features/student/blocs/profile/screens/user_profile_screen.dart';
+import 'package:nexcampus_app/features/student/blocs/user_profile/screens/user_profile_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AppBottomNavBar extends StatelessWidget {
   final int currentIndex; // 0=Home 1=Courses 2=QNB 3=Profile
-  final bool isGuest;
-  final User? user = FirebaseAuth.instance.currentUser;
-  AppBottomNavBar({
-    super.key,
-    required this.currentIndex,
-    this.isGuest = false,
-  });
+  const AppBottomNavBar({super.key, required this.currentIndex});
 
   static const _primary = Color(0xFF1B4F9B);
 
   void _onTap(BuildContext context, int index) {
+    final user = FirebaseAuth.instance.currentUser;
     if (index == currentIndex) return;
     switch (index) {
       case 0:
-        if (user == null) {
+        if (user != null) {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-              builder: (_) => StudentDashboardScreen(user: user!),
+              builder: (_) => StudentDashboardScreen(user: user),
             ),
             (r) => false,
           );
         }
         break;
       case 1:
-        Navigator.pushAndRemoveUntil(
+        Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const CoursesScreen()),
-          (r) => false,
         );
         break;
       case 2:
         // PoU center button — goes home (acts as brand home button)
-        Navigator.pushAndRemoveUntil(
+        Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const QuestionBankScreen()),
-          (r) => false,
         );
         break;
       case 3:
-        Navigator.pushAndRemoveUntil(
+        Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const UserProfileScreen()),
-          (r) => false,
         );
         break;
     }

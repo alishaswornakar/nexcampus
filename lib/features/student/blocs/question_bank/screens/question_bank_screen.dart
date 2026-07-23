@@ -25,7 +25,18 @@ class _QuestionBankView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Question Bank"), centerTitle: true),
+      appBar: AppBar(
+        title: const Text(
+          "Question Bank",
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
+        backgroundColor: AppTheme.secondary,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: BlocBuilder<QuestionBankBloc, QuestionBankState>(
         builder: (context, state) {
           if (state is QuestionBankLoading) {
@@ -51,15 +62,24 @@ class _QuestionBankView extends StatelessWidget {
                   ),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: AppTheme.primaryColor,
+                      radius: 22,
+                      backgroundColor: AppTheme.secondary,
                       child: Text(
                         semester.toString(),
-                        style: const TextStyle(color: Colors.white),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     title: Text(
                       "Semester $semester",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.background,
+                        backgroundColor: AppTheme.secondary,
+                      ),
                     ),
                     subtitle: const Text("View subjects and Question Banks"),
                     trailing: const Icon(Icons.chevron_right),
@@ -83,7 +103,7 @@ class _QuestionBankView extends StatelessWidget {
           );
         },
       ),
-      bottomNavigationBar: AppBottomNavBar(currentIndex: 2),
+      bottomNavigationBar: const AppBottomNavBar(currentIndex: 2),
     );
   }
 }
