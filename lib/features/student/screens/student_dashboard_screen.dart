@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../widgets/student_app_bar.dart';
-import '../widgets/student_profile_card.dart';
+//import '../widgets/student_profile_card.dart';
 import '../widgets/quick_access_grid.dart';
 import '../widgets/announcements_section.dart';
 import 'package:nexcampus_app/features/student/widgets/bottom_nav_bar.dart';
@@ -15,24 +15,23 @@ class StudentDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF6F8FB),
+    return const Scaffold(
+      backgroundColor: Color(0xFFF6F8FB),
 
-      appBar: const StudentAppBar(),
+      appBar: StudentAppBar(),
 
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            StudentProfileCard(user: user),
+            // StudentProfileCard(user: user),
+            SizedBox(height: 20),
 
-            const SizedBox(height: 20),
+            QuickAccessGrid(studentId: ''),
 
-            const QuickAccessGrid(studentId: ''),
+            SizedBox(height: 20),
 
-            const SizedBox(height: 20),
-
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 "Today's Schedule",
@@ -40,36 +39,36 @@ class StudentDashboardScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 10),
-            const ScheduleCard(
+            SizedBox(height: 10),
+            ScheduleCard(
               subject: "Data Structures",
               time: "09:00 AM - 10:00 AM",
               teacher: "Prof. Gupta",
               room: "302",
             ),
 
-            const ScheduleCard(
+            ScheduleCard(
               subject: "Operating Systems",
               time: "11:00 AM - 12:00 PM",
               teacher: "Dr. Khan",
               room: "304",
             ),
 
-            const ScheduleCard(
+            ScheduleCard(
               subject: "Machine Learning",
               time: "02:00 PM - 03:00 PM",
               teacher: "Ms. Verma",
               room: "308",
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
-            const AnnouncementsSection(),
+            AnnouncementsSection(),
           ],
         ),
       ),
 
-      bottomNavigationBar: const AppBottomNavBar(currentIndex: 0),
+      bottomNavigationBar: AppBottomNavBar(currentIndex: 0),
     );
   }
 }

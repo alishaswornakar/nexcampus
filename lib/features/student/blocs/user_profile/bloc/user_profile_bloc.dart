@@ -16,6 +16,8 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
     on<UserProfileUpdated>(_onProfileUpdated);
     on<UserProfileFieldsUpdated>(_onProfileFieldsUpdated);
     on<UserProfileCleared>(_onProfileCleared);
+    on<UploadProfileImage>(_onUploadProfileImage);
+    on<ProfileImageUploaded>(_onProfileImageUploaded);
   }
 
   Future<void> _onProfileRequested(
@@ -101,6 +103,58 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
     Emitter<UserProfileState> emit,
   ) {
     emit(const UserProfileState());
+  }
+
+  Future<void> _onUploadProfileImage(
+    UploadProfileImage event,
+    Emitter<UserProfileState> emit,
+  ) async {
+    // Preserve existing profile-load state/error while the image
+    // upload runs — this is a separate concern from profile status.
+    emit(
+      state.copyWith(
+        imageUploadStatus: ProfileImageUploadStatus.uploading,
+        errorMessage: state.errorMessage,
+        imageUploadError: null,
+      ),
+    );
+    try {
+      final newImageUrl = await _repository.uploadImage(
+        uid: event.uid,
+        imageFile: event.imageFile,
+        oldImageUrl: event.oldImageUrl,
+      );
+      // Dispatch the follow-up event rather than emitting profile
+      // changes directly here, so the "upload succeeded" transition
+      // and the "profile.imageUrl updated" transition are handled by
+      // a single, testable event handler (_onProfileImageUploaded).
+      add(ProfileImageUploaded(newImageUrl));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          imageUploadStatus: ProfileImageUploadStatus.failure,
+          errorMessage: state.errorMessage,
+          imageUploadError: e.toString(),
+        ),
+      );
+    }
+  }
+
+  void _onProfileImageUploaded(
+    ProfileImageUploaded event,
+    Emitter<UserProfileState> emit,
+  ) {
+    final currentProfile = state.profile;
+    final updatedProfile = currentProfile?.copyWith(photoUrl: event.imageUrl);
+
+    emit(
+      state.copyWith(
+        imageUploadStatus: ProfileImageUploadStatus.success,
+        errorMessage: state.errorMessage,
+        imageUploadError: null,
+        profile: updatedProfile ?? currentProfile,
+      ),
+    );
   }
 
   @override

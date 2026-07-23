@@ -15,14 +15,16 @@ class StudentAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: AppTheme.secondary,
       elevation: 0,
       title: const Text(
-        "NexCampus",
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        "Student Dashboard",
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 17,
+        ),
       ),
       leading: Padding(
         padding: const EdgeInsets.all(8),
-        child: CircleAvatar(
-          child: Image.asset("assets/images/mbman_app_icon.png"),
-        ),
+        child: CircleAvatar(child: Image.asset("assets/images/App_image.png")),
       ),
       actions: [
         const Icon(Icons.notifications_none, color: Colors.white),

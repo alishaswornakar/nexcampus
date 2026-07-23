@@ -81,7 +81,7 @@ class QuestionBankSubjectScreen extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (_) => DriveWebViewScreen(
-                                        title: "$shortName Question Bank",
+                                        title: "$shortName QNB",
                                         url: qnbLink,
                                       ),
                                     ),

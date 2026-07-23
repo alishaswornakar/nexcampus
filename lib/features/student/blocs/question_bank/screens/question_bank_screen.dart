@@ -26,16 +26,15 @@ class _QuestionBankView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           "Question Bank",
           style: TextStyle(color: Colors.white),
+          textAlign: TextAlign.left,
         ),
-        centerTitle: true,
+
         backgroundColor: AppTheme.secondary,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: BlocBuilder<QuestionBankBloc, QuestionBankState>(
         builder: (context, state) {

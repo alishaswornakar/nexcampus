@@ -14,6 +14,7 @@ import '../widgets/loading_shimmer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/student/widgets/bottom_nav_bar.dart';
+import 'package:nexcampus_app/features/student/blocs/user_profile/screens/edit_profile_screen.dart';
 
 class UserProfileScreen extends StatelessWidget {
   const UserProfileScreen({super.key});
@@ -30,15 +31,13 @@ class UserProfileScreen extends StatelessWidget {
           UserProfileBloc()..add(UserProfileSubscriptionRequested(user.uid)),
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: const Text(
             'Student Profile',
             style: TextStyle(color: Colors.white),
+            textAlign: TextAlign.left,
           ),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
-          ),
+          iconTheme: const IconThemeData(color: Colors.white),
           backgroundColor: AppTheme.secondary,
         ),
         body: BlocBuilder<UserProfileBloc, UserProfileState>(
@@ -82,7 +81,17 @@ class UserProfileScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   AccountInformationCard(profile: profile),
                   const SizedBox(height: 24),
-                  EditProfileButton(profile: profile),
+                  EditProfileButton(
+                    profile: profile,
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider.value(
+                          value: context.read<UserProfileBloc>(),
+                          child: EditProfileScreen(profile: profile),
+                        ),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   const LogoutTile(),
                   const SizedBox(height: 24),
@@ -91,7 +100,7 @@ class UserProfileScreen extends StatelessWidget {
             );
           },
         ),
-        bottomNavigationBar: const AppBottomNavBar(currentIndex: 2),
+        bottomNavigationBar: const AppBottomNavBar(currentIndex: 3),
       ),
     );
   }

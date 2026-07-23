@@ -67,6 +67,7 @@ dependencies:
   bloc: ^9.2.1
   qr_flutter: ^4.1.0
   flutter_pdfview: ^1.4.4
+  cached_network_image: ^3.4.1
   
 
 dev_dependencies:
