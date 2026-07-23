@@ -78,7 +78,6 @@ class _QuestionBankView extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: AppTheme.background,
-                        backgroundColor: AppTheme.secondary,
                       ),
                     ),
                     subtitle: const Text("View subjects and Question Banks"),
