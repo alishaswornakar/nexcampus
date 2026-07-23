@@ -75,13 +75,13 @@ class _QuestionBankView extends StatelessWidget {
                     ),
                     title: Text(
                       "Semester $semester",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.background,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: const Text("View subjects and Question Banks"),
-                    trailing: const Icon(Icons.chevron_right),
+                    trailing: const Icon(
+                      Icons.chevron_right,
+                      color: Colors.white,
+                    ),
                     onTap: () {
                       context.read<QuestionBankBloc>().add(
                         SelectSemester(semester),

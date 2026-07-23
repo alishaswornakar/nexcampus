@@ -29,13 +29,12 @@ class CoursesScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: const Text('Courses'),
           backgroundColor: AppTheme.secondary,
           foregroundColor: Colors.white,
         ),
-        bottomNavigationBar:  const AppBottomNavBar(
-          currentIndex: 1
-        ),
+        bottomNavigationBar: const AppBottomNavBar(currentIndex: 1),
         body: ListView.separated(
           padding: EdgeInsets.all(size.width * 0.04),
           itemCount: 8,
@@ -117,9 +116,7 @@ class _SubjectsScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF1B4F9B),
         foregroundColor: Colors.white,
       ),
-      bottomNavigationBar: const AppBottomNavBar(
-        currentIndex: 1,
-      ),
+      bottomNavigationBar: const AppBottomNavBar(currentIndex: 1),
       body: ListView.separated(
         padding: EdgeInsets.all(size.width * 0.04),
         itemCount: subjects.length,
@@ -237,9 +234,7 @@ class _SyllabusPdfScreenState extends State<_SyllabusPdfScreen> {
         backgroundColor: const Color(0xFF1B4F9B),
         foregroundColor: Colors.white,
       ),
-      bottomNavigationBar: const AppBottomNavBar(
-        currentIndex: 1,
-      ),
+      bottomNavigationBar: const AppBottomNavBar(currentIndex: 1),
       body: _error != null
           ? Center(
               child: Column(

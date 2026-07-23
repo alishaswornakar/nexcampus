@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 class DriveWebViewScreen extends StatefulWidget {
   final String title;
@@ -63,7 +64,15 @@ class _DriveWebViewScreenState extends State<DriveWebViewScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          backgroundColor: AppTheme.secondary,
+          iconTheme: const IconThemeData(color: Colors.white),
+          title: Text(
+            widget.title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           centerTitle: true,
           actions: [
             IconButton(

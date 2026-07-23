@@ -24,6 +24,7 @@ class QuestionBankSubjectScreen extends StatelessWidget {
           ),
         ),
         centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: subjects.isEmpty
           ? const Center(
@@ -38,8 +39,8 @@ class QuestionBankSubjectScreen extends StatelessWidget {
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final subject = subjects[index];
-
-                final subjectName = subject['name'] ?? '';
+                final fullName = subject['name'] ?? '';
+                final shortName = subject['shortName'] ?? fullName;
                 final qnbLink = subject['qnb'] ?? '';
 
                 return Card(
@@ -56,7 +57,7 @@ class QuestionBankSubjectScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            subjectName,
+                            fullName,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -80,7 +81,7 @@ class QuestionBankSubjectScreen extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (_) => DriveWebViewScreen(
-                                        title: "$subjectName Question Bank",
+                                        title: "$shortName Question Bank",
                                         url: qnbLink,
                                       ),
                                     ),

@@ -13,6 +13,7 @@ import '../widgets/logout_tile.dart';
 import '../widgets/loading_shimmer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
+import 'package:nexcampus_app/features/student/widgets/bottom_nav_bar.dart';
 
 class UserProfileScreen extends StatelessWidget {
   const UserProfileScreen({super.key});
@@ -90,6 +91,7 @@ class UserProfileScreen extends StatelessWidget {
             );
           },
         ),
+        bottomNavigationBar: const AppBottomNavBar(currentIndex: 2),
       ),
     );
   }
