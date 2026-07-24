@@ -35,7 +35,7 @@ class ClassesService {
   // }
   Stream<List<StudentModel>> studentsBySemester({
     required String department,
-    int? semester,
+    String? semester,
   }) {
     return firestore
         .collection("users")

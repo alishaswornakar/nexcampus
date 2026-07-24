@@ -81,7 +81,7 @@ class StudentAssignmentModel {
 
   String get description => assignment.description;
 
-  String get subject => assignment.subject;
+  String get subject => assignment.courseName;
 
   String get department => assignment.department;
 

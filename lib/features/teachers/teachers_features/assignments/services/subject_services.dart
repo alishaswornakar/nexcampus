@@ -11,7 +11,7 @@ class SubjectService {
     required String department,
     required String semester,
   }) {
-    
+    // 
 
     return firestore
         .collection("subjects")

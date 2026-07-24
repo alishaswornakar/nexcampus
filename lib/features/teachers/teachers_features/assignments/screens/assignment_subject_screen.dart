@@ -8,7 +8,7 @@ import 'assignment_list_screen.dart';
 
 class AssignmentSubjectScreen extends StatelessWidget {
   final String department;
-  final int semester;
+  final String? semester;
 
   AssignmentSubjectScreen({
     super.key,
@@ -125,12 +125,9 @@ class AssignmentSubjectScreen extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (_) =>
                             AssignmentListScreen(
-                          department:
-                              department,
-                          semester:
-                              semester,
-                          subject:
-                              subject.subject,
+                          department: department,
+                          semester: semester,
+                          subject: subject.subject,
                         ),
                       ),
                     );

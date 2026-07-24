@@ -71,7 +71,7 @@ class AssignmentBloc extends Bloc<AssignmentEvent, AssignmentState> {
   List<AssignmentSubmissionModel> _latestSubmissions = const [];
   bool _hasReceivedAssignments = false;
 
-  AssignmentBloc()
+  AssignmentBloc(AssignmentRepository assignmentRepository)
     : _assignmentRepository = AssignmentRepository(AssignmentService()),
       _submissionRepository = AssignmentSubmissionRepository(
         AssignmentSubmissionService(),

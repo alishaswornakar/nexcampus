@@ -27,7 +27,7 @@ class ClassesBloc
     await emit.forEach<List<StudentModel>>(
       repository.students(
         event.department,
-        event.semester,
+        event.semester ,
       ),
       onData: (students) =>
           ClassesLoaded(students),

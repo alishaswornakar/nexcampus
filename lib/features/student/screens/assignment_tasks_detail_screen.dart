@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 
 import '../../teachers/teachers_features/assignments/models/assignment_submission_model.dart';
 import '../../teachers/teachers_features/assignments/repository/assignment_submission_repository.dart';
@@ -96,7 +98,24 @@ class _AssignmentTasksDetailScreenState
   Future<void> _pickPdf() async {
     setState(() => _uploading = true);
     try {
-      final result = await CloudinaryService().uploadPdf();
+      // Let user pick a PDF file
+      final pickResult = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+        withData: false,
+      );
+
+      if (pickResult == null || pickResult.files.isEmpty) return;
+
+      final path = pickResult.files.first.path;
+      if (path == null) return;
+
+      final file = File(path);
+
+      final cloudinary = CloudinaryService();
+      final result = await cloudinary.uploadFile(file);
+
+      // ignore: unnecessary_null_comparison
       if (result != null) {
         setState(() => _pickedFile = result);
       }
@@ -331,6 +350,8 @@ class _AssignmentTasksDetailScreenState
           ),
         ),
         const SizedBox(height: 8),
+
+        
         if (assignment.hasSubmissionPdf)
           OutlinedButton.icon(
             onPressed: () => _openUrl(assignment.submissionPdfUrl!),

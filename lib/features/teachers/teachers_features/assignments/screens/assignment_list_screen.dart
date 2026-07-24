@@ -9,7 +9,7 @@ import 'assignment_detail_screen.dart';
 import 'create_assignment_screen.dart';
 class AssignmentListScreen extends StatefulWidget {
   final String department;
-  final int semester;
+  final String? semester;
   final String subject;
 
   const AssignmentListScreen({

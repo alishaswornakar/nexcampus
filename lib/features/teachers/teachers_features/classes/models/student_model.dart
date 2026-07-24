@@ -3,7 +3,7 @@ class StudentModel {
   final String fullName;
   final String email;
   final String department;
-  final int? semester;
+  final String? semester;
   final String roll;
   final String role;
   final String photoUrl;
@@ -28,9 +28,7 @@ class StudentModel {
     fullName: map['fullName'] ?? '',
     email: map['email'] ?? '',
     department: map['department'] ?? '',
-    semester: map['semester'] != null
-        ? int.tryParse(map['semester'].toString())
-        : null,
+    semester: map['semester']?.toString(),
     roll: map['roll'] ?? '',
     role: map['role'] ?? '',
     photoUrl: map['photoUrl'] ?? '',

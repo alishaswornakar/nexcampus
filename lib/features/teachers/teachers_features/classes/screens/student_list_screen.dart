@@ -13,7 +13,7 @@ import '../services/classes_service.dart';
 
 class StudentListScreen extends StatefulWidget {
   final String department;
-  final int semester;
+  final String semester;
 
   const StudentListScreen({
     super.key,

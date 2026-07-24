@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/assignments/repository/assignment_repository.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/assignments/services/assignment_service.dart';
 import '../blocs/assignment/assignment_bloc.dart';
 import '../blocs/assignment/assignment_event.dart';
 import '../blocs/assignment/assignment_state.dart';
@@ -30,20 +32,15 @@ class TasksScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => AssignmentBloc()
-        ..add(
-          WatchAssignments(
-            department: department,
-            semester: semester,
-            studentId: studentId,
-          ),
-        ),
+      create: (_) => AssignmentBloc(AssignmentRepository(AssignmentService())),
       child: _TasksScreenBody(
         department: department,
         semester: semester,
         studentId: studentId,
-      ),
-    );
+          ),
+        );
+      
+  
   }
 }
 
