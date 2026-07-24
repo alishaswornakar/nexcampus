@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
 
-import 'package:nexcampus_app/features/student/models/attendance_model.dart';
+import 'package:nexcampus_app/features/student/blocs/attendance/models/attendance_model.dart';
 
 abstract class AttendanceState extends Equatable {
   const AttendanceState();
-
   @override
   List<Object?> get props => [];
 }

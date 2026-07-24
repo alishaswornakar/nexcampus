@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../models/assignment_model.dart';
+import '../models/assignment_model.dart';
 
 abstract class AssignmentState extends Equatable {
   const AssignmentState();

@@ -9,7 +9,7 @@ import 'package:nexcampus_app/features/teachers/teachers_features/assignments/re
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/services/assignment_service.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/services/assignment_submission_service.dart';
 
-import '../../models/assignment_model.dart';
+import '../models/assignment_model.dart';
 import 'assignment_event.dart';
 import 'assignment_state.dart';
 

@@ -1,5 +1,5 @@
 import '../models/attendance_model.dart';
-import 'package:nexcampus_app/features/student/services/attendance_service.dart';
+import 'package:nexcampus_app/features/student/blocs/attendance/services/attendance_service.dart';
 
 class AttendanceRepository {
   final AttendanceService _firestoreService;

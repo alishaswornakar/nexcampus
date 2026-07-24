@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart ';
-import 'package:nexcampus_app/features/student/models/attendance_model.dart';
-import '../../student/blocs/attendance/attendance_bloc.dart';
-import 'package:nexcampus_app/features/student/blocs/attendance/attendance_event.dart';
-import 'package:nexcampus_app/features/student/blocs/attendance/attendance_state.dart';
-import 'package:nexcampus_app/features/student/repository/attendance_repository.dart';
-import 'package:nexcampus_app/features/student/widgets/attendance_summary_card.dart';
-import 'package:nexcampus_app/features/student/widgets/attendance_record_card.dart';
-import 'package:nexcampus_app/features/student/widgets/attendance_calendar.dart';
-import 'package:nexcampus_app/features/student/widgets/attendance_filter.dart';
+import 'package:nexcampus_app/features/student/blocs/attendance/models/attendance_model.dart';
+import 'package:nexcampus_app/features/student/blocs/attendance/bloc/attendance_bloc.dart';
+import 'package:nexcampus_app/features/student/blocs/attendance/bloc/attendance_event.dart';
+import 'package:nexcampus_app/features/student/blocs/attendance/bloc/attendance_state.dart';
+import 'package:nexcampus_app/features/student/blocs/attendance/repository/attendance_repository.dart';
+import 'package:nexcampus_app/features/student/blocs/attendance/widgets/attendance_summary_card.dart';
+import 'package:nexcampus_app/features/student/blocs/attendance/widgets/attendance_record_card.dart';
+import 'package:nexcampus_app/features/student/blocs/attendance/widgets/attendance_calendar.dart';
+import 'package:nexcampus_app/features/student/blocs/attendance/widgets/attendance_filter.dart';
 
 class AttendanceScreen extends StatelessWidget {
   final String studentId;

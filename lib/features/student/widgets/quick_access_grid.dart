@@ -4,17 +4,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/features/student/blocs/result/screens/results_screen.dart';
 import 'quick_tile.dart';
 //import '../screens/alerts_screen.dart';
-import '../screens/attendance_screen.dart';
+import '../blocs/assignment/screens/attendance_screen.dart';
 import '../../../features/student/blocs/digital_queue/screens/digital_queue_home_screen.dart';
 import 'package:nexcampus_app/features/student/blocs/notes/screens/notes_screen.dart';
 import 'package:nexcampus_app/features/student/blocs/syllabus/screens/syllabus_screen.dart';
 //import '../screens/schedule_screen.dart';
 //import '../screens/fees_screen.dart';
 //import '../screens/notices_screen.dart';
-import '../screens/issue_reporting_screen.dart';
+import 'package:nexcampus_app/features/student/blocs/anonymous_issue_reporting/screens/anonymous_issue_reporting_screen.dart';
 import 'package:nexcampus_app/features/student/blocs/team_finder/screens/team_finder_screen.dart';
 //import '../screens/library_screen.dart';
-import '../screens/tasks_screen.dart';
+import '../blocs/assignment/screens/tasks_screen.dart';
 
 /// Plain data holder for the logged-in student's profile, read once from
 /// Firestore (`users/{uid}`) and reused across every Quick Access tile
@@ -225,7 +225,9 @@ class _QuickAccessGridState extends State<QuickAccessGrid> {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const IssueReportingScreen(),
+                      builder: (context) => AnonymousIssueReportingScreen(
+                        studentId: profile.studentId,
+                      ),
                     ),
                   ),
                 ),

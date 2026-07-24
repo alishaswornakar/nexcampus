@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
-import '../../teachers/teachers_features/assignments/models/assignment_model.dart';
-import '../../teachers/teachers_features/assignments/models/assignment_submission_model.dart';
+import '../../../../teachers/teachers_features/assignments/models/assignment_model.dart';
+import '../../../../teachers/teachers_features/assignments/models/assignment_submission_model.dart';
 
 /// Status shown in the Student Assignment module.
 enum StudentAssignmentStatus { pending, overdue, submitted, graded }

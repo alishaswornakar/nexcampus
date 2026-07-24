@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../teachers/teachers_features/assignments/models/assignment_submission_model.dart';
-import '../../teachers/teachers_features/assignments/repository/assignment_submission_repository.dart';
-import '../../teachers/teachers_features/assignments/services/assignment_submission_service.dart';
-import '../../teachers/teachers_features/assignments/services/cloudinary_service.dart';
+import '../../../../teachers/teachers_features/assignments/models/assignment_submission_model.dart';
+import '../../../../teachers/teachers_features/assignments/repository/assignment_submission_repository.dart';
+import '../../../../teachers/teachers_features/assignments/services/assignment_submission_service.dart';
+import '../../../../teachers/teachers_features/assignments/services/cloudinary_service.dart';
 import '../models/assignment_model.dart';
 import '../widgets/assignment_status_chip.dart';
 

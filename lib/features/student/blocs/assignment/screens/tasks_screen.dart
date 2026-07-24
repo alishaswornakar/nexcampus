@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
-import '../blocs/assignment/assignment_bloc.dart';
-import '../blocs/assignment/assignment_event.dart';
-import '../blocs/assignment/assignment_state.dart';
+import '../bloc/assignment_bloc.dart';
+import '../bloc/assignment_event.dart';
+import '../bloc/assignment_state.dart';
 import '../models/assignment_model.dart';
 import '../widgets/assignment_card.dart';
 import '../widgets/assignment_empty_widget.dart';

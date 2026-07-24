@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:nexcampus_app/features/student/models/attendance_model.dart';
-import 'package:nexcampus_app/features/student/repository/attendance_repository.dart';
+import 'package:nexcampus_app/features/student/blocs/attendance/models/attendance_model.dart';
+import 'package:nexcampus_app/features/student/blocs/attendance/repository/attendance_repository.dart';
 import 'attendance_event.dart';
 import 'attendance_state.dart';
 
