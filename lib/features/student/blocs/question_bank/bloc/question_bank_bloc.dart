@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:nexcampus_app/core/data/semester_subjects.dart';
+import 'package:nexcampus_app/core/data/semester_data1.dart';
 import 'question_bank_event.dart';
 import 'question_bank_state.dart';
 

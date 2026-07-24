@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:nexcampus_app/features/student/widgets/bottom_nav_bar.dart';
 import 'package:nexcampus_app/features/student/screens/student_dashboard_screen.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
-import 'package:nexcampus_app/core/data/semester_subjects.dart';
+import 'package:nexcampus_app/core/data/semester_data1.dart';
 
 class CoursesScreen extends StatelessWidget {
   const CoursesScreen({super.key});
@@ -163,7 +163,7 @@ class _SubjectsScreen extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (_) => _SyllabusPdfScreen(
                           assetPath: subject['pdf']!,
-                          title: subject['name']!,
+                          title: subject['shortName'] ?? subject['name']!,
                         ),
                       ),
                     ),

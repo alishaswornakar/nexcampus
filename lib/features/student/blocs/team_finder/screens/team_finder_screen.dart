@@ -1,7 +1,8 @@
 // lib/features/student/blocs/team_finder/screens/team_finder_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+// import 'package:nexcampus_app/core/data/semester_subjects.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import '../bloc/team_finder_bloc.dart';
 import '../bloc/team_finder_event.dart';
 import '../bloc/team_finder_state.dart';
@@ -170,9 +171,13 @@ class _TeamFinderViewState extends State<_TeamFinderView>
     return Scaffold(
       backgroundColor: const Color(0xFFF6F8FB),
       appBar: AppBar(
-        title: const Text('Team Finder'),
+        backgroundColor: AppTheme.secondary,
+        title: const Text(
+          'Team Finder',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
         bottom: TabBar(

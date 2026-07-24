@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexcampus_app/core/data/semester_subjects.dart';
+import 'package:nexcampus_app/core/data/semester_data1.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import 'drive_webview_screen.dart';

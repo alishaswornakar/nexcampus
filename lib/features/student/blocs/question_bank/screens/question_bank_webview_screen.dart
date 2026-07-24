@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
-class QuestionBankWebViewScreen extends StatefulWidget {
+class DriveWebViewScreen extends StatefulWidget {
   final String title;
   final String url;
+  final String? fallbackUrl;
 
-  const QuestionBankWebViewScreen({
+  const DriveWebViewScreen({
     super.key,
     required this.title,
     required this.url,
+    this.fallbackUrl,
   });
 
   @override
-  State<QuestionBankWebViewScreen> createState() =>
-      _QuestionBankWebViewScreenState();
+  State<DriveWebViewScreen> createState() => _DriveWebViewScreenState();
 }
 
-class _QuestionBankWebViewScreenState extends State<QuestionBankWebViewScreen> {
+class _DriveWebViewScreenState extends State<DriveWebViewScreen> {
   late final WebViewController _controller;
 
-  bool _isLoading = true;
+  bool _loading = true;
+  bool _usedFallback = false;
 
   @override
   void initState() {
@@ -27,35 +30,42 @@ class _QuestionBankWebViewScreenState extends State<QuestionBankWebViewScreen> {
 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(Colors.white)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (_) {
-            if (mounted) {
-              setState(() {
-                _isLoading = true;
-              });
-            }
+            if (mounted) setState(() => _loading = true);
           },
           onPageFinished: (_) {
-            if (mounted) {
-              setState(() {
-                _isLoading = false;
-              });
-            }
+            if (mounted) setState(() => _loading = false);
+          },
+          onWebResourceError: (error) {
+            // Ignore errors from sub-resources (images, scripts, etc.);
+            // only react when the main page itself fails to load.
+            if (error.isForMainFrame == false) return;
+            _handleLoadError();
           },
         ),
       )
       ..loadRequest(Uri.parse(widget.url));
   }
 
-  // Future<bool> _onWillPop() async {
-  //   if (await _controller.canGoBack()) {
-  //     await _controller.goBack();
-  //     return false;
-  //   }
+  void _handleLoadError() {
+    if (_usedFallback) return; // already tried the fallback once, stop here
+    final fallback = widget.fallbackUrl;
+    if (fallback == null || fallback.isEmpty || fallback == widget.url) return;
 
-  //   return true;
-  // }
+    _usedFallback = true;
+    _controller.loadRequest(Uri.parse(fallback));
+  }
+
+  Future<bool> _handleBack() async {
+    if (await _controller.canGoBack()) {
+      await _controller.goBack();
+      return false;
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,31 +73,31 @@ class _QuestionBankWebViewScreenState extends State<QuestionBankWebViewScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-
-        if (await _controller.canGoBack()) {
-          await _controller.goBack();
-        } else {
-          if (context.mounted) {
-            Navigator.pop(context);
-          }
+        final shouldPop = await _handleBack();
+        if (shouldPop && context.mounted) {
+          Navigator.pop(context);
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
-
+          backgroundColor: AppTheme.secondary,
+          iconTheme: const IconThemeData(color: Colors.white),
+          title: Text(
+            widget.title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
           actions: [
             IconButton(
-              tooltip: "Back",
-              icon: const Icon(Icons.arrow_back_ios_new),
+              icon: const Icon(Icons.arrow_back_ios),
               onPressed: () async {
-                if (await _controller.canGoBack()) {
-                  await _controller.goBack();
-                }
+                if (await _controller.canGoBack()) await _controller.goBack();
               },
             ),
             IconButton(
-              tooltip: "Forward",
               icon: const Icon(Icons.arrow_forward_ios),
               onPressed: () async {
                 if (await _controller.canGoForward()) {
@@ -96,19 +106,15 @@ class _QuestionBankWebViewScreenState extends State<QuestionBankWebViewScreen> {
               },
             ),
             IconButton(
-              tooltip: "Reload",
               icon: const Icon(Icons.refresh),
-              onPressed: () {
-                _controller.reload();
-              },
+              onPressed: () => _controller.reload(),
             ),
           ],
         ),
         body: Stack(
           children: [
             WebViewWidget(controller: _controller),
-
-            if (_isLoading) const LinearProgressIndicator(),
+            if (_loading) const LinearProgressIndicator(),
           ],
         ),
       ),

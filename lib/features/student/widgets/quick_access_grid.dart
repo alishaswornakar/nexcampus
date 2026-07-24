@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:nexcampus_app/features/student/blocs/result/screens/results_screen.dart';
 import 'quick_tile.dart';
-import '../screens/alerts_screen.dart';
+//import '../screens/alerts_screen.dart';
 import '../screens/attendance_screen.dart';
 import '../../../features/student/blocs/digital_queue/screens/digital_queue_home_screen.dart';
-import '../screens/notes_screen.dart';
-import '../screens/syllabus_screen.dart';
-import '../screens/schedule_screen.dart';
-import '../screens/fees_screen.dart';
-import '../screens/notices_screen.dart';
+import 'package:nexcampus_app/features/student/blocs/notes/screens/notes_screen.dart';
+import 'package:nexcampus_app/features/student/blocs/syllabus/screens/syllabus_screen.dart';
+//import '../screens/schedule_screen.dart';
+//import '../screens/fees_screen.dart';
+//import '../screens/notices_screen.dart';
 import '../screens/issue_reporting_screen.dart';
 import 'package:nexcampus_app/features/student/blocs/team_finder/screens/team_finder_screen.dart';
-import '../screens/library_screen.dart';
+//import '../screens/library_screen.dart';
 import '../screens/tasks_screen.dart';
 
 /// Plain data holder for the logged-in student's profile, read once from
@@ -161,16 +161,16 @@ class _QuickAccessGridState extends State<QuickAccessGrid> {
                     ),
                   ),
                 ),
-                QuickTile(
-                  icon: Icons.notifications,
-                  label: "Alerts",
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AlertsScreen(),
-                    ),
-                  ),
-                ),
+                // QuickTile(
+                //   icon: Icons.notifications,
+                //   label: "Alerts",
+                //   onTap: () => Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (context) => const AlertsScreen(),
+                //     ),
+                //   ),
+                // ),
                 QuickTile(
                   icon: Icons.menu_book,
                   label: "Notes",
@@ -191,34 +191,34 @@ class _QuickAccessGridState extends State<QuickAccessGrid> {
                     ),
                   ),
                 ),
-                QuickTile(
-                  icon: Icons.schedule,
-                  label: "Schedule",
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ScheduleScreen(),
-                    ),
-                  ),
-                ),
-                QuickTile(
-                  icon: Icons.payment,
-                  label: "Fees",
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const FeesScreen()),
-                  ),
-                ),
-                QuickTile(
-                  icon: Icons.campaign,
-                  label: "Notices",
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const NoticesScreen(),
-                    ),
-                  ),
-                ),
+                // QuickTile(
+                //   icon: Icons.schedule,
+                //   label: "Schedule",
+                //   onTap: () => Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (context) => const ScheduleScreen(),
+                //     ),
+                //   ),
+                // ),
+                // QuickTile(
+                //   icon: Icons.payment,
+                //   label: "Fees",
+                //   onTap: () => Navigator.push(
+                //     context,
+                //     MaterialPageRoute(builder: (context) => const FeesScreen()),
+                //   ),
+                // ),
+                // QuickTile(
+                //   icon: Icons.campaign,
+                //   label: "Notices",
+                //   onTap: () => Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (context) => const NoticesScreen(),
+                //     ),
+                //   ),
+                // ),
                 QuickTile(
                   icon: Icons.support_agent,
                   label: "Issue",
@@ -229,16 +229,16 @@ class _QuickAccessGridState extends State<QuickAccessGrid> {
                     ),
                   ),
                 ),
-                QuickTile(
-                  icon: Icons.local_library,
-                  label: "Library",
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LibraryScreen(),
-                    ),
-                  ),
-                ),
+                // QuickTile(
+                //   icon: Icons.local_library,
+                //   label: "Library",
+                //   onTap: () => Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (context) => const LibraryScreen(),
+                //     ),
+                //   ),
+                // ),
                 QuickTile(
                   icon: Icons.group,
                   label: "Team",
@@ -253,6 +253,16 @@ class _QuickAccessGridState extends State<QuickAccessGrid> {
                         department: profile.department,
                         semester: profile.semester,
                       ),
+                    ),
+                  ),
+                ),
+                QuickTile(
+                  icon: Icons.poll,
+                  label: "Results",
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ResultsScreen(),
                     ),
                   ),
                 ),

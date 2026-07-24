@@ -1,6 +1,7 @@
 // lib/features/student/blocs/team_finder/screens/team_post_detail_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import '../bloc/team_finder_bloc.dart';
 import '../bloc/team_finder_event.dart';
@@ -188,9 +189,13 @@ class _TeamPostDetailScreenState extends State<TeamPostDetailScreen> {
           return Scaffold(
             backgroundColor: const Color(0xFFF6F8FB),
             appBar: AppBar(
-              title: const Text('Post Details'),
+              backgroundColor: AppTheme.secondary,
+              title: const Text(
+                'Post Details',
+                style: TextStyle(color: Colors.white),
+              ),
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               actions: _isOwner
