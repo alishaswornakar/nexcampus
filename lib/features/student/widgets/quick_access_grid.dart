@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/features/student/blocs/result/screens/results_screen.dart';
 import 'quick_tile.dart';
 //import '../screens/alerts_screen.dart';
-import '../blocs/assignment/screens/attendance_screen.dart';
+import '../blocs/attendance/screens/attendance_screen.dart';
 import '../../../features/student/blocs/digital_queue/screens/digital_queue_home_screen.dart';
 import 'package:nexcampus_app/features/student/blocs/notes/screens/notes_screen.dart';
 import 'package:nexcampus_app/features/student/blocs/syllabus/screens/syllabus_screen.dart';

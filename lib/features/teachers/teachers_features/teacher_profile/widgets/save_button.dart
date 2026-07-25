@@ -35,10 +35,7 @@ class SaveProfileButton extends StatelessWidget {
               )
             : const Text(
                 "Save Changes",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
       ),
     );
