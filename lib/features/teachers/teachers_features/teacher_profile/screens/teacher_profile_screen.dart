@@ -14,11 +14,9 @@ class TeacherProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => TeacherProfileBloc(
-        TeacherProfileRepository(
-          TeacherProfileService(),
-        ),
-      )..add(const LoadTeacherProfileEvent()),
+      create: (_) =>
+          TeacherProfileBloc(TeacherProfileRepository(TeacherProfileService()))
+            ..add(const LoadTeacherProfileEvent()),
       child: const _TeacherProfileView(),
     );
   }
@@ -42,9 +40,7 @@ class _TeacherProfileView extends StatelessWidget {
       body: BlocBuilder<TeacherProfileBloc, TeacherProfileState>(
         builder: (context, state) {
           if (state is TeacherProfileLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (state is TeacherProfileError) {
@@ -63,22 +59,16 @@ class _TeacherProfileView extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-
                   // Profile Picture
                   CircleAvatar(
                     radius: 55,
                     backgroundColor: Colors.blue.shade100,
-                    backgroundImage: teacher.photoUrl != null &&
-                            teacher.photoUrl!.isNotEmpty
+                    backgroundImage:
+                        teacher.photoUrl != null && teacher.photoUrl!.isNotEmpty
                         ? NetworkImage(teacher.photoUrl!)
                         : null,
-                    child: teacher.photoUrl == null ||
-                            teacher.photoUrl!.isEmpty
-                        ? const Icon(
-                            Icons.person,
-                            size: 60,
-                            color: Colors.blue,
-                          )
+                    child: teacher.photoUrl == null || teacher.photoUrl!.isEmpty
+                        ? const Icon(Icons.person, size: 60, color: Colors.blue)
                         : null,
                   ),
 
@@ -96,9 +86,7 @@ class _TeacherProfileView extends StatelessWidget {
 
                   Text(
                     teacher.email,
-                    style: TextStyle(
-                      color: Colors.grey.shade700,
-                    ),
+                    style: TextStyle(color: Colors.grey.shade700),
                   ),
 
                   const SizedBox(height: 25),
@@ -151,23 +139,20 @@ class _TeacherProfileView extends StatelessWidget {
                         backgroundColor: Colors.blue,
                         foregroundColor: Colors.white,
                       ),
-                     onPressed: () async {
-  await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => BlocProvider.value(
-        value: context.read<TeacherProfileBloc>(),
-        child: EditTeacherProfileScreen(
-          profile: teacher,
-        ),
-      ),
-    ),
-  );
-
-  context.read<TeacherProfileBloc>().add(
-    const LoadTeacherProfileEvent(),
-  );
-},
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => BlocProvider.value(
+                              value: context.read<TeacherProfileBloc>(),
+                              child: EditTeacherProfileScreen(profile: teacher),
+                            ),
+                          ),
+                        );
+                        context.read<TeacherProfileBloc>().add(
+                          const LoadTeacherProfileEvent(),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -189,23 +174,16 @@ class _TeacherProfileView extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 15),
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: Colors.blue.shade50,
-          child: Icon(
-            icon,
-            color: Colors.blue,
-          ),
+          child: Icon(icon, color: Colors.blue),
         ),
         title: Text(title),
         subtitle: Text(
           value,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
     );

@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+//import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import '../../../../teachers/teachers_features/assignments/models/assignment_submission_model.dart';
 import '../../../../teachers/teachers_features/assignments/repository/assignment_submission_repository.dart';
 import '../../../../teachers/teachers_features/assignments/services/assignment_submission_service.dart';
 import '../../../../teachers/teachers_features/assignments/services/cloudinary_service.dart';
 import '../models/assignment_model.dart';
 import '../widgets/assignment_status_chip.dart';
+import '../../../screens/pdf_viewer_screen.dart';
 
 /// Full detail view for a single student assignment.
 ///
@@ -25,13 +28,20 @@ import '../widgets/assignment_status_chip.dart';
 /// and is not guaranteed to be an ancestor of this pushed route. The
 /// existing live Firestore streams in the bloc (via `WatchAssignments`)
 /// will automatically reflect the new submission once written.
+///
+/// [studentName] and [roll] are treated as a fallback only. Before writing
+/// a submission, this screen looks up the signed-in user's `users/{uid}`
+/// document (the same pattern used by the teacher-side
+/// `SubmitAssignmentScreen`) and prefers `fullName`/`roll` from there, so
+/// the teacher's grading screens always see a real name instead of a
+/// blank one.
 class AssignmentTasksDetailScreen extends StatefulWidget {
   const AssignmentTasksDetailScreen({
     super.key,
     required this.assignment,
     required this.studentId,
-    required this.studentName,
-    required this.roll,
+    this.studentName = '',
+    this.roll = '',
   });
 
   final StudentAssignmentModel assignment;
@@ -82,17 +92,13 @@ class _AssignmentTasksDetailScreenState
     return '$day $month ${date.year}';
   }
 
-  Future<void> _openUrl(String url) async {
-    final uri = Uri.tryParse(url);
-    if (uri == null) return;
-
-    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-
-    if (!launched && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Could not open the file.')));
-    }
+  void openPdf(String url, String title) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PdfViewerScreen(pdfUrl: url, title: title),
+      ),
+    );
   }
 
   Future<void> _pickPdf() async {
@@ -141,12 +147,43 @@ class _AssignmentTasksDetailScreenState
     setState(() => _submitting = true);
 
     try {
+      // Look up the signed-in student's profile so the submission carries
+      // a real name/roll number. Falls back to whatever was passed into
+      // this widget if the profile can't be read for any reason, so a
+      // Firestore hiccup never blocks the submission itself.
+      String studentName = widget.studentName;
+      String roll = widget.roll;
+
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        try {
+          final userDoc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUser.uid)
+              .get();
+
+          final userData = userDoc.data();
+          if (userData != null) {
+            studentName =
+                (userData['fullName'] as String?)?.trim().isNotEmpty == true
+                ? userData['fullName'] as String
+                : studentName;
+            roll = (userData['roll'] as String?)?.trim().isNotEmpty == true
+                ? userData['roll'] as String
+                : roll;
+          }
+        } catch (_) {
+          // Ignore lookup failures and fall back to the widget-provided
+          // values below.
+        }
+      }
+
       final submission = AssignmentSubmissionModel(
         id: '${widget.assignment.id}_${widget.studentId}',
         assignmentId: widget.assignment.id,
         studentId: widget.studentId,
-        studentName: widget.studentName,
-        roll: widget.roll,
+        studentName: studentName,
+        roll: roll,
         department: widget.assignment.department,
         semester: widget.assignment.semester,
         pdfUrl: _pickedFile!['url'] as String,
@@ -181,7 +218,17 @@ class _AssignmentTasksDetailScreenState
     final assignment = widget.assignment;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Assignment Details')),
+      appBar: AppBar(
+        title: const Text(
+          'Assignment Details',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        backgroundColor: AppTheme.secondary,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -252,7 +299,10 @@ class _AssignmentTasksDetailScreenState
             if (assignment.hasAssignmentPdf) ...[
               const SizedBox(height: 16),
               OutlinedButton.icon(
-                onPressed: () => _openUrl(assignment.assignmentPdfUrl!),
+                onPressed: () => openPdf(
+                  assignment.assignmentPdfUrl!,
+                  assignment.assignmentPdfName ?? "Assignment PDF",
+                ),
                 icon: const Icon(Icons.picture_as_pdf_rounded),
                 label: Text(
                   assignment.assignmentPdfName ?? 'View Assignment PDF',
@@ -351,10 +401,12 @@ class _AssignmentTasksDetailScreenState
         ),
         const SizedBox(height: 8),
 
-        
         if (assignment.hasSubmissionPdf)
           OutlinedButton.icon(
-            onPressed: () => _openUrl(assignment.submissionPdfUrl!),
+            onPressed: () => openPdf(
+              assignment.submissionPdfUrl!,
+              assignment.submissionPdfName ?? "Submitted PDF",
+            ),
             icon: const Icon(Icons.picture_as_pdf_rounded),
             label: Text(
               assignment.submissionPdfName ?? 'View Submitted PDF',

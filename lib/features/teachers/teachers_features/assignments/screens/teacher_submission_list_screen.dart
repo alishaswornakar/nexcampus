@@ -70,13 +70,12 @@ class TeacherSubmissionListScreen extends StatelessWidget {
   return ListView.builder(
     padding: const EdgeInsets.all(16),
     itemCount: submissions.length,
-    // ignore: body_might_complete_normally_nullable
     itemBuilder: (context, index) {
 
       final submission =
           submissions[index];
 
-     Card(
+     return Card(
   margin: const EdgeInsets.only(bottom: 14),
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(16),

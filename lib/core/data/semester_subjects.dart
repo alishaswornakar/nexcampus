@@ -361,7 +361,7 @@ class SubjectLink {
 SubjectLink getNotesLink(Map<String, String> subject) {
   final url = subject['notes'];
   final id = subject['driveId'];
-  if (url != null && id != null) {
+  if (url != null && url.isNotEmpty && id != null && id.isNotEmpty) {
     return SubjectLink(url: url, driveId: id, isFallback: false);
   }
   return const SubjectLink(
@@ -376,7 +376,7 @@ SubjectLink getNotesLink(Map<String, String> subject) {
 SubjectLink getQnbLink(Map<String, String> subject) {
   final url = subject['qnb'];
   final id = subject['qnbDriveId'];
-  if (url != null && id != null) {
+  if (url != null && url.isNotEmpty && id != null && id.isNotEmpty) {
     return SubjectLink(url: url, driveId: id, isFallback: false);
   }
   return const SubjectLink(
@@ -393,9 +393,9 @@ SubjectLink getQnbLink(Map<String, String> subject) {
 /// relevant subject map and this will pick it up automatically, same
 /// as [getNotesLink] does.
 SubjectLink getSyllabusLink(Map<String, String> subject) {
-  final url = subject['syllabus'];
+  final url = subject['syllabusDrive'];
   final id = subject['syllabusDriveId'];
-  if (url != null && id != null) {
+  if (url != null && url.isNotEmpty && id != null && id.isNotEmpty) {
     return SubjectLink(url: url, driveId: id, isFallback: false);
   }
   return const SubjectLink(

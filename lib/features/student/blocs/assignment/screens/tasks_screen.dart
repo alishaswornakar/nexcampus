@@ -5,7 +5,9 @@ import 'package:nexcampus_app/features/student/blocs/assignment/bloc/assignment_
 import 'package:nexcampus_app/features/student/blocs/assignment/bloc/assignment_event.dart';
 import 'package:nexcampus_app/features/student/blocs/assignment/bloc/assignment_state.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/repository/assignment_repository.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/assignments/repository/assignment_submission_repository.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/services/assignment_service.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/assignments/services/assignment_submission_service.dart';
 
 import '../models/assignment_model.dart';
 import '../widgets/assignment_card.dart';
@@ -33,15 +35,16 @@ class TasksScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => AssignmentBloc(AssignmentRepository(AssignmentService())),
+      create: (_) => AssignmentBloc(
+        AssignmentRepository(AssignmentService()),
+        AssignmentSubmissionRepository(AssignmentSubmissionService()),
+      ),
       child: _TasksScreenBody(
         department: department,
         semester: semester,
         studentId: studentId,
-          ),
-        );
-      
-  
+      ),
+    );
   }
 }
 
@@ -72,9 +75,21 @@ class _TasksScreenBodyState extends State<_TasksScreenBody>
   ];
 
   @override
+  @override
   void initState() {
     super.initState();
+
     _tabController = TabController(length: _tabLabels.length, vsync: this);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AssignmentBloc>().add(
+        LoadAssignments(
+          department: widget.department,
+          semester: widget.semester,
+          studentId: widget.studentId,
+        ),
+      );
+    });
   }
 
   @override
@@ -99,8 +114,6 @@ class _TasksScreenBodyState extends State<_TasksScreenBody>
         builder: (_) => AssignmentTasksDetailScreen(
           assignment: item,
           studentId: widget.studentId,
-          studentName: '',
-          roll: '',
         ),
       ),
     );

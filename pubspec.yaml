@@ -31,12 +31,12 @@ dependencies:
   equatable: ^2.0.8
 
   # Networking
-  dio: ^5.9.0
+  dio: ^5.10.0
   http: ^1.6.0
 
   # Storage
   shared_preferences: ^2.5.5
-  path_provider: ^2.1.5
+  path_provider: ^2.1.6
 
   # File & Image
   image_picker: ^1.2.3
@@ -70,6 +70,7 @@ dependencies:
 
   flutter_pdfview: ^1.4.4
   cached_network_image: ^3.4.1
+  crypto: ^3.0.7
   
 
 dev_dependencies:

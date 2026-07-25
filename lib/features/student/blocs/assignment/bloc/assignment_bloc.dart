@@ -1,13 +1,12 @@
 import 'dart:async';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/models/assignment_model.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/models/assignment_submission_model.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/repository/assignment_repository.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/repository/assignment_submission_repository.dart';
-import 'package:nexcampus_app/features/teachers/teachers_features/assignments/services/assignment_service.dart';
-import 'package:nexcampus_app/features/teachers/teachers_features/assignments/services/assignment_submission_service.dart';
+//import 'package:nexcampus_app/features/teachers/teachers_features/assignments/services/assignment_service.dart';
+//import 'package:nexcampus_app/features/teachers/teachers_features/assignments/services/assignment_submission_service.dart';
 
 import '../models/assignment_model.dart';
 import 'assignment_event.dart';
@@ -71,11 +70,11 @@ class AssignmentBloc extends Bloc<AssignmentEvent, AssignmentState> {
   List<AssignmentSubmissionModel> _latestSubmissions = const [];
   bool _hasReceivedAssignments = false;
 
-  AssignmentBloc(AssignmentRepository assignmentRepository)
-    : _assignmentRepository = AssignmentRepository(AssignmentService()),
-      _submissionRepository = AssignmentSubmissionRepository(
-        AssignmentSubmissionService(),
-      ),
+  AssignmentBloc(
+    AssignmentRepository assignmentRepository,
+    AssignmentSubmissionRepository submissionRepository,
+  ) : _assignmentRepository = assignmentRepository,
+      _submissionRepository = submissionRepository,
       super(const AssignmentInitial()) {
     on<LoadAssignments>(_onLoadAssignments);
     on<RefreshAssignments>(_onRefreshAssignments);
