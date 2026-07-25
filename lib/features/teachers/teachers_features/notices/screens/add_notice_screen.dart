@@ -332,7 +332,7 @@ class _AddNoticeScreenState extends State<AddNoticeScreen> {
                       /// Pin Notice
                       SwitchListTile(
                         value: isPinned,
-                        activeColor: Colors.blue,
+                        activeThumbColor: Colors.blue,
                         title: const Text(
                           "Pin this Notice",
                         ),

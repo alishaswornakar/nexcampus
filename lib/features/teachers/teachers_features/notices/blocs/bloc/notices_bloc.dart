@@ -8,7 +8,7 @@ import 'notices_state.dart';
 class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
   final NoticeRepository repository;
 
-  NoticeBloc(this.repository) : super(NoticeInitial()) {
+  NoticeBloc(this.repository) : super(const NoticeInitial()) {
     on<LoadNoticesEvent>(_onLoadNotices);
 
     on<AddNoticeEvent>(_onAddNotice);
@@ -25,7 +25,7 @@ class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
     LoadNoticesEvent event,
     Emitter<NoticeState> emit,
   ) async {
-    emit(NoticeLoading());
+    emit(const NoticeLoading());
 
     await emit.forEach<List<NoticeModel>>(
       repository.getNotices(),
