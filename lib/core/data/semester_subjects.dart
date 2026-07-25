@@ -20,11 +20,50 @@ const String defaultQnbFolderId = '1x7QuORJx2uPGqW--b6UODK3Ni9CemGWC';
 
 const semesterSubjects = <int, List<Map<String, String>>>{
   1: [
-    {'name': 'Calculus I', 'pdf': 'assets/pdfs/sem1_calculus1.pdf'},
-    {'name': 'Digital Logic', 'pdf': 'assets/pdfs/sem1_digital_logic.pdf'},
-    {'name': 'Programming in C', 'pdf': 'assets/pdfs/sem1_programming_c.pdf'},
     {
-      'name': 'Basic Electrical Engineering',
+      'name': 'Calculus I', //semester 1 subject 1
+      'shortName': 'Math I',
+      'pdf': 'assets/pdfs/sem1_calculus1.pdf', //syllabus offline
+      'notes':
+          'https://drive.google.com/drive/u/1/folders/1gbBnwG3Y9y-4YUl5Q37Llrl4YkZnPiJp', //notes online
+      'driveId': '1gbBnwG3Y9y-4YUl5Q37Llrl4YkZnPiJp',
+      'qnb':
+          'https://drive.google.com/drive/u/1/folders/15nYULiq_ZSlc2rBZlvwHggXIllXkLixe', //qnb online
+      'qnbDriveId': '15nYULiq_ZSlc2rBZlvwHggXIllXkLixe',
+      'syllabusDrive':
+          'https://drive.google.com/drive/u/1/folders/17i2JZOVlw3xkfYG5fHfaeC2Rb7TAJSQe',
+      'syllabusDriveId': '17i2JZOVlw3xkfYG5fHfaeC2Rb7TAJSQe', //syllabus online
+    },
+    {
+      'name': 'Digital Logic', //semester 1 subject 2
+      'shortName': 'DL',
+      'pdf': 'assets/pdfs/sem1_digital_logic.pdf',
+      'notes':
+          'https://drive.google.com/drive/u/1/folders/17QuG5kWkv3r7VESm2cyyWXwJ1lHlpYt7',
+      'driveId': '17QuG5kWkv3r7VESm2cyyWXwJ1lHlpYt7',
+      'qnb':
+          'https://drive.google.com/drive/u/1/folders/1pUZFuRzGlBepkDSHJ1asdc-0v05vMxdS',
+      'qnbDriveId': '1pUZFuRzGlBepkDSHJ1asdc-0v05vMxdS',
+      'syllabusDrive':
+          'https://drive.google.com/drive/u/1/folders/1_mMG9O-8pSpWoL8nsOIZj47SgL7gE9DZ',
+      'syllabusDriveId': '1_mMG9O-8pSpWoL8nsOIZj47SgL7gE9DZ',
+    },
+    {
+      'name': 'Programming in C', //semester 1 subject 3
+      'pdf': 'assets/pdfs/sem1_programming_c.pdf',
+      'shortName': 'C Prog.',
+      'notes':
+          'https://drive.google.com/drive/u/1/folders/1s1KjEypa-ymOPJK008ggjU1bk5fHZIWC',
+      'driveId': '1s1KjEypa-ymOPJK008ggjU1bk5fHZIWC',
+      'qnb':
+          'https://drive.google.com/drive/u/1/folders/1aCtUli8xC7NEasnMGXAyuMMM1NCGY7sd',
+      'qnbDriveId': '1aCtUli8xC7NEasnMGXAyuMMM1NCGY7sd',
+      'syllabusDrive':
+          'https://drive.google.com/drive/u/1/folders/1pm6SzeVSrblU7_25XR3UMJAJrz-udONk',
+      'syllabusDriveId': '1pm6SzeVSrblU7_25XR3UMJAJrz-udONk',
+    },
+    {
+      'name': 'Basic Electrical Engineering', //semester 1 subject 4
       'shortName': 'BEE',
       'pdf': 'assets/pdfs/sem1_basic_electrical.pdf',
       'notes':
@@ -33,21 +72,49 @@ const semesterSubjects = <int, List<Map<String, String>>>{
       'qnb':
           'https://drive.google.com/drive/u/0/folders/1pwOnpO_zr-3EDomF9R0SiPpOrbxCIM5L',
       'qnbDriveId': '1pwOnpO_zr-3EDomF9R0SiPpOrbxCIM5L',
+      'syllabusDrive':
+          'https://drive.google.com/drive/u/1/folders/1g-N9PkSmBcSFlha5ZiUcwqtmIMDdYbUt',
+      'syllabusDriveId': '1g-N9PkSmBcSFlha5ZiUcwqtmIMDdYbUt',
     },
     {
-      'name': 'Computer Workshop',
-      'shortName': 'CW',
+      'name': 'Computer Workshop', //semester 1 subject 5
+      'shortName': 'C.Workshop',
       'pdf': 'assets/pdfs/sem1_computer_workshop.pdf',
+      'notes': '',
+      'driveId': '',
+      'qnb': '',
+      'qnbDriveId': '',
+      'syllabusDrive': '',
+      'syllabusDriveId': '',
     },
     {
-      'name': 'Communication Technique',
-      'shortName': 'CT',
+      'name': 'Communication Technique', //semester 1 subject 6
+      'shortName': 'English',
       'pdf': 'assets/pdfs/sem1_communication_technique.pdf',
+      'notes':
+          'https://drive.google.com/drive/u/1/folders/1UkSVUqFLU-MMOFZ6kucmnyodAz3IK5bX',
+      'driveId': '1UkSVUqFLU-MMOFZ6kucmnyodAz3IK5bX',
+      'qnb':
+          'https://drive.google.com/drive/u/1/folders/1XzftUO5VLRk-JpD0fD3f2C8UhYdTsKIY',
+      'qnbDriveId': '1XzftUO5VLRk-JpD0fD3f2C8UhYdTsKIY',
+      'syllabusDrive':
+          'https://drive.google.com/drive/u/1/folders/1PlG90cAG4SbU_kUEhkezumK9UmYCih2W',
+      'syllabusDriveId': '1PlG90cAG4SbU_kUEhkezumK9UmYCih2W',
     },
     {
+      //semester 1 subject 7
       'name': 'Electronics Devices and Circuits',
       'shortName': 'EDC',
       'pdf': 'assets/pdfs/sem1_electronics_devices.pdf',
+      'notes':
+          'https://drive.google.com/drive/u/1/folders/1krmYkPCY9dasOtx-s-i2Ace50R80mIIO',
+      'driveId': '1krmYkPCY9dasOtx-s-i2Ace50R80mIIO',
+      'qnb':
+          'https://drive.google.com/drive/u/1/folders/1fxFlGTyBchPyRCrddjkTfQrhI9HSggiU',
+      'qnbDriveId': '1fxFlGTyBchPyRCrddjkTfQrhI9HSggiU',
+      'syllabusDrive':
+          'https://drive.google.com/drive/u/1/folders/1TSpP7bxvmY-L_phFOaZDrPKp3eqi_ZtC',
+      'syllabusDriveId': '1TSpP7bxvmY-L_phFOaZDrPKp3eqi_ZtC',
     },
   ],
   2: [
