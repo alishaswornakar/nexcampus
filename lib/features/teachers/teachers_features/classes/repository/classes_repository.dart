@@ -8,7 +8,7 @@ class ClassesRepository {
 
   Stream<List<StudentModel>> students(
     String department,
-    int? semester,
+    String? semester,
   ) {
     return service.studentsBySemester(
       department: department,

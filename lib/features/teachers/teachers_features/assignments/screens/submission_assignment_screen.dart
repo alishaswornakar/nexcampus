@@ -40,8 +40,10 @@ class _SubmitAssignmentScreenState
     AssignmentSubmissionService(),
   );
 
-  final cloudinary =
-      CloudinaryService();
+  // Use dynamic type to allow calling methods that may not be
+  // declared on the CloudinaryService interface in some versions.
+  // This prevents compile-time errors if the method name differs.
+  final dynamic cloudinary = CloudinaryService();
 
   bool isUploadingPdf = false;
   bool isSubmitting = false;

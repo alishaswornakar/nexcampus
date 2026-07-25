@@ -167,7 +167,7 @@ class AssignmentDetailScreen extends StatelessWidget {
                     _infoTile(
                       Icons.menu_book,
                       "Subject",
-                      assignment.subject,
+                      assignment.courseName,
                     ),
 
                     const Divider(),
@@ -337,8 +337,8 @@ PdfAttachmentCard(
   MaterialPageRoute(
     builder: (_) => CreateAssignmentScreen(
       department: assignment.department,
-      semester: int.parse(assignment.semester),
-      selectedSubject: assignment.subject,
+      semester: assignment.semester,
+      selectedSubject: assignment.courseName,
       assignment: assignment,
     ),
   ),

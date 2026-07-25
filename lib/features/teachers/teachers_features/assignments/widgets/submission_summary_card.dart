@@ -70,7 +70,7 @@ class SubmissionSummaryCard extends StatelessWidget {
             buildTile(
               Icons.menu_book,
               "Subject",
-              assignment.subject,
+              assignment.courseName,
             ),
 
             buildTile(

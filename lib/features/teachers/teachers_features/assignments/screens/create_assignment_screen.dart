@@ -1,7 +1,10 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: unused_local_variable, use_build_context_synchronously
+
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../models/assignment_model.dart';
@@ -15,7 +18,7 @@ import '../widgets/pdf_upload_card.dart';
 
 class CreateAssignmentScreen extends StatefulWidget {
   final String department;
-  final int semester;
+  final String? semester;
   final String selectedSubject;
 
   /// null = Create
@@ -114,25 +117,52 @@ class _CreateAssignmentScreenState
     });
 
     try {
-      final result =
-          await cloudinaryService.uploadPdf();
+      // Let user pick a PDF file first
+      final picked = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+      );
 
-      if (result != null) {
+      if (picked == null || picked.files.isEmpty) {
+        // user cancelled
         setState(() {
-          pdfUrl = result["url"];
-          pdfName = result["name"];
+          isUploadingPdf = false;
         });
-
-        ScaffoldMessenger.of(context)
-            .showSnackBar(
-          const SnackBar(
-            backgroundColor: Colors.green,
-            content: Text(
-              "PDF uploaded successfully",
-            ),
-          ),
-        );
+        return;
       }
+
+      final path = picked.files.single.path;
+      if (path == null) {
+        setState(() {
+          isUploadingPdf = false;
+        });
+        return;
+      }
+
+      final selectedFile = File(path);
+
+      final cloudinary = CloudinaryService();
+
+      final result = await cloudinary.uploadFile(selectedFile);
+
+      final fileUrl = result["url"];
+    
+      final uploadedFileName = result["name"];
+
+      setState(() {
+        pdfUrl = result["url"];
+        pdfName = result["name"];
+      });
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.green,
+          content: Text(
+            "PDF uploaded successfully",
+          ),
+        ),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(
@@ -208,7 +238,8 @@ class _CreateAssignmentScreenState
             descriptionController.text.trim(),
         department: widget.department,
         semester: widget.semester.toString(),
-        subject: widget.selectedSubject,
+        courseId: widget.selectedSubject,
+        courseName: widget.selectedSubject,
         teacherId: user.uid,
         teacherName:
             user.displayName ?? "Teacher",

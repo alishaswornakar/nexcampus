@@ -5,7 +5,7 @@ class AssignmentForm extends StatelessWidget {
   final TextEditingController descriptionController;
 
   final String department;
-  final int semester;
+  final String? semester;
   final String subject;
 
   final DateTime? dueDate;
