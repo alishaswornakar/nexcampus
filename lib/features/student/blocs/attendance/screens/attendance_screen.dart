@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:nexcampus_app/core/constants/app_theme.dart ';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/student/blocs/attendance/models/attendance_model.dart';
 import 'package:nexcampus_app/features/student/blocs/attendance/bloc/attendance_bloc.dart';
 import 'package:nexcampus_app/features/student/blocs/attendance/bloc/attendance_event.dart';
@@ -246,6 +246,7 @@ class _AttendanceViewState extends State<_AttendanceView> {
           onPressed: _openFilter,
         ),
         PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert_rounded, color: Colors.white),
           onSelected: _handleMenuSelection,
           itemBuilder: (context) => const [
             PopupMenuItem(value: 'refresh', child: Text('Refresh')),
@@ -292,30 +293,45 @@ class _AttendanceViewState extends State<_AttendanceView> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.error_outline,
+              const Icon(
+                Icons.error_outline_rounded,
                 size: 64,
-                color: Theme.of(context).colorScheme.error,
+                color: Colors.redAccent,
               ),
               const SizedBox(height: 16),
               const Text(
                 'Something went wrong',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.textPrimary,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 message,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey.shade600),
+                style: const TextStyle(color: AppTheme.textSecondary),
               ),
               const SizedBox(height: 20),
               ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.secondary,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 onPressed: () {
                   context.read<AttendanceBloc>().add(
                     ListenAttendance(widget.studentId),
                   );
                 },
-                icon: const Icon(Icons.refresh),
+                icon: const Icon(Icons.refresh_rounded),
                 label: const Text('Retry'),
               ),
             ],
@@ -332,11 +348,15 @@ class _AttendanceViewState extends State<_AttendanceView> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.event_busy, size: 72, color: Colors.grey.shade400),
+            Icon(
+              Icons.event_busy_rounded,
+              size: 72,
+              color: AppTheme.textSecondary.withValues(alpha: 0.5),
+            ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'No attendance records found.',
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+              style: TextStyle(fontSize: 16, color: AppTheme.textSecondary),
             ),
           ],
         ),
@@ -420,10 +440,20 @@ class _AttendanceViewState extends State<_AttendanceView> {
         SliverToBoxAdapter(child: _buildCalendar(fullList, visibleList)),
         const SliverToBoxAdapter(
           child: Padding(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
-            child: Text(
-              'Recent Attendance',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: Row(
+              children: [
+                Icon(Icons.history_rounded, size: 18, color: AppTheme.secondary),
+                SizedBox(width: 8),
+                Text(
+                  'Recent Attendance',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -436,6 +466,7 @@ class _AttendanceViewState extends State<_AttendanceView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.background,
       appBar: _buildAppBar(),
       body: BlocConsumer<AttendanceBloc, AttendanceState>(
         listener: (context, state) {
