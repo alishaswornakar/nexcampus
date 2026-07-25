@@ -354,7 +354,6 @@ Widget build(BuildContext context) {
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [
                     BoxShadow(
-                      // ignore: deprecated_member_use
                       color: Colors.black.withOpacity(.08),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
@@ -362,16 +361,16 @@ Widget build(BuildContext context) {
                   ],
                 ),
                 child: const Center(
-                   child:  Icon(
-                        Icons.school_rounded,
-                   
+                  child: Text(
+                    "NX",
+                    style: TextStyle(
                       color: Colors.white,
-                   
+                      fontSize: 26,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-              
+              ),
 
               const SizedBox(height: 22),
 

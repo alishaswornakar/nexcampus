@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nexcampus_app/features/authentication/blocs/auth/auth_bloc.dart';
-import 'package:nexcampus_app/features/student/blocs/assignment/assignment_bloc.dart';
+
+import 'package:nexcampus_app/features/student/blocs/assignment/bloc/assignment_bloc.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/repository/assignment_repository.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/services/assignment_service.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/attendance/blocs/bloc/attendance_bloc.dart';
