@@ -55,33 +55,33 @@ class AssignmentSubmissionService {
   }
 
   /// Teacher: Get all submissions for an assignment
-  Stream<List<AssignmentSubmissionModel>>
-      getAssignmentSubmissions({
-    required String assignmentId,
-  }) {
-    return submissionCollection
-        .where(
-          "assignmentId",
-          isEqualTo: assignmentId,
-        )
-        .orderBy(
-          "submittedAt",
-          descending: true,
-        )
-        .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map(
-                (doc) =>
-                    AssignmentSubmissionModel.fromMap(
-                  doc.data()
-                      as Map<String, dynamic>,
-                  doc.id,
-                ),
-              )
-              .toList(),
-        );
-  }
+  // Stream<List<AssignmentSubmissionModel>>
+  //     getAssignmentSubmissions({
+  //   required String assignmentId,
+  // }) {
+  //   return submissionCollection
+  //       .where(
+  //         "assignmentId",
+  //         isEqualTo: assignmentId,
+  //       )
+  //       .orderBy(
+  //         "submittedAt",
+  //         descending: true,
+  //       )
+  //       .snapshots()
+  //       .map(
+  //         (snapshot) => snapshot.docs
+  //             .map(
+  //               (doc) =>
+  //                   AssignmentSubmissionModel.fromMap(
+  //                 doc.data()
+  //                     as Map<String, dynamic>,
+  //                 doc.id,
+  //               ),
+  //             )
+  //             .toList(),
+  //       );
+  // }
 
   /// Student: Get my submissions
   Stream<List<AssignmentSubmissionModel>>
@@ -166,5 +166,35 @@ Future<void> gradeSubmission({
       "Failed to grade submission: $e",
     );
   }
+}
+Stream<List<AssignmentSubmissionModel>>
+getAssignmentSubmissions({
+  required String assignmentId,
+}) {
+  print("Searching assignmentId = $assignmentId");
+
+  return submissionCollection
+      .where(
+        "assignmentId",
+        isEqualTo: assignmentId,
+      )
+      .snapshots()
+      .map((snapshot) {
+
+        print("Documents found = ${snapshot.docs.length}");
+
+        for (var doc in snapshot.docs) {
+          print(doc.data());
+        }
+
+        return snapshot.docs
+            .map(
+              (doc) => AssignmentSubmissionModel.fromMap(
+                doc.data() as Map<String, dynamic>,
+                doc.id,
+              ),
+            )
+            .toList();
+      });
 }
 }

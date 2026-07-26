@@ -240,6 +240,7 @@ class _CreateAssignmentScreenState
         semester: widget.semester.toString(),
         courseId: widget.selectedSubject,
         courseName: widget.selectedSubject,
+        subject: widget.selectedSubject,
         teacherId: user.uid,
         teacherName:
             user.displayName ?? "Teacher",

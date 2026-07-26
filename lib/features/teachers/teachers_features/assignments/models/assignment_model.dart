@@ -11,6 +11,7 @@ class AssignmentModel {
 
   final String courseId;
   final String courseName;
+  final String subject;
 
   final String teacherId;
   final String teacherName;
@@ -31,6 +32,7 @@ class AssignmentModel {
     required this.semester,
     required this.courseId,
     required this.courseName,
+    required this.subject,
     required this.teacherId,
     required this.teacherName,
     required this.dueDate,
@@ -52,6 +54,7 @@ class AssignmentModel {
       semester: map["semester"] ?? "",
       courseId: map["courseId"] ?? "",
       courseName: map["courseName"] ?? "",
+      subject: map["subject"]??"",
       teacherId: map["teacherId"] ?? "",
       teacherName: map["teacherName"] ?? "",
       dueDate: (map["dueDate"] as Timestamp).toDate(),
@@ -70,6 +73,7 @@ class AssignmentModel {
       "semester": semester,
       "courseId": courseId,
       "courseName": courseName,
+      "subject": subject,
       "teacherId": teacherId,
       "teacherName": teacherName,
       "dueDate": Timestamp.fromDate(dueDate),
