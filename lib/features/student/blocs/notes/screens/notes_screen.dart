@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:nexcampus_app/features/student/widgets/bottom_nav_bar.dart';
 import 'package:nexcampus_app/features/student/screens/student_dashboard_screen.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'notes_subject_screen.dart';

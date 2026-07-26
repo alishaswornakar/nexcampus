@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/notice_model.dart';
 
-class NoticeService {
+class TeacherNoticeService {
   final FirebaseFirestore _firestore =
       FirebaseFirestore.instance;
 
@@ -12,7 +12,7 @@ class NoticeService {
 
   /// Add Notice
   Future<void> addNotice(
-    NoticeModel notice,
+    TeacherNoticeModel notice,
   ) async {
     await noticesRef.doc(notice.id).set(
           notice.toMap(),
@@ -21,7 +21,7 @@ class NoticeService {
 
   /// Update Notice
   Future<void> updateNotice(
-    NoticeModel notice,
+    TeacherNoticeModel notice,
   ) async {
     await noticesRef.doc(notice.id).update(
           notice.toMap(),
@@ -46,7 +46,7 @@ class NoticeService {
   }
 
   /// Get All Notices
-  Stream<List<NoticeModel>> getNotices() {
+  Stream<List<TeacherNoticeModel>> getNotices() {
     return noticesRef
         .orderBy(
           "isPinned",
@@ -60,7 +60,7 @@ class NoticeService {
         .map(
           (snapshot) => snapshot.docs
               .map(
-                (doc) => NoticeModel.fromMap(
+                (doc) => TeacherNoticeModel.fromMap(
                   doc.data(),
                   doc.id,
                 ),
@@ -70,7 +70,7 @@ class NoticeService {
   }
 
   /// Get Single Notice
-  Future<NoticeModel?> getNotice(
+  Future<TeacherNoticeModel?> getNotice(
     String noticeId,
   ) async {
     final doc = await noticesRef.doc(noticeId).get();
@@ -79,7 +79,7 @@ class NoticeService {
       return null;
     }
 
-    return NoticeModel.fromMap(
+    return TeacherNoticeModel.fromMap(
       doc.data()!,
       doc.id,
     );

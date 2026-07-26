@@ -16,7 +16,7 @@ import '../blocs/bloc/notices_state.dart';
 import '../models/notice_model.dart';
 
 class AddNoticeScreen extends StatefulWidget {
-  final NoticeModel? notice;
+  final TeacherNoticeModel? notice;
 
   const AddNoticeScreen({
     super.key,
@@ -420,7 +420,7 @@ class _AddNoticeScreenState extends State<AddNoticeScreen> {
 
                                         /// Create Notice
                                         final notice =
-                                            NoticeModel(
+                                            TeacherNoticeModel(
                                           id: widget
                                                   .notice
                                                   ?.id ??

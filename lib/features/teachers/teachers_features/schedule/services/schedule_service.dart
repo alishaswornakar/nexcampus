@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/schedule/model/schedule_model.dart';
-
+import 'package:flutter/foundation.dart';
 
 class ScheduleService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -9,65 +9,42 @@ class ScheduleService {
       firestore.collection("schedule");
 
   /// Create Schedule
-  Future<void> createSchedule({
-    required ScheduleModel schedule,
-  }) async {
+  Future<void> createSchedule({required ScheduleModel schedule}) async {
     try {
-      await scheduleCollection
-          .doc(schedule.id)
-          .set(schedule.toMap());
+      await scheduleCollection.doc(schedule.id).set(schedule.toMap());
     } catch (e) {
-      throw Exception(
-        "Failed to create schedule: $e",
-      );
+      throw Exception("Failed to create schedule: $e");
     }
   }
 
   /// Update Schedule
-  Future<void> updateSchedule({
-    required ScheduleModel schedule,
-  }) async {
+  Future<void> updateSchedule({required ScheduleModel schedule}) async {
     try {
-      await scheduleCollection
-          .doc(schedule.id)
-          .update(schedule.toMap());
+      await scheduleCollection.doc(schedule.id).update(schedule.toMap());
     } catch (e) {
-      throw Exception(
-        "Failed to update schedule: $e",
-      );
+      throw Exception("Failed to update schedule: $e");
     }
   }
 
   /// Delete Schedule
-  Future<void> deleteSchedule(
-    String scheduleId,
-  ) async {
+  Future<void> deleteSchedule(String scheduleId) async {
     try {
-      await scheduleCollection
-          .doc(scheduleId)
-          .delete();
+      await scheduleCollection.doc(scheduleId).delete();
     } catch (e) {
-      throw Exception(
-        "Failed to delete schedule: $e",
-      );
+      throw Exception("Failed to delete schedule: $e");
     }
   }
 
   /// Teacher Schedule
-  Stream<List<ScheduleModel>> getTeacherSchedule({
-    required String teacherId,
-  }) {
+  Stream<List<ScheduleModel>> getTeacherSchedule({required String teacherId}) {
     return scheduleCollection
-        .where(
-          "teacherId",
-          isEqualTo: teacherId,
-        )
+        .where("teacherId", isEqualTo: teacherId)
         .orderBy("day")
         .orderBy("startTime")
         .snapshots()
         .handleError((e) {
-        print("Firestore Error: $e");
-      })
+          debugPrint("Firestore Error: $e");
+        })
         .map(
           (snapshot) => snapshot.docs
               .map(
@@ -86,14 +63,8 @@ class ScheduleService {
     required String semester,
   }) {
     return scheduleCollection
-        .where(
-          "department",
-          isEqualTo: department,
-        )
-        .where(
-          "semester",
-          isEqualTo: semester,
-        )
+        .where("department", isEqualTo: department)
+        .where("semester", isEqualTo: semester)
         .orderBy("day")
         .orderBy("startTime")
         .snapshots()
@@ -115,14 +86,8 @@ class ScheduleService {
     required String semester,
   }) {
     return scheduleCollection
-        .where(
-          "department",
-          isEqualTo: department,
-        )
-        .where(
-          "semester",
-          isEqualTo: semester,
-        )
+        .where("department", isEqualTo: department)
+        .where("semester", isEqualTo: semester)
         .orderBy("day")
         .orderBy("startTime")
         .snapshots()
@@ -139,18 +104,11 @@ class ScheduleService {
   }
 
   /// Single Schedule
-  Future<ScheduleModel?> getScheduleById(
-    String scheduleId,
-  ) async {
-    final doc = await scheduleCollection
-        .doc(scheduleId)
-        .get();
+  Future<ScheduleModel?> getScheduleById(String scheduleId) async {
+    final doc = await scheduleCollection.doc(scheduleId).get();
 
     if (!doc.exists) return null;
 
-    return ScheduleModel.fromMap(
-      doc.data() as Map<String, dynamic>,
-      doc.id,
-    );
+    return ScheduleModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
   }
 }

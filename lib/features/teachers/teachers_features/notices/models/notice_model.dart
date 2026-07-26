@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class NoticeModel {
+class TeacherNoticeModel {
   final String id;
 
   final String title;
@@ -17,7 +17,7 @@ class NoticeModel {
 
   final DateTime createdAt;
 
-  const NoticeModel({
+  const TeacherNoticeModel({
     required this.id,
     required this.title,
     required this.description,
@@ -29,11 +29,11 @@ class NoticeModel {
     required this.createdAt,
   });
 
-  factory NoticeModel.fromMap(
+  factory TeacherNoticeModel.fromMap(
     Map<String, dynamic> map,
     String id,
   ) {
-    return NoticeModel(
+    return TeacherNoticeModel(
       id: id,
       title: map["title"] ?? "",
       description: map["description"] ?? "",
@@ -69,7 +69,7 @@ class NoticeModel {
     };
   }
 
-  NoticeModel copyWith({
+  TeacherNoticeModel copyWith({
     String? id,
     String? title,
     String? description,
@@ -80,7 +80,7 @@ class NoticeModel {
     bool? isPinned,
     DateTime? createdAt,
   }) {
-    return NoticeModel(
+    return TeacherNoticeModel(
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,

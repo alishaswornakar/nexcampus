@@ -1,12 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/notice_model.dart';
-import '../../repository/notice_repository.dart';
+import '../../repository/teacher_notice_repository.dart';
 import 'notices_event.dart';
 import 'notices_state.dart';
 
 class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
-  final NoticeRepository repository;
+  final TeacherNoticeRepository repository;
 
   NoticeBloc(this.repository) : super(const NoticeInitial()) {
     on<LoadNoticesEvent>(_onLoadNotices);
@@ -27,7 +27,7 @@ class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
   ) async {
     emit(const NoticeLoading());
 
-    await emit.forEach<List<NoticeModel>>(
+    await emit.forEach<List<TeacherNoticeModel>>(
       repository.getNotices(),
       onData: (notices) => NoticesLoaded(notices),
       onError: (error, stackTrace) =>

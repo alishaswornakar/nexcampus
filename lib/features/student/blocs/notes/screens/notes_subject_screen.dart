@@ -7,7 +7,6 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:nexcampus_app/features/student/widgets/bottom_nav_bar.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/core/data/semester_subjects.dart';
 import 'package:nexcampus_app/features/student/blocs/question_bank/screens/drive_webview_screen.dart';

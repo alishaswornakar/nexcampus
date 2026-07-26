@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/notice_model.dart';
 
 class NoticeTile extends StatelessWidget {
-  final NoticeModel notice;
+  final TeacherNoticeModel notice;
 
   final VoidCallback onEdit;
   final VoidCallback onDelete;

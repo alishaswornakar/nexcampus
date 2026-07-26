@@ -1,4 +1,6 @@
-import '../../models/notice_model.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/notices/models/notice_model.dart';
+
+import '../models/notice_model.dart';
 
 abstract class NoticeState {
   const NoticeState();
@@ -19,21 +21,6 @@ class NoticesLoaded extends NoticeState {
   final List<TeacherNoticeModel> notices;
 
   const NoticesLoaded(this.notices);
-}
-
-/// Notice Added
-class NoticeAdded extends NoticeState {
-  const NoticeAdded();
-}
-
-/// Notice Updated
-class NoticeUpdated extends NoticeState {
-  const NoticeUpdated();
-}
-
-/// Notice Deleted
-class NoticeDeleted extends NoticeState {
-  const NoticeDeleted();
 }
 
 /// Error
