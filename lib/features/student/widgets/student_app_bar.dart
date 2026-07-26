@@ -26,7 +26,7 @@ class StudentAppBar extends StatelessWidget implements PreferredSizeWidget {
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
-          fontSize: 17,
+          fontSize: 15,
         ),
       ),
       leading: Padding(

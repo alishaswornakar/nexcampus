@@ -67,10 +67,13 @@ class _SyllabusScreenState extends State<SyllabusScreen> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: const Text('Syllabus'),
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back),
+          ),
           backgroundColor: AppTheme.secondary,
           foregroundColor: Colors.white,
         ),
-        bottomNavigationBar: const AppBottomNavBar(currentIndex: 0),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
