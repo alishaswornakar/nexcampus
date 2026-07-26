@@ -5,10 +5,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:nexcampus_app/features/authentication/presentation/pages/login_screen.dart';
+import 'package:nexcampus_app/features/student/screens/schedule_screen.dart';
 import 'package:nexcampus_app/features/teachers/shared_screens/department_semester_selection_screen.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/grades/screens/grade_screen.dart';
+// import 'package:nexcampus_app/features/teachers/teachers_features/notes/screens/notes_screen.dart';
 
 
 import 'package:nexcampus_app/features/teachers/teachers_features/notices/screens/notice_screen.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/schedule/screens/teacher_schedule_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/teacher_profile/screens/teacher_profile_screen.dart';
 
 
@@ -360,6 +364,12 @@ class TeacherDashboard extends StatelessWidget {
 
 
                   (){
+                     Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const DepartmentSemesterSelectionScreen(feature:FeatureType.grades),
+      ),
+    );
 
 
                   },
@@ -387,21 +397,47 @@ class TeacherDashboard extends StatelessWidget {
 
 
 
+               
 
 
-                // _feature(
+    //             _feature(
 
-                //   Icons.chat,
-                //   "Messages",
-                //   Colors.teal,
-
-
-                //   (){
+    //               Icons.chat,
+    //               "Notes",
+    //               Colors.teal,
 
 
-                //   },
+    //               (){
+                    
+    //                      Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (_) => const NoteScreen(course: null,),
+    //   ),
+    // );
 
-                // ),
+    //               },
+
+    //             ),
+     _feature(
+
+                  Icons.calendar_view_month_rounded,
+                  "schedule",
+                  Colors.teal,
+
+
+                  (){
+                    
+                         Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const DepartmentSemesterSelectionScreen (feature:FeatureType.schedules),
+      ),
+    );
+
+                  },
+
+                ),
 
 
 
