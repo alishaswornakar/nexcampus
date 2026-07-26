@@ -4,8 +4,10 @@ import 'package:nexcampus_app/features/teachers/teachers_features/assignments/sc
 import 'package:nexcampus_app/features/teachers/teachers_features/attendance/screens/attendance_subject_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/student_list_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/courses/screens/courselist.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/grades/screens/grade_screen.dart';
 
 import 'package:nexcampus_app/features/teachers/teachers_features/notices/screens/notice_screen.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/schedule/screens/teacher_schedule_screen.dart';
 
 
 enum FeatureType {
@@ -17,6 +19,7 @@ enum FeatureType {
   notices,
   grades,
   students,
+  schedules,
 }
 
 class DepartmentSemesterSelectionScreen extends StatefulWidget {
@@ -429,12 +432,12 @@ class _DepartmentSemesterSelectionScreenState
         );
         break;
 
-      // case FeatureType.notes:
-      //   screen = NoteScreen(
-      //     department: department,
-      //     semester: semester,
-      //   );
-      //   break;
+      case FeatureType.schedules:
+        screen = TeacherScheduleScreen(
+          department: department,
+          semester: semester,
+        );
+        break;
 
       case FeatureType.notices:
         screen = const NoticeScreen(
@@ -442,12 +445,12 @@ class _DepartmentSemesterSelectionScreenState
         );
         break;
 
-      // case FeatureType.grades:
-      //   screen = GradeScreen(
-      //     department: department,
-      //     semester: semester,
-      //   );
-      //   break;
+     case FeatureType.grades:
+  screen = GradeScreen(
+    department: department,
+    semester: semester,
+  );
+  break;
 
       case FeatureType.students:
         screen = StudentListScreen(
@@ -458,9 +461,7 @@ class _DepartmentSemesterSelectionScreenState
       case FeatureType.notes:
         // TODO: Handle this case.
         throw UnimplementedError();
-      case FeatureType.grades:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+      
     }
 
     Navigator.push(
@@ -469,5 +470,5 @@ class _DepartmentSemesterSelectionScreenState
         builder: (_) => screen,
       ),
     );
-  }
+  } 
 }
