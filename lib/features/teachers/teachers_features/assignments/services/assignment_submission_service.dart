@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/assignment_submission_model.dart';
+import 'package:flutter/foundation.dart';
 
 class AssignmentSubmissionService {
-  final FirebaseFirestore firestore =
-      FirebaseFirestore.instance;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   CollectionReference get submissionCollection =>
       firestore.collection("assignment_submissions");
@@ -14,13 +14,9 @@ class AssignmentSubmissionService {
     required AssignmentSubmissionModel submission,
   }) async {
     try {
-      await submissionCollection
-          .doc(submission.id)
-          .set(submission.toMap());
+      await submissionCollection.doc(submission.id).set(submission.toMap());
     } catch (e) {
-      throw Exception(
-        "Failed to submit assignment: $e",
-      );
+      throw Exception("Failed to submit assignment: $e");
     }
   }
 
@@ -29,28 +25,18 @@ class AssignmentSubmissionService {
     required AssignmentSubmissionModel submission,
   }) async {
     try {
-      await submissionCollection
-          .doc(submission.id)
-          .update(submission.toMap());
+      await submissionCollection.doc(submission.id).update(submission.toMap());
     } catch (e) {
-      throw Exception(
-        "Failed to update submission: $e",
-      );
+      throw Exception("Failed to update submission: $e");
     }
   }
 
   /// Delete Submission
-  Future<void> deleteSubmission(
-    String submissionId,
-  ) async {
+  Future<void> deleteSubmission(String submissionId) async {
     try {
-      await submissionCollection
-          .doc(submissionId)
-          .delete();
+      await submissionCollection.doc(submissionId).delete();
     } catch (e) {
-      throw Exception(
-        "Failed to delete submission: $e",
-      );
+      throw Exception("Failed to delete submission: $e");
     }
   }
 
@@ -84,27 +70,18 @@ class AssignmentSubmissionService {
   // }
 
   /// Student: Get my submissions
-  Stream<List<AssignmentSubmissionModel>>
-      getStudentSubmissions({
+  Stream<List<AssignmentSubmissionModel>> getStudentSubmissions({
     required String studentId,
   }) {
     return submissionCollection
-        .where(
-          "studentId",
-          isEqualTo: studentId,
-        )
-        .orderBy(
-          "submittedAt",
-          descending: true,
-        )
+        .where("studentId", isEqualTo: studentId)
+        .orderBy("submittedAt", descending: true)
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
               .map(
-                (doc) =>
-                    AssignmentSubmissionModel.fromMap(
-                  doc.data()
-                      as Map<String, dynamic>,
+                (doc) => AssignmentSubmissionModel.fromMap(
+                  doc.data() as Map<String, dynamic>,
                   doc.id,
                 ),
               )
@@ -113,23 +90,15 @@ class AssignmentSubmissionService {
   }
 
   /// Check if student already submitted
-  Future<AssignmentSubmissionModel?>
-      getStudentSubmission({
+  Future<AssignmentSubmissionModel?> getStudentSubmission({
     required String assignmentId,
     required String studentId,
   }) async {
-    final snapshot =
-        await submissionCollection
-            .where(
-              "assignmentId",
-              isEqualTo: assignmentId,
-            )
-            .where(
-              "studentId",
-              isEqualTo: studentId,
-            )
-            .limit(1)
-            .get();
+    final snapshot = await submissionCollection
+        .where("assignmentId", isEqualTo: assignmentId)
+        .where("studentId", isEqualTo: studentId)
+        .limit(1)
+        .get();
 
     if (snapshot.docs.isEmpty) {
       return null;
@@ -145,56 +114,50 @@ class AssignmentSubmissionService {
 
   /// Teacher: Grade Submission
   /// Grade Assignment
-Future<void> gradeSubmission({
-  required String submissionId,
-  required String grade,
-  required String feedback,
-  required String status,
-}) async {
-  try {
-    await firestore
-        .collection("assignment_submissions")
-        .doc(submissionId)
-        .update({
-      "grade": grade,
-      "feedback": feedback,
-      "status": status,
-      "gradedAt": Timestamp.now(),
-    });
-  } catch (e) {
-    throw Exception(
-      "Failed to grade submission: $e",
-    );
+  Future<void> gradeSubmission({
+    required String submissionId,
+    required String grade,
+    required String feedback,
+    required String status,
+  }) async {
+    try {
+      await firestore
+          .collection("assignment_submissions")
+          .doc(submissionId)
+          .update({
+            "grade": grade,
+            "feedback": feedback,
+            "status": status,
+            "gradedAt": Timestamp.now(),
+          });
+    } catch (e) {
+      throw Exception("Failed to grade submission: $e");
+    }
   }
-}
-Stream<List<AssignmentSubmissionModel>>
-getAssignmentSubmissions({
-  required String assignmentId,
-}) {
-  print("Searching assignmentId = $assignmentId");
 
-  return submissionCollection
-      .where(
-        "assignmentId",
-        isEqualTo: assignmentId,
-      )
-      .snapshots()
-      .map((snapshot) {
+  Stream<List<AssignmentSubmissionModel>> getAssignmentSubmissions({
+    required String assignmentId,
+  }) {
+    debugPrint("Searching assignmentId = $assignmentId");
 
-        print("Documents found = ${snapshot.docs.length}");
+    return submissionCollection
+        .where("assignmentId", isEqualTo: assignmentId)
+        .snapshots()
+        .map((snapshot) {
+          debugPrint("Documents found = ${snapshot.docs.length}");
 
-        for (var doc in snapshot.docs) {
-          print(doc.data());
-        }
+          for (var doc in snapshot.docs) {
+            debugPrint(doc.data().toString());
+          }
 
-        return snapshot.docs
-            .map(
-              (doc) => AssignmentSubmissionModel.fromMap(
-                doc.data() as Map<String, dynamic>,
-                doc.id,
-              ),
-            )
-            .toList();
-      });
-}
+          return snapshot.docs
+              .map(
+                (doc) => AssignmentSubmissionModel.fromMap(
+                  doc.data() as Map<String, dynamic>,
+                  doc.id,
+                ),
+              )
+              .toList();
+        });
+  }
 }
