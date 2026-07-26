@@ -8,8 +8,6 @@ import 'package:nexcampus_app/features/teachers/teachers_features/notices/servic
 import '../bloc/notices_bloc.dart';
 import '../bloc/notices_event.dart';
 import '../bloc/notices_state.dart';
-import '../repository/notice_repository.dart';
-import '../services/notice_service.dart';
 import '../widgets/notice_tile.dart';
 import 'notice_detail_screen.dart';
 
@@ -26,7 +24,6 @@ class NoticesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-<<<<<<< HEAD
       create: (_) => NoticeBloc(
         TeacherNoticeRepository(
           TeacherNoticeService(),
@@ -34,11 +31,6 @@ class NoticesScreen extends StatelessWidget {
       )..add(
           LoadNoticesEvent(),
         ),
-=======
-      create: (_) =>
-          NoticeBloc(NoticeRepository(NoticeService()))
-            ..add(LoadNoticesEvent()),
->>>>>>> caa77f0da2b9b39e33077d005b2bdd2c2f118c73
       child: Scaffold(
         backgroundColor: AppTheme.background,
 

@@ -5,8 +5,6 @@ import 'package:nexcampus_app/features/teachers/teachers_features/notices/models
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:nexcampus_app/core/constants/app_theme.dart';
-
-import '../models/notice_model.dart';
 import '../screens/pdf_viewer_screen.dart';
 
 /// Read-only notice card for students. Same information as the teacher's

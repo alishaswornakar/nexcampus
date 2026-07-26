@@ -7,8 +7,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 
 import 'package:nexcampus_app/core/constants/app_theme.dart';
-
-import '../models/notice_model.dart';
 import 'pdf_viewer_screen.dart';
 
 /// Student-facing detail view for a single notice.
