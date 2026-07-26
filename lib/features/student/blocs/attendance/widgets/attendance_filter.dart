@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart%20';
 
 class AttendanceFilterScreen extends StatefulWidget {
   final Map<String, dynamic>? initialFilters;
@@ -111,7 +112,13 @@ class _AttendanceFilterScreenState extends State<AttendanceFilterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Attendance Filter')),
+      appBar: AppBar(
+        title: const Text(
+          'Attendance Filter',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: AppTheme.secondary,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

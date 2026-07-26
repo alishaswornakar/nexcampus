@@ -19,13 +19,47 @@ import 'package:nexcampus_app/features/teachers/teachers_features/notes/model/no
 import 'package:nexcampus_app/features/teachers/teachers_features/notes/repository/note_repository.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/notes/services/note_service.dart';
 
-class CoursesScreen extends StatelessWidget {
+class CoursesScreen extends StatefulWidget {
   const CoursesScreen({super.key});
 
   @override
+  State<CoursesScreen> createState() => _CoursesScreenState();
+}
+
+class _CoursesScreenState extends State<CoursesScreen> {
+  // Same department -> semester-count map used on the teacher side
+  // (department_semester_selection_screen.dart), so the two flows stay
+  // in sync.
+  final Map<String, int> _departments = const {
+    "Computer Engineering": 8,
+    "Civil Engineering": 8,
+    "Architecture Engineering": 10,
+  };
+
+  String? _selectedDepartment;
+
+  IconData _iconFor(String department) {
+    if (department.contains('Computer')) return Icons.computer_rounded;
+    if (department.contains('Civil')) return Icons.engineering_rounded;
+    return Icons.architecture_rounded;
+  }
+
+  void _openSemester(int semester) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _SubjectsScreen(
+          semester: semester,
+          department: _selectedDepartment!,
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     final User? currentUser = FirebaseAuth.instance.currentUser;
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -39,6 +73,7 @@ class CoursesScreen extends StatelessWidget {
         }
       },
       child: Scaffold(
+        backgroundColor: AppTheme.background,
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: const Text('Courses'),
@@ -46,66 +81,178 @@ class CoursesScreen extends StatelessWidget {
           foregroundColor: Colors.white,
         ),
         bottomNavigationBar: const AppBottomNavBar(currentIndex: 1),
-        body: ListView.separated(
-          padding: EdgeInsets.all(size.width * 0.04),
-          itemCount: 8,
-          separatorBuilder: (_, __) => SizedBox(height: size.height * 0.015),
-          itemBuilder: (context, index) {
-            final semester = index + 1;
-            return _buildSemesterTile(context, semester, size);
-          },
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Choose Department',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                'Select your department to continue.',
+                style: TextStyle(fontSize: 13, color: AppTheme.textSecondary),
+              ),
+              const SizedBox(height: 20),
+              ..._departments.entries.map(
+                (entry) => Padding(
+                  padding: const EdgeInsets.only(bottom: 14),
+                  child: _departmentCard(
+                    title: entry.key,
+                    semesterCount: entry.value,
+                    icon: _iconFor(entry.key),
+                  ),
+                ),
+              ),
+              if (_selectedDepartment != null) ...[
+                const SizedBox(height: 10),
+                const Divider(color: AppTheme.border),
+                const SizedBox(height: 20),
+                const Text(
+                  'Choose Semester',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'Select a semester to view its courses.',
+                  style: TextStyle(fontSize: 13, color: AppTheme.textSecondary),
+                ),
+                const SizedBox(height: 20),
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _departments[_selectedDepartment]!,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 14,
+                    mainAxisSpacing: 14,
+                    childAspectRatio: 2.3,
+                  ),
+                  itemBuilder: (context, index) {
+                    final semester = index + 1;
+                    return _semesterChip(semester);
+                  },
+                ),
+              ],
+              const SizedBox(height: 12),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildSemesterTile(BuildContext context, int semester, Size size) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => _SubjectsScreen(semester: semester),
+  Widget _departmentCard({
+    required String title,
+    required int semesterCount,
+    required IconData icon,
+  }) {
+    final selected = _selectedDepartment == title;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(18),
+      onTap: () => setState(() => _selectedDepartment = title),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: selected ? AppTheme.primary : AppTheme.background,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: selected ? AppTheme.primary : AppTheme.border,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.primary.withValues(alpha: 0.06),
+              blurRadius: 14,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: size.width * 0.04,
-            vertical: size.height * 0.018,
-          ),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: size.width * 0.06,
-                backgroundColor: const Color(0xFF1B4F9B),
-                child: Text(
-                  '$semester',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: size.width * 0.045,
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: selected
+                  ? Colors.white.withValues(alpha: 0.15)
+                  : AppTheme.secondary.withValues(alpha: 0.08),
+              child: Icon(
+                icon,
+                color: selected ? Colors.white : AppTheme.secondary,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: selected ? Colors.white : AppTheme.textPrimary,
+                    ),
                   ),
-                ),
-              ),
-              SizedBox(width: size.width * 0.04),
-              Expanded(
-                child: Text(
-                  'Semester $semester',
-                  style: TextStyle(
-                    fontSize: size.width * 0.045,
-                    fontWeight: FontWeight.w600,
+                  const SizedBox(height: 4),
+                  Text(
+                    '$semesterCount Semesters',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: selected ? Colors.white70 : AppTheme.textSecondary,
+                    ),
                   ),
-                ),
+                ],
               ),
-              const Icon(
-                Icons.arrow_forward_ios,
-                size: 18,
-                color: Color(0xFF1B4F9B),
-              ),
-            ],
+            ),
+            Icon(
+              selected
+                  ? Icons.check_circle_rounded
+                  : Icons.chevron_right_rounded,
+              color: selected ? Colors.white : AppTheme.textSecondary,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _semesterChip(int semester) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: () => _openSemester(semester),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.background,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppTheme.border),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.primary.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            'Semester $semester',
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.textPrimary,
+            ),
           ),
         ),
       ),
@@ -128,7 +275,14 @@ class CoursesScreen extends StatelessWidget {
 ///    `NoteScreen` writes to), and lets the student open each file.
 class _SubjectsScreen extends StatefulWidget {
   final int semester;
-  const _SubjectsScreen({required this.semester});
+
+  /// Passed in directly from the new department-selection step on
+  /// [CoursesScreen]. When null (e.g. if this screen is ever pushed from
+  /// elsewhere without a selection), falls back to the student's own
+  /// department from their profile, same as before.
+  final String? department;
+
+  const _SubjectsScreen({required this.semester, this.department});
 
   @override
   State<_SubjectsScreen> createState() => _SubjectsScreenState();
@@ -146,7 +300,12 @@ class _SubjectsScreenState extends State<_SubjectsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadDepartment();
+    if (widget.department != null && widget.department!.trim().isNotEmpty) {
+      _department = widget.department;
+      _loadingDepartment = false;
+    } else {
+      _loadDepartment();
+    }
   }
 
   Future<void> _loadDepartment() async {
@@ -180,6 +339,30 @@ class _SubjectsScreenState extends State<_SubjectsScreen> {
     }
   }
 
+  /// Normalizes a subject/course string so matching survives common
+  /// real-world typos: casing, punctuation, extra spaces, and roman
+  /// numerals typed as digits (e.g. "Calculus I" vs "Calculus 1").
+  String _normalize(String input) {
+    var s = input.toLowerCase().trim();
+    s = s.replaceAll(RegExp(r'[^\w\s]'), ''); // strip punctuation
+    s = s.replaceAll(RegExp(r'\s+'), ' '); // collapse whitespace
+
+    const romanToDigit = {
+      ' i': ' 1',
+      ' ii': ' 2',
+      ' iii': ' 3',
+      ' iv': ' 4',
+      ' v': ' 5',
+    };
+    for (final entry in romanToDigit.entries) {
+      if (s.endsWith(entry.key)) {
+        s = s.substring(0, s.length - entry.key.length) + entry.value;
+        break;
+      }
+    }
+    return s.trim();
+  }
+
   /// Loosely matches a live Firestore [CourseModel] to an entry in the
   /// local `semesterSubjects` map (semester_data1.dart), so the Drive
   /// links (syllabus/notes/qnb) configured there can be resolved for
@@ -188,19 +371,23 @@ class _SubjectsScreenState extends State<_SubjectsScreen> {
   /// fall back to the shared root/QNB folders for an empty/partial map.
   Map<String, String> _subjectDataFor(CourseModel course) {
     final subjects = semesterSubjects[widget.semester] ?? [];
-    final courseName = course.courseName.toLowerCase().trim();
-    final courseCode = course.courseCode.toLowerCase().trim();
+    final courseName = _normalize(course.courseName);
+    final courseCode = _normalize(course.courseCode);
 
     for (final subject in subjects) {
-      final name = (subject['name'] ?? '').toLowerCase().trim();
-      final shortName = (subject['shortName'] ?? '').toLowerCase().trim();
+      final name = _normalize(subject['name'] ?? '');
+      final shortName = _normalize(subject['shortName'] ?? '');
 
-      if (name == courseName ||
-          shortName == courseCode ||
-          (name.isNotEmpty && courseName.contains(name)) ||
-          (courseName.isNotEmpty && name.contains(courseName))) {
-        return subject;
-      }
+      if (name.isEmpty) continue;
+
+      final matches =
+          name == courseName ||
+          (shortName.isNotEmpty &&
+              (shortName == courseCode || shortName == courseName)) ||
+          courseName.contains(name) ||
+          (courseName.isNotEmpty && name.contains(courseName));
+
+      if (matches) return subject;
     }
     return const {};
   }
@@ -310,9 +497,10 @@ class _SubjectsScreenState extends State<_SubjectsScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
         title: Text('Semester ${widget.semester} Courses'),
-        backgroundColor: const Color(0xFF1B4F9B),
+        backgroundColor: AppTheme.secondary,
         foregroundColor: Colors.white,
       ),
       bottomNavigationBar: const AppBottomNavBar(currentIndex: 1),
@@ -325,7 +513,10 @@ class _SubjectsScreenState extends State<_SubjectsScreen> {
                 child: Text(
                   _departmentError!,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: AppTheme.textSecondary,
+                  ),
                 ),
               ),
             )
@@ -346,10 +537,30 @@ class _SubjectsScreenState extends State<_SubjectsScreen> {
                 final courses = snapshot.data ?? [];
 
                 if (courses.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'No courses added for this semester yet.',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.menu_book_outlined,
+                            size: 56,
+                            color: AppTheme.textSecondary.withValues(
+                              alpha: 0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          const Text(
+                            'No courses added for this semester yet.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 }
