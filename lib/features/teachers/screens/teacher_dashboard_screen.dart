@@ -7,7 +7,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/features/authentication/presentation/pages/login_screen.dart';
 import 'package:nexcampus_app/features/student/screens/schedule_screen.dart';
 import 'package:nexcampus_app/features/teachers/shared_screens/department_semester_selection_screen.dart';
-import 'package:nexcampus_app/features/teachers/teachers_features/grades/screens/grade_screen.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/assignments/screens/grade_submission_screen.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/assignments/screens/teacher_submission_list_screen.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/grades/screens/teacher_grade_screen.dart';
 // import 'package:nexcampus_app/features/teachers/teachers_features/notes/screens/notes_screen.dart';
 
 
@@ -356,26 +358,26 @@ class TeacherDashboard extends StatelessWidget {
 
 
 
-                _feature(
+    //             _feature(
 
-                  Icons.grade,
-                  "Grades",
-                  Colors.orange,
-
-
-                  (){
-                     Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const DepartmentSemesterSelectionScreen(feature:FeatureType.grades),
-      ),
-    );
+    //               Icons.grade,
+    //               "Grades",
+    //               Colors.orange,
 
 
-                  },
+    //               (){
+    //                  Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (_) => TeacherSubmissionListScreen(assignment: assignment),
+    //   ),
+    // );
 
 
-                ),
+    //               },
+
+
+    //             ),
 
 
 

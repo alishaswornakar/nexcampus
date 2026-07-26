@@ -4,7 +4,7 @@ import 'package:nexcampus_app/features/teachers/teachers_features/assignments/sc
 import 'package:nexcampus_app/features/teachers/teachers_features/attendance/screens/attendance_subject_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/student_list_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/courses/screens/courselist.dart';
-import 'package:nexcampus_app/features/teachers/teachers_features/grades/screens/grade_screen.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/grades/screens/teacher_grade_screen.dart';
 
 import 'package:nexcampus_app/features/teachers/teachers_features/notices/screens/notice_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/schedule/screens/teacher_schedule_screen.dart';
@@ -17,7 +17,7 @@ enum FeatureType {
   classes,
   notes,
   notices,
-  grades,
+  //grades,
   students,
   schedules,
 }
@@ -445,12 +445,12 @@ class _DepartmentSemesterSelectionScreenState
         );
         break;
 
-     case FeatureType.grades:
-  screen = GradeScreen(
-    department: department,
-    semester: semester,
-  );
-  break;
+  //    case FeatureType.grades:
+  // screen = GradeScreen(
+  //   department: department,
+  //   semester: semester,
+  // );
+  // break;
 
       case FeatureType.students:
         screen = StudentListScreen(
