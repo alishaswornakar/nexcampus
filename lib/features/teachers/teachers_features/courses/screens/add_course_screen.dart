@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:nexcampus_app/core/data/semester_subjects.dart';
 import '../blocs/bloc/course_bloc.dart';
 import '../models/course_model.dart';
 
@@ -23,23 +23,47 @@ class AddCourseScreen extends StatefulWidget {
 class _AddCourseScreenState extends State<AddCourseScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _courseNameController =
-      TextEditingController();
+  final TextEditingController _courseNameController = TextEditingController();
 
-  final TextEditingController _courseCodeController =
-      TextEditingController();
+  final TextEditingController _courseCodeController = TextEditingController();
 
-  final TextEditingController _descriptionController =
-      TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore =
-      FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   String teacherId = "";
   String teacherName = "";
 
   bool isLoadingTeacher = true;
+
+  /// Predefined subjects for this semester, sourced straight from
+  /// `semester_subjects.dart` — the same map the student side reads
+  /// Drive links from. This curriculum data is Computer Engineering
+  /// only, so the dropdown is limited to that department; teachers in
+  /// other departments always type the course name manually.
+  List<Map<String, String>> get predefinedSubjects {
+    if (widget.department != "Computer Engineering") return const [];
+    final semesterInt = int.tryParse(widget.semester);
+    if (semesterInt == null) return const [];
+    return semesterSubjects[semesterInt] ?? const [];
+  }
+
+  /// Selected subject map from [predefinedSubjects], or null when the
+  /// teacher is entering a custom/manual course name (only offered when
+  /// there's no predefined list for this semester, e.g. Architecture's
+  /// semesters 9-10 which aren't in `semesterSubjects`).
+  Map<String, String>? selectedSubject;
+
+  void onSubjectSelected(Map<String, String>? subject) {
+    setState(() {
+      selectedSubject = subject;
+      _courseNameController.text = subject?['name'] ?? '';
+      // Pre-fill the code from the subject's short name, but leave it
+      // editable in case the teacher wants a different code.
+      _courseCodeController.text = subject?['shortName'] ?? '';
+    });
+  }
 
   @override
   void initState() {
@@ -73,15 +97,11 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
       setState(() {
         isLoadingTeacher = false;
       });
-
+      if (!mounted) return;
       // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Failed to load teacher: $e",
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Failed to load teacher: $e")));
     }
   }
 
@@ -98,28 +118,18 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
 
       fillColor: Colors.white,
 
-      border: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(12),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
 
       enabledBorder: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12),
 
-        borderSide: BorderSide(
-          color: Colors.grey.shade300,
-        ),
+        borderSide: BorderSide(color: Colors.grey.shade300),
       ),
 
       focusedBorder: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12),
 
-        borderSide: const BorderSide(
-          color: Colors.blue,
-          width: 2,
-        ),
+        borderSide: const BorderSide(color: Colors.blue, width: 2),
       ),
     );
   }
@@ -135,7 +145,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
 
   @override
   Widget build(BuildContext context) {
-        return BlocListener<CourseBloc, CourseState>(
+    return BlocListener<CourseBloc, CourseState>(
       listener: (context, state) {
         if (state is CourseAdded) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -150,10 +160,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
 
         if (state is CourseError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red,
-            ),
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
           );
         }
       },
@@ -170,9 +177,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
         ),
 
         body: isLoadingTeacher
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
+            ? const Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
 
@@ -180,11 +185,9 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                   key: _formKey,
 
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
 
                     children: [
-
                       const SizedBox(height: 5),
 
                       const Text(
@@ -199,36 +202,74 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
 
                       Text(
                         "Teacher : $teacherName",
-                        style: TextStyle(
-                          color: Colors.grey.shade700,
-                        ),
+                        style: TextStyle(color: Colors.grey.shade700),
                       ),
 
                       const SizedBox(height: 30),
 
-                      TextFormField(
-                        controller:
-                            _courseNameController,
-
-                        decoration: _inputDecoration(
-                          label: "Course Name",
-                          icon: Icons.menu_book,
-                        ),
-
-                        validator: (value) {
-                          if (value == null ||
-                              value.trim().isEmpty) {
-                            return "Enter course name";
-                          }
-                          return null;
-                        },
-                      ),
+                      predefinedSubjects
+                              .isNotEmpty //ignore: value is deprecated
+                          ? DropdownButtonFormField<Map<String, String>>(
+                              initialValue: selectedSubject,
+                              isExpanded: true,
+                              decoration: _inputDecoration(
+                                label: "Course Name",
+                                icon: Icons.menu_book,
+                              ),
+                              items: predefinedSubjects
+                                  .map(
+                                    (subject) => DropdownMenuItem(
+                                      value: subject,
+                                      child: Text(
+                                        subject['name'] ?? '',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: onSubjectSelected,
+                              validator: (value) {
+                                if (value == null) {
+                                  return "Select a course name";
+                                }
+                                return null;
+                              },
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                TextFormField(
+                                  controller: _courseNameController,
+                                  decoration: _inputDecoration(
+                                    label: "Course Name",
+                                    icon: Icons.menu_book,
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.trim().isEmpty) {
+                                      return "Enter course name";
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 6, left: 4),
+                                  child: Text(
+                                    "No predefined subjects found for this "
+                                    "semester — enter the course name "
+                                    "manually.",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
 
                       const SizedBox(height: 18),
 
                       TextFormField(
-                        controller:
-                            _courseCodeController,
+                        controller: _courseCodeController,
 
                         decoration: _inputDecoration(
                           label: "Course Code",
@@ -236,8 +277,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                         ),
 
                         validator: (value) {
-                          if (value == null ||
-                              value.trim().isEmpty) {
+                          if (value == null || value.trim().isEmpty) {
                             return "Enter course code";
                           }
                           return null;
@@ -247,8 +287,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                       const SizedBox(height: 18),
 
                       TextFormField(
-                        controller:
-                            _descriptionController,
+                        controller: _descriptionController,
 
                         maxLines: 5,
 
@@ -258,8 +297,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                         ),
 
                         validator: (value) {
-                          if (value == null ||
-                              value.trim().isEmpty) {
+                          if (value == null || value.trim().isEmpty) {
                             return "Enter description";
                           }
                           return null;
@@ -271,23 +309,15 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                       Card(
                         elevation: 2,
                         shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(14),
                         ),
 
                         child: ListTile(
-                          leading: const Icon(
-                            Icons.school,
-                            color: Colors.blue,
-                          ),
+                          leading: const Icon(Icons.school, color: Colors.blue),
 
-                          title: const Text(
-                            "Department",
-                          ),
+                          title: const Text("Department"),
 
-                          subtitle: Text(
-                            widget.department,
-                          ),
+                          subtitle: Text(widget.department),
                         ),
                       ),
 
@@ -296,8 +326,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                       Card(
                         elevation: 2,
                         shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(14),
                         ),
 
                         child: ListTile(
@@ -306,13 +335,9 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                             color: Colors.orange,
                           ),
 
-                          title: const Text(
-                            "Semester",
-                          ),
+                          title: const Text("Semester"),
 
-                          subtitle: Text(
-                            "Semester ${widget.semester}",
-                          ),
+                          subtitle: Text("Semester ${widget.semester}"),
                         ),
                       ),
 
@@ -345,9 +370,12 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                             .collection("courses")
                                             .doc()
                                             .id,
-                                        courseName: _courseNameController.text.trim(),
-                                        courseCode: _courseCodeController.text.trim(),
-                                        description: _descriptionController.text.trim(),
+                                        courseName: _courseNameController.text
+                                            .trim(),
+                                        courseCode: _courseCodeController.text
+                                            .trim(),
+                                        description: _descriptionController.text
+                                            .trim(),
                                         department: widget.department,
                                         semester: widget.semester,
                                         teacherId: teacherId,
@@ -356,8 +384,8 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                       );
 
                                       context.read<CourseBloc>().add(
-                                            AddCourseEvent(course),
-                                          );
+                                        AddCourseEvent(course),
+                                      );
                                     },
                               icon: loading
                                   ? const SizedBox(
@@ -388,4 +416,3 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
     );
   }
 }
-                      
