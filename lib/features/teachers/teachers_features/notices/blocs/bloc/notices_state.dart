@@ -16,7 +16,7 @@ class NoticeLoading extends NoticeState {
 
 /// Loaded
 class NoticesLoaded extends NoticeState {
-  final List<NoticeModel> notices;
+  final List<TeacherNoticeModel> notices;
 
   const NoticesLoaded(this.notices);
 }

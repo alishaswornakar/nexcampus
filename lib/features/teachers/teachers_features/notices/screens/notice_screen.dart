@@ -5,8 +5,8 @@ import 'package:nexcampus_app/features/teachers/teachers_features/notices/screen
 import '../blocs/bloc/notices_bloc.dart';
 import '../blocs/bloc/notices_event.dart';
 import '../blocs/bloc/notices_state.dart';
-import '../repository/notice_repository.dart';
-import '../services/notice_service.dart';
+import '../repository/teacher_notice_repository.dart';
+import '../services/teacher_notice_service.dart';
 import '../widgets/notice_tile.dart';
 import 'add_notice_screen.dart';
 
@@ -17,8 +17,8 @@ class NoticeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => NoticeBloc(
-        NoticeRepository(
-          NoticeService(),
+        TeacherNoticeRepository(
+          TeacherNoticeService(),
         ),
       )..add(
           LoadNoticesEvent(),

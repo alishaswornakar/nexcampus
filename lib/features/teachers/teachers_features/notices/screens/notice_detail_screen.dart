@@ -9,7 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 
 class NoticeDetailScreen extends StatefulWidget {
-  final NoticeModel notice;
+  final TeacherNoticeModel notice;
 
   const NoticeDetailScreen({super.key, required this.notice});
 

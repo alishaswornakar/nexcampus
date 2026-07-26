@@ -1,21 +1,21 @@
 import '../models/notice_model.dart';
-import '../services/notice_service.dart';
+import '../services/teacher_notice_service.dart';
 
-class NoticeRepository {
-  final NoticeService service;
+class TeacherNoticeRepository {
+  final TeacherNoticeService service;
 
-  NoticeRepository(this.service);
+  TeacherNoticeRepository(this.service);
 
   /// Add Notice
   Future<void> addNotice(
-    NoticeModel notice,
+    TeacherNoticeModel notice,
   ) async {
     await service.addNotice(notice);
   }
 
   /// Update Notice
   Future<void> updateNotice(
-    NoticeModel notice,
+    TeacherNoticeModel notice,
   ) async {
     await service.updateNotice(notice);
   }
@@ -39,12 +39,12 @@ class NoticeRepository {
   }
 
   /// Get All Notices
-  Stream<List<NoticeModel>> getNotices() {
+  Stream<List<TeacherNoticeModel>> getNotices() {
     return service.getNotices();
   }
 
   /// Get Single Notice
-  Future<NoticeModel?> getNotice(
+  Future<TeacherNoticeModel?> getNotice(
     String noticeId,
   ) {
     return service.getNotice(noticeId);

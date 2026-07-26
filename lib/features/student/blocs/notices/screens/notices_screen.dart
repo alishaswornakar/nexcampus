@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:nexcampus_app/core/constants/app_theme.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/notices/repository/teacher_notice_repository.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/notices/services/teacher_notice_service.dart';
 
 import '../bloc/notices_bloc.dart';
 import '../bloc/notices_event.dart';
@@ -24,9 +26,19 @@ class NoticesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
+<<<<<<< HEAD
+      create: (_) => NoticeBloc(
+        TeacherNoticeRepository(
+          TeacherNoticeService(),
+        ),
+      )..add(
+          LoadNoticesEvent(),
+        ),
+=======
       create: (_) =>
           NoticeBloc(NoticeRepository(NoticeService()))
             ..add(LoadNoticesEvent()),
+>>>>>>> caa77f0da2b9b39e33077d005b2bdd2c2f118c73
       child: Scaffold(
         backgroundColor: AppTheme.background,
 

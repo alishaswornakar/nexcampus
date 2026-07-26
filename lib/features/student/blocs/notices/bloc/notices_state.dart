@@ -1,3 +1,5 @@
+import 'package:nexcampus_app/features/teachers/teachers_features/notices/models/notice_model.dart';
+
 import '../models/notice_model.dart';
 
 abstract class NoticeState {
@@ -16,7 +18,7 @@ class NoticeLoading extends NoticeState {
 
 /// Loaded
 class NoticesLoaded extends NoticeState {
-  final List<NoticeModel> notices;
+  final List<TeacherNoticeModel> notices;
 
   const NoticesLoaded(this.notices);
 }

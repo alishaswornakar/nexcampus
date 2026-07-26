@@ -7,14 +7,14 @@ class LoadNoticesEvent extends NoticeEvent {}
 
 /// Add Notice
 class AddNoticeEvent extends NoticeEvent {
-  final NoticeModel notice;
+  final TeacherNoticeModel notice;
 
   AddNoticeEvent(this.notice);
 }
 
 /// Update Notice
 class UpdateNoticeEvent extends NoticeEvent {
-  final NoticeModel notice;
+  final TeacherNoticeModel notice;
 
   UpdateNoticeEvent(this.notice);
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import 'package:nexcampus_app/features/teachers/teachers_features/notices/models/notice_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:nexcampus_app/core/constants/app_theme.dart';
@@ -13,7 +15,7 @@ import '../screens/pdf_viewer_screen.dart';
 /// colors. Tapping a PDF attachment opens it in-app; other file types
 /// launch externally.
 class NoticeTile extends StatelessWidget {
-  final NoticeModel notice;
+  final TeacherNoticeModel notice;
   final VoidCallback onTap;
 
   const NoticeTile({super.key, required this.notice, required this.onTap});

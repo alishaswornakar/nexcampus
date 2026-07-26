@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:dio/dio.dart';
+import 'package:nexcampus_app/features/teachers/teachers_features/notices/models/notice_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 
@@ -17,7 +18,7 @@ import 'pdf_viewer_screen.dart';
 /// the file and opening it with whatever app the device has installed for
 /// that file type, since there's no in-app renderer for those formats here.
 class NoticeDetailScreen extends StatefulWidget {
-  final NoticeModel notice;
+  final TeacherNoticeModel notice;
 
   const NoticeDetailScreen({super.key, required this.notice});
 
