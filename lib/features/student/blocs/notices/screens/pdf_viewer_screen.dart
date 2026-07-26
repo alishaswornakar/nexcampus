@@ -76,9 +76,13 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
-        title: Text(widget.title, overflow: TextOverflow.ellipsis),
+        title: Text(
+          widget.title,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
-        backgroundColor: AppTheme.primary,
+        backgroundColor: AppTheme.secondary,
         foregroundColor: Colors.white,
         actions: [
           if (_isRendered && _totalPages > 0)

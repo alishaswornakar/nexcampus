@@ -15,12 +15,12 @@ class StudentDashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xFFF6F8FB),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF6F8FB),
 
-      appBar: StudentAppBar(),
+      appBar: StudentAppBar(studentId: user.uid),
 
-      body: SingleChildScrollView(
+      body: const SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
@@ -68,7 +68,7 @@ class StudentDashboardScreen extends StatelessWidget {
         ),
       ),
 
-      bottomNavigationBar: AppBottomNavBar(currentIndex: 0),
+      bottomNavigationBar: const AppBottomNavBar(currentIndex: 0),
     );
   }
 }
