@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import '../bloc/notices_bloc.dart';
-import '..//bloc/notices_event.dart';
+import '../bloc/notices_event.dart';
 import '../bloc/notices_state.dart';
 import '../repository/notice_repository.dart';
 import '../services/notice_service.dart';
@@ -24,13 +24,9 @@ class NoticesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => NoticeBloc(
-        NoticeRepository(
-          NoticeService(),
-        ),
-      )..add(
-          LoadNoticesEvent(),
-        ),
+      create: (_) =>
+          NoticeBloc(NoticeRepository(NoticeService()))
+            ..add(LoadNoticesEvent()),
       child: Scaffold(
         backgroundColor: AppTheme.background,
 
@@ -90,9 +86,7 @@ class NoticesScreen extends StatelessWidget {
               return RefreshIndicator(
                 color: AppTheme.primary,
                 onRefresh: () async {
-                  context.read<NoticeBloc>().add(
-                        LoadNoticesEvent(),
-                      );
+                  context.read<NoticeBloc>().add(LoadNoticesEvent());
                 },
                 child: ListView.builder(
                   padding: const EdgeInsets.all(16),
@@ -106,9 +100,7 @@ class NoticesScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => NoticeDetailScreen(
-                              notice: notice,
-                            ),
+                            builder: (_) => NoticeDetailScreen(notice: notice),
                           ),
                         );
                       },
