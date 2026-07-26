@@ -4,13 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/features/student/blocs/result/screens/results_screen.dart';
 import 'quick_tile.dart';
 //import '../screens/alerts_screen.dart';
+import 'package:nexcampus_app/features/student/blocs/notices/screens/notices_screen.dart';
 import '../blocs/attendance/screens/attendance_screen.dart';
 import '../../../features/student/blocs/digital_queue/screens/digital_queue_home_screen.dart';
-import 'package:nexcampus_app/features/student/blocs/notes/screens/notes_screen.dart';
+//import 'package:nexcampus_app/features/student/blocs/notes/screens/notes_screen.dart';
 import 'package:nexcampus_app/features/student/blocs/syllabus/screens/syllabus_screen.dart';
 //import '../screens/schedule_screen.dart';
 //import '../screens/fees_screen.dart';
-//import '../screens/notices_screen.dart';
 import 'package:nexcampus_app/features/student/blocs/anonymous_issue_reporting/screens/anonymous_issue_reporting_screen.dart';
 import 'package:nexcampus_app/features/student/blocs/team_finder/screens/team_finder_screen.dart';
 //import '../screens/library_screen.dart';
@@ -56,6 +56,14 @@ class _StudentProfile {
   }
 }
 
+/// Session-level cache so the extra Firestore fields (roll number,
+/// department, semester) are fetched at most once per app session instead
+/// of every time the dashboard is rebuilt/revisited.
+class _ProfileCache {
+  static _StudentProfile? cached;
+  static Future<_StudentProfile>? inFlight;
+}
+
 class QuickAccessGrid extends StatefulWidget {
   final String studentId;
 
@@ -66,213 +74,226 @@ class QuickAccessGrid extends StatefulWidget {
 }
 
 class _QuickAccessGridState extends State<QuickAccessGrid> {
-  late final Future<_StudentProfile> _profileFuture = _loadProfile();
+  late final User _authUser = FirebaseAuth.instance.currentUser!;
 
-  Future<_StudentProfile> _loadProfile() async {
-    final authUser = FirebaseAuth.instance.currentUser!;
-    final snap = await FirebaseFirestore.instance
+  /// Instantly available — no Firestore call needed. Tiles that only need
+  /// studentId/name/email can use this on the very first frame.
+  late _StudentProfile _profile =
+      _ProfileCache.cached ??
+      _StudentProfile(
+        studentId: _authUser.uid,
+        studentName: _authUser.displayName ?? 'Student',
+        studentEmail: _authUser.email ?? '',
+        rollNumber: '',
+        department: '',
+        semester: '',
+      );
+
+  @override
+  void initState() {
+    super.initState();
+    if (_ProfileCache.cached == null) {
+      _loadExtraProfileFields();
+    }
+  }
+
+  /// Fetches roll number / department / semester in the background and
+  /// quietly updates the tiles that need them once it arrives — it never
+  /// blocks the initial render of the grid.
+  Future<void> _loadExtraProfileFields() async {
+    _ProfileCache.inFlight ??= FirebaseFirestore.instance
         .collection('users')
-        .doc(authUser.uid)
-        .get();
-    return _StudentProfile.fromFirestore(authUser.uid, snap.data(), authUser);
+        .doc(_authUser.uid)
+        .get()
+        .then(
+          (snap) => _StudentProfile.fromFirestore(
+            _authUser.uid,
+            snap.data(),
+            _authUser,
+          ),
+        );
+
+    try {
+      final profile = await _ProfileCache.inFlight!;
+      _ProfileCache.cached = profile;
+      if (mounted) {
+        setState(() => _profile = profile);
+      }
+    } catch (_) {
+      // Silently keep the fallback (uid/name/email) — these fields aren't
+      // critical for first paint, so we don't show an error for them.
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<_StudentProfile>(
-      future: _profileFuture,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 24),
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
-        if (snapshot.hasError) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Text(
-              'Could not load your profile: ${snapshot.error}',
-              style: const TextStyle(color: Colors.red, fontSize: 12),
-            ),
-          );
-        }
+    final profile = _profile;
+    final currentStudent = CurrentStudent(
+      studentId: profile.studentId,
+      studentName: profile.studentName,
+      studentEmail: profile.studentEmail,
+      rollNumber: profile.rollNumber,
+      department: profile.department,
+      semester: profile.semester,
+    );
 
-        final profile = snapshot.data!;
-        final currentStudent = CurrentStudent(
-          studentId: profile.studentId,
-          studentName: profile.studentName,
-          studentEmail: profile.studentEmail,
-          rollNumber: profile.rollNumber,
-          department: profile.department,
-          semester: profile.semester,
-        );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Quick Access",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        const SizedBox(height: 10),
+
+        GridView.count(
+          crossAxisCount: 4,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
           children: [
-            const Text(
-              "Quick Access",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            QuickTile(
+              icon: Icons.calendar_today,
+              label: "Attendance",
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      AttendanceScreen(studentId: profile.studentId),
+                ),
+              ),
             ),
-
-            const SizedBox(height: 10),
-
-            GridView.count(
-              crossAxisCount: 4,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              children: [
-                QuickTile(
-                  icon: Icons.calendar_today,
-                  label: "Attendance",
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          AttendanceScreen(studentId: profile.studentId),
-                    ),
+            QuickTile(
+              icon: Icons.assignment,
+              label: "Tasks",
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => TasksScreen(
+                    department: profile.department,
+                    semester: profile.semester,
+                    studentId: profile.studentId,
                   ),
                 ),
-                QuickTile(
-                  icon: Icons.assignment,
-                  label: "Tasks",
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => TasksScreen(
-                        department: profile.department,
-                        semester: profile.semester,
-                        studentId: profile.studentId,
-                      ),
-                    ),
+              ),
+            ),
+            QuickTile(
+              icon: Icons.queue,
+              label: "Digital Queue",
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      DigitalQueueHomeScreen(student: currentStudent),
+                ),
+              ),
+            ),
+            // QuickTile(
+            //   icon: Icons.notifications,
+            //   label: "Alerts",
+            //   onTap: () => Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //       builder: (context) => const AlertsScreen(),
+            //     ),
+            //   ),
+            // ),
+            // QuickTile(
+            //   icon: Icons.menu_book,
+            //   label: "Notes",
+            //   onTap: () => Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //       builder: (context) => const NotesScreen(),
+            //     ),
+            //   ),
+            // ),
+            QuickTile(
+              icon: Icons.book,
+              label: "Syllabus",
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SyllabusScreen()),
+              ),
+            ),
+            // QuickTile(
+            //   icon: Icons.schedule,
+            //   label: "Schedule",
+            //   onTap: () => Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //       builder: (context) => const ScheduleScreen(),
+            //     ),
+            //   ),
+            // ),
+            // QuickTile(
+            //   icon: Icons.payment,
+            //   label: "Fees",
+            //   onTap: () => Navigator.push(
+            //     context,
+            //     MaterialPageRoute(builder: (context) => const FeesScreen()),
+            //   ),
+            // ),
+            QuickTile(
+              icon: Icons.campaign,
+              label: "Notices",
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NoticesScreen()),
+              ),
+            ),
+            QuickTile(
+              icon: Icons.support_agent,
+              label: "Issue",
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AnonymousIssueReportingScreen(
+                    studentId: profile.studentId,
                   ),
                 ),
-                QuickTile(
-                  icon: Icons.queue,
-                  label: "Digital Queue",
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          DigitalQueueHomeScreen(student: currentStudent),
-                    ),
+              ),
+            ),
+            // QuickTile(
+            //   icon: Icons.local_library,
+            //   label: "Library",
+            //   onTap: () => Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //       builder: (context) => const LibraryScreen(),
+            //     ),
+            //   ),
+            // ),
+            QuickTile(
+              icon: Icons.group,
+              label: "Team",
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TeamFinderScreen(
+                    studentId: profile.studentId,
+                    studentName: profile.studentName,
+                    studentEmail: profile.studentEmail,
+                    rollNumber: profile.rollNumber,
+                    department: profile.department,
+                    semester: profile.semester,
                   ),
                 ),
-                // QuickTile(
-                //   icon: Icons.notifications,
-                //   label: "Alerts",
-                //   onTap: () => Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //       builder: (context) => const AlertsScreen(),
-                //     ),
-                //   ),
-                // ),
-                QuickTile(
-                  icon: Icons.menu_book,
-                  label: "Notes",
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const NotesScreen(),
-                    ),
-                  ),
-                ),
-                QuickTile(
-                  icon: Icons.book,
-                  label: "Syllabus",
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SyllabusScreen(),
-                    ),
-                  ),
-                ),
-                // QuickTile(
-                //   icon: Icons.schedule,
-                //   label: "Schedule",
-                //   onTap: () => Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //       builder: (context) => const ScheduleScreen(),
-                //     ),
-                //   ),
-                // ),
-                // QuickTile(
-                //   icon: Icons.payment,
-                //   label: "Fees",
-                //   onTap: () => Navigator.push(
-                //     context,
-                //     MaterialPageRoute(builder: (context) => const FeesScreen()),
-                //   ),
-                // ),
-                // QuickTile(
-                //   icon: Icons.campaign,
-                //   label: "Notices",
-                //   onTap: () => Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //       builder: (context) => const NoticesScreen(),
-                //     ),
-                //   ),
-                // ),
-                QuickTile(
-                  icon: Icons.support_agent,
-                  label: "Issue",
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AnonymousIssueReportingScreen(
-                        studentId: profile.studentId,
-                      ),
-                    ),
-                  ),
-                ),
-                // QuickTile(
-                //   icon: Icons.local_library,
-                //   label: "Library",
-                //   onTap: () => Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //       builder: (context) => const LibraryScreen(),
-                //     ),
-                //   ),
-                // ),
-                QuickTile(
-                  icon: Icons.group,
-                  label: "Team",
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TeamFinderScreen(
-                        studentId: profile.studentId,
-                        studentName: profile.studentName,
-                        studentEmail: profile.studentEmail,
-                        rollNumber: profile.rollNumber,
-                        department: profile.department,
-                        semester: profile.semester,
-                      ),
-                    ),
-                  ),
-                ),
-                QuickTile(
-                  icon: Icons.poll,
-                  label: "Results",
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ResultsScreen(),
-                    ),
-                  ),
-                ),
-              ],
+              ),
+            ),
+            QuickTile(
+              icon: Icons.poll,
+              label: "Results",
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ResultsScreen()),
+              ),
             ),
           ],
-        );
-      },
+        ),
+      ],
     );
   }
 }
