@@ -149,6 +149,9 @@ class _TeacherProfileView extends StatelessWidget {
                             ),
                           ),
                         );
+
+                        if (!context.mounted) return; // <-- add this guard
+
                         context.read<TeacherProfileBloc>().add(
                           const LoadTeacherProfileEvent(),
                         );

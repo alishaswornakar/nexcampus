@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../models/notice_model.dart';
-import '../../repository/notice_repository.dart';
+import '../models/notice_model.dart';
+import '../repository/notice_repository.dart';
 import 'notices_event.dart';
 import 'notices_state.dart';
 
