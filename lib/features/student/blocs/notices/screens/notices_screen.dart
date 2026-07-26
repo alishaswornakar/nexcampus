@@ -33,7 +33,7 @@ class NoticesScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Notices"),
           centerTitle: true,
-          backgroundColor: AppTheme.primary,
+          backgroundColor: AppTheme.secondary,
           foregroundColor: Colors.white,
         ),
 
