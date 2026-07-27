@@ -105,7 +105,7 @@ class _AssignmentTasksDetailScreenState
     setState(() => _uploading = true);
     try {
       // Let user pick a PDF file
-      final pickResult = await FilePicker.pickFiles(
+      final pickResult = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf'],
         withData: false,
