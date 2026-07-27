@@ -12,27 +12,36 @@ class QuickTile extends StatelessWidget {
     this.onTap,
   });
 
+  static const _tileColor = Color(0xFFE9EBF8);
+  static const _iconColor = Color(0xFF1B4F9B);
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
       child: Container(
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          color: _tileColor,
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: Colors.blue),
-
-            const SizedBox(height: 5),
-
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: Colors.white,
+              child: Icon(icon, color: _iconColor, size: 18),
+            ),
+            const SizedBox(height: 10),
             Text(
               label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 10),
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1A1A1A),
+              ),
             ),
           ],
         ),
