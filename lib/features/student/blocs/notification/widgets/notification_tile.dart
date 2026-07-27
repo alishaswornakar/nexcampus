@@ -23,6 +23,8 @@ class NotificationTile extends StatelessWidget {
         return Icons.assignment_outlined;
       case NotificationType.notice:
         return Icons.campaign_outlined;
+      case NotificationType.note:
+        return Icons.description_outlined;
       case NotificationType.general:
         return Icons.notifications_outlined;
     }
@@ -36,6 +38,8 @@ class NotificationTile extends StatelessWidget {
         return Colors.orange;
       case NotificationType.notice:
         return Colors.purple;
+      case NotificationType.note:
+        return Colors.teal;
       case NotificationType.general:
         return Colors.grey;
     }
@@ -53,7 +57,7 @@ class NotificationTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CircleAvatar(
-                backgroundColor: _iconColor.withValues(alpha:0.12),
+                backgroundColor: _iconColor.withValues(alpha: 0.12),
                 child: Icon(_icon, color: _iconColor, size: 20),
               ),
               const SizedBox(width: 12),
@@ -71,12 +75,20 @@ class NotificationTile extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       notification.body,
-                      style: const TextStyle(fontSize: 13, color: Colors.black54),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Colors.black54,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      DateFormat('MMM d, h:mm a').format(notification.createdAt),
-                      style: const TextStyle(fontSize: 11, color: Colors.black38),
+                      DateFormat(
+                        'MMM d, h:mm a',
+                      ).format(notification.createdAt),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Colors.black38,
+                      ),
                     ),
                   ],
                 ),

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// The kind of notification, used to pick an icon/colour and let the
 /// teacher side categorise what it's sending.
-enum NotificationType { course, assignment, notice, general }
+enum NotificationType { course, assignment, notice, note, general }
 
 /// Who a notification is meant for.
 /// - all      -> every student
