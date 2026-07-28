@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/notes/model/note_model.dart';
 
-
-
 class NoteTile extends StatelessWidget {
   final NoteModel note;
   final VoidCallback onTap;
@@ -23,13 +21,11 @@ class NoteTile extends StatelessWidget {
       return Icons.picture_as_pdf;
     }
 
-    if (name.endsWith(".doc") ||
-        name.endsWith(".docx")) {
+    if (name.endsWith(".doc") || name.endsWith(".docx")) {
       return Icons.description;
     }
 
-    if (name.endsWith(".ppt") ||
-        name.endsWith(".pptx")) {
+    if (name.endsWith(".ppt") || name.endsWith(".pptx")) {
       return Icons.slideshow;
     }
 
@@ -49,13 +45,11 @@ class NoteTile extends StatelessWidget {
       return Colors.red;
     }
 
-    if (name.endsWith(".ppt") ||
-        name.endsWith(".pptx")) {
+    if (name.endsWith(".ppt") || name.endsWith(".pptx")) {
       return Colors.orange;
     }
 
-    if (name.endsWith(".doc") ||
-        name.endsWith(".docx")) {
+    if (name.endsWith(".doc") || name.endsWith(".docx")) {
       return Colors.blue;
     }
 
@@ -73,30 +67,25 @@ class NoteTile extends StatelessWidget {
     return Card(
       elevation: 3,
       margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(18),
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   CircleAvatar(
                     radius: 26,
-                    backgroundColor:
-                        _iconColor(note.fileName)
-                            // ignore: deprecated_member_use
-                            .withOpacity(.12),
+                    backgroundColor: _iconColor(note.fileName)
+                        // ignore: deprecated_member_use
+                        .withOpacity(.12),
                     child: Icon(
                       _fileIcon(note.fileName),
-                      color:
-                          _iconColor(note.fileName),
+                      color: _iconColor(note.fileName),
                     ),
                   ),
 
@@ -104,19 +93,15 @@ class NoteTile extends StatelessWidget {
 
                   Expanded(
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           note.title,
                           maxLines: 1,
-                          overflow:
-                              TextOverflow.ellipsis,
-                          style:
-                              const TextStyle(
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
                             fontSize: 17,
-                            fontWeight:
-                                FontWeight.bold,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
 
@@ -125,12 +110,8 @@ class NoteTile extends StatelessWidget {
                         Text(
                           note.description,
                           maxLines: 2,
-                          overflow:
-                              TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: Colors
-                                .grey.shade700,
-                          ),
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: Colors.grey.shade700),
                         ),
                       ],
                     ),
@@ -147,10 +128,7 @@ class NoteTile extends StatelessWidget {
                         value: "delete",
                         child: Row(
                           children: [
-                            Icon(
-                              Icons.delete,
-                              color: Colors.red,
-                            ),
+                            Icon(Icons.delete, color: Colors.red),
                             SizedBox(width: 8),
                             Text("Delete"),
                           ],
@@ -167,15 +145,11 @@ class NoteTile extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
-                  borderRadius:
-                      BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
-                      Icons.attach_file,
-                      size: 18,
-                    ),
+                    const Icon(Icons.attach_file, size: 18),
 
                     const SizedBox(width: 8),
 
@@ -183,8 +157,7 @@ class NoteTile extends StatelessWidget {
                       child: Text(
                         note.fileName,
                         maxLines: 1,
-                        overflow:
-                            TextOverflow.ellipsis,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -195,27 +168,15 @@ class NoteTile extends StatelessWidget {
 
               Row(
                 children: [
-                  Icon(
-                    Icons.person,
-                    color: Colors.grey.shade600,
-                    size: 18,
-                  ),
+                  Icon(Icons.person, color: Colors.grey.shade600, size: 18),
 
                   const SizedBox(width: 6),
 
-                  Expanded(
-                    child: Text(
-                      note.uploadedBy,
-                    ),
-                  ),
+                  Expanded(child: Text(note.uploadedBy)),
 
                   Text(
-                    DateFormat(
-                      "dd MMM yyyy",
-                    ).format(note.createdAt),
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                    ),
+                    DateFormat("dd MMM yyyy").format(note.createdAt),
+                    style: TextStyle(color: Colors.grey.shade600),
                   ),
                 ],
               ),
@@ -226,15 +187,11 @@ class NoteTile extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: ElevatedButton.icon(
                   onPressed: onTap,
-                  style:
-                      ElevatedButton.styleFrom(
+                  style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
-                    foregroundColor:
-                        Colors.white,
+                    foregroundColor: Colors.white,
                   ),
-                  icon: const Icon(
-                    Icons.visibility,
-                  ),
+                  icon: const Icon(Icons.visibility),
                   label: const Text("View"),
                 ),
               ),

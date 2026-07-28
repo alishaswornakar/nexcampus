@@ -195,7 +195,7 @@ class _GradeSubmissionScreenState
             const SizedBox(height: 8),
 
             DropdownButtonFormField<String>(
-              value: status,
+              initialValue: status,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
