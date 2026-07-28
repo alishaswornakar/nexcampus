@@ -8,6 +8,8 @@ import 'student_management_screen.dart';
 import 'teacher_management_screen.dart';
 import 'admin_attendance_view_screen.dart'; 
 import 'course_file_management_scree.dart';
+import 'admin_team_management_screen.dart'; 
+import 'admin_queue_management_screen.dart'; // 👈 1. Digital Queue Import थपियो
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -85,7 +87,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         },
       },
       {
-        'title': 'Student Reports', // 👈 Admin ले Student को Report हेर्ने/Feedback दिने ठाउँ
+        'title': 'Student Reports',
         'subtitle': '',
         'icon': Icons.report_problem_outlined,
         'color': Colors.deepPurple,
@@ -93,7 +95,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ReportMonitoringScreen(), // const हटाइएको छ
+              builder: (context) => ReportMonitoringScreen(),
             ),
           );
         },
@@ -142,24 +144,30 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         },
       },
       {
-        'title': 'Digital Queue',
+        'title': 'Digital Queue', // 👈 2. SnackBar को सट्टा Navigation जोडिएको छ
         'subtitle': '',
         'icon': Icons.confirmation_number_outlined,
         'color': Colors.indigo,
         'onTap': () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Opening Digital Queue...')),
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AdminQueueManagementScreen(),
+            ),
           );
         },
       },
       {
-        'title': 'Our Team',
+        'title': 'Project Teams',
         'subtitle': '',
         'icon': Icons.groups_outlined,
         'color': Colors.blue,
         'onTap': () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Opening Team Management...')),
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AdminTeamManagementScreen(),
+            ),
           );
         },
       },
