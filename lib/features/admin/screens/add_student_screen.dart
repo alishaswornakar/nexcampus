@@ -131,7 +131,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: _selectedDepartment,
+                initialValue: _selectedDepartment,
                 hint: const Text("Choose Department"),
                 decoration: _inputDecoration(),
                 items: _departments.map((dept) {
@@ -157,7 +157,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<int>(
-                value: _selectedSemester,
+                initialValue: _selectedSemester,
                 hint: Text(_selectedDepartment == null
                     ? "First select a department"
                     : "Choose Semester (1 - $maxSemester)"),
@@ -189,7 +189,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: _selectedSection,
+                initialValue: _selectedSection,
                 hint: const Text("Choose Section"),
                 decoration: _inputDecoration(),
                 items: _sections.map((sec) {

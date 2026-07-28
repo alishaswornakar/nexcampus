@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/features/admin/models/student_model.dart';
+import 'package:flutter/foundation.dart';
 
 class AdminService {
   static final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -12,15 +13,18 @@ class AdminService {
 
       // Fallback values यदि केही नमिलेमा
       studentData['role'] = 'student';
-      if ((studentData['department'] ?? '').isEmpty) studentData['department'] = 'Computer';
-      if ((studentData['semester'] ?? '').isEmpty) studentData['semester'] = '1';
+      if ((studentData['department'] ?? '').isEmpty) {
+        studentData['department'] = 'Computer';
+      }
+      if ((studentData['semester'] ?? '').isEmpty) {
+        studentData['semester'] = '1';
+      }
       if ((studentData['section'] ?? '').isEmpty) studentData['section'] = 'A';
 
       // 'studentData' Collection मा document थप्ने
       await _db.collection('studentData').add(studentData);
-
     } catch (e) {
-      print("Error adding student: $e");
+      debugPrint("Error adding student: $e");
       rethrow;
     }
   }
@@ -30,16 +34,14 @@ class AdminService {
     try {
       final QuerySnapshot snapshot = await _db.collection('studentData').get();
 
-      final List<StudentModel> studentsList = snapshot.docs
-          .map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
-            return StudentModel.fromMap(data, doc.id);
-          })
-          .toList();
+      final List<StudentModel> studentsList = snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return StudentModel.fromMap(data, doc.id);
+      }).toList();
 
       return studentsList;
     } catch (e) {
-      print("Error fetching students: $e");
+      debugPrint("Error fetching students: $e");
       return [];
     }
   }
@@ -56,7 +58,8 @@ class AdminService {
       return allStudents.where((student) {
         if (department != null &&
             department.isNotEmpty &&
-            student.department.toLowerCase().trim() != department.toLowerCase().trim()) {
+            student.department.toLowerCase().trim() !=
+                department.toLowerCase().trim()) {
           return false;
         }
         if (semester != null &&
@@ -66,13 +69,14 @@ class AdminService {
         }
         if (section != null &&
             section.isNotEmpty &&
-            student.section.toLowerCase().trim() != section.toLowerCase().trim()) {
+            student.section.toLowerCase().trim() !=
+                section.toLowerCase().trim()) {
           return false;
         }
         return true;
       }).toList();
     } catch (e) {
-      print("Error filtering students: $e");
+      debugPrint("Error filtering students: $e");
       return [];
     }
   }

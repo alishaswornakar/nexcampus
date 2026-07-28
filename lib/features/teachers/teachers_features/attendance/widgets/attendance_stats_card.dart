@@ -109,7 +109,7 @@ class AttendanceStatisticsCard extends StatelessWidget {
         CircleAvatar(
           radius: 25,
           backgroundColor:
-              color.withOpacity(0.15),
+              color.withValues(alpha:0.15),
           child: Icon(
             icon,
             color: color,

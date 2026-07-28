@@ -274,7 +274,7 @@ class _AdminQueueManagementScreenState
                         ),
                         Switch(
                           value: isCounterOpen,
-                          activeColor: Colors.green,
+                          activeThumbColor: Colors.green,
                           onChanged: (val) {
                             setState(() {
                               isCounterOpen = val;
@@ -368,7 +368,7 @@ class _AdminQueueManagementScreenState
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: purpleTheme.withOpacity(0.1),
+                            color: purpleTheme.withValues(alpha:0.1),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
@@ -421,7 +421,7 @@ class _AdminQueueManagementScreenState
         border: Border.all(color: Colors.green, width: 2),
         boxShadow: [
           BoxShadow(
-            color: Colors.green.withOpacity(0.1),
+            color: Colors.green.withValues(alpha:0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -517,7 +517,7 @@ class _AdminQueueManagementScreenState
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: themeColor.withOpacity(0.1),
+              color: themeColor.withValues(alpha:0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(

@@ -11,7 +11,9 @@ class AdminAssignmentService {
 
   // 2. Update Assignment
   static Future<void> updateAssignment(
-      String id, Map<String, dynamic> data) async {
+    String id,
+    Map<String, dynamic> data,
+  ) async {
     await _db.collection('assignments').doc(id).update(data);
   }
 
@@ -21,13 +23,19 @@ class AdminAssignmentService {
   }
 
   // 4. Share Feature
-  static void shareAssignmentDetails(String title, String dept, String sem, String deadline) {
-    String text = "📚 *Assignment Details*\n\n"
+  static void shareAssignmentDetails(
+    String title,
+    String dept,
+    String sem,
+    String deadline,
+  ) {
+    String text =
+        "📚 *Assignment Details*\n\n"
         "Title: $title\n"
         "Department: $dept\n"
         "Semester: $sem\n"
         "Deadline: $deadline\n\n"
         "Please check the NexCampus app for full details.";
-    Share.share(text);
+    SharePlus.instance.share(ShareParams(text: text));
   }
 }

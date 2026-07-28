@@ -40,15 +40,27 @@ class _StudentListScreenState extends State<StudentListScreen> {
   // ✏️ STUDENT EDIT / UPDATE DIALOG
   void _showEditStudentDialog(Map<String, dynamic> data) {
     final docId = data['docId'];
-    final nameController = TextEditingController(text: data['name'] ?? data['fullName'] ?? '');
+    final nameController = TextEditingController(
+      text: data['name'] ?? data['fullName'] ?? '',
+    );
     final emailController = TextEditingController(text: data['email'] ?? '');
-    final rollController = TextEditingController(text: data['rollNo'] ?? data['roll'] ?? '');
+    final rollController = TextEditingController(
+      text: data['rollNo'] ?? data['roll'] ?? '',
+    );
     final phoneController = TextEditingController(text: data['phone'] ?? '');
-    final addressController = TextEditingController(text: data['address'] ?? '');
+    final addressController = TextEditingController(
+      text: data['address'] ?? '',
+    );
 
     String selectedDept = data['department'] ?? 'Computer';
-    String selectedSem = (data['semester'] ?? '1').toString().replaceAll(RegExp(r'[^0-9]'), '');
-    String selectedSec = (data['section'] ?? 'A').toString().replaceAll(RegExp(r'[^A-Ea-e]'), '').toUpperCase();
+    String selectedSem = (data['semester'] ?? '1').toString().replaceAll(
+      RegExp(r'[^0-9]'),
+      '',
+    );
+    String selectedSec = (data['section'] ?? 'A')
+        .toString()
+        .replaceAll(RegExp(r'[^A-Ea-e]'), '')
+        .toUpperCase();
 
     if (!_departments.contains(selectedDept)) selectedDept = _departments.first;
     if (!_sections.contains(selectedSec)) selectedSec = _sections.first;
@@ -67,7 +79,9 @@ class _StudentListScreenState extends State<StudentListScreen> {
             }
 
             return AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               title: const Text("Edit Student Details"),
               content: SingleChildScrollView(
                 child: Column(
@@ -85,12 +99,16 @@ class _StudentListScreenState extends State<StudentListScreen> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: emailController,
-                      decoration: const InputDecoration(labelText: "Email Address"),
+                      decoration: const InputDecoration(
+                        labelText: "Email Address",
+                      ),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: phoneController,
-                      decoration: const InputDecoration(labelText: "Phone Number"),
+                      decoration: const InputDecoration(
+                        labelText: "Phone Number",
+                      ),
                     ),
                     const SizedBox(height: 8),
                     TextField(
@@ -99,8 +117,10 @@ class _StudentListScreenState extends State<StudentListScreen> {
                     ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      value: selectedDept,
-                      decoration: const InputDecoration(labelText: "Department"),
+                      initialValue: selectedDept,
+                      decoration: const InputDecoration(
+                        labelText: "Department",
+                      ),
                       items: _departments.map((dept) {
                         return DropdownMenuItem(value: dept, child: Text(dept));
                       }).toList(),
@@ -115,26 +135,40 @@ class _StudentListScreenState extends State<StudentListScreen> {
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            value: selectedSem,
-                            decoration: const InputDecoration(labelText: "Semester"),
+                            initialValue: selectedSem,
+                            decoration: const InputDecoration(
+                              labelText: "Semester",
+                            ),
                             items: availableSemesters.map((sem) {
-                              return DropdownMenuItem(value: sem, child: Text("Sem $sem"));
+                              return DropdownMenuItem(
+                                value: sem,
+                                child: Text("Sem $sem"),
+                              );
                             }).toList(),
                             onChanged: (val) {
-                              if (val != null) setDialogState(() => selectedSem = val);
+                              if (val != null) {
+                                setDialogState(() => selectedSem = val);
+                              }
                             },
                           ),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            value: selectedSec,
-                            decoration: const InputDecoration(labelText: "Section"),
+                            initialValue: selectedSec,
+                            decoration: const InputDecoration(
+                              labelText: "Section",
+                            ),
                             items: _sections.map((sec) {
-                              return DropdownMenuItem(value: sec, child: Text("Sec $sec"));
+                              return DropdownMenuItem(
+                                value: sec,
+                                child: Text("Sec $sec"),
+                              );
                             }).toList(),
                             onChanged: (val) {
-                              if (val != null) setDialogState(() => selectedSec = val);
+                              if (val != null) {
+                                setDialogState(() => selectedSec = val);
+                              }
                             },
                           ),
                         ),
@@ -167,15 +201,24 @@ class _StudentListScreenState extends State<StudentListScreen> {
                         'section': selectedSec,
                       };
 
-                      await _db.collection('studentData').doc(docId).update(updateData).catchError((_) async {
-                        await _db.collection('students').doc(docId).update(updateData);
-                      });
+                      await _db
+                          .collection('studentData')
+                          .doc(docId)
+                          .update(updateData)
+                          .catchError((_) async {
+                            await _db
+                                .collection('students')
+                                .doc(docId)
+                                .update(updateData);
+                          });
 
-                      if (!mounted) return;
+                      if (!context.mounted) return;
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text("Student details updated successfully!"),
+                          content: Text(
+                            "Student details updated successfully!",
+                          ),
                           backgroundColor: Colors.green,
                         ),
                       );
@@ -189,7 +232,10 @@ class _StudentListScreenState extends State<StudentListScreen> {
                       );
                     }
                   },
-                  child: const Text("Save Updates", style: TextStyle(color: Colors.white)),
+                  child: const Text(
+                    "Save Updates",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             );
@@ -215,11 +261,15 @@ class _StudentListScreenState extends State<StudentListScreen> {
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {
               try {
-                await _db.collection('studentData').doc(docId).delete().catchError((_) async {
-                  await _db.collection('students').doc(docId).delete();
-                });
+                await _db
+                    .collection('studentData')
+                    .doc(docId)
+                    .delete()
+                    .catchError((_) async {
+                      await _db.collection('students').doc(docId).delete();
+                    });
 
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -230,9 +280,9 @@ class _StudentListScreenState extends State<StudentListScreen> {
               } catch (e) {
                 if (!mounted) return;
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Failed to delete: $e")),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text("Failed to delete: $e")));
               }
             },
             child: const Text("Delete", style: TextStyle(color: Colors.white)),
@@ -303,28 +353,43 @@ class _StudentListScreenState extends State<StudentListScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: _buildDropdown("Department", _selectedDepartment, _departments, (val) {
-                        setState(() {
-                          _selectedDepartment = val;
-                          if (val != 'Architecture' &&
-                              _selectedSemester != null &&
-                              int.parse(_selectedSemester!) > 8) {
-                            _selectedSemester = null;
-                          }
-                        });
-                      }),
+                      child: _buildDropdown(
+                        "Department",
+                        _selectedDepartment,
+                        _departments,
+                        (val) {
+                          setState(() {
+                            _selectedDepartment = val;
+                            if (val != 'Architecture' &&
+                                _selectedSemester != null &&
+                                int.parse(_selectedSemester!) > 8) {
+                              _selectedSemester = null;
+                            }
+                          });
+                        },
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: _buildDropdown("Semester", _selectedSemester, currentSemesters, (val) {
-                        setState(() => _selectedSemester = val);
-                      }),
+                      child: _buildDropdown(
+                        "Semester",
+                        _selectedSemester,
+                        currentSemesters,
+                        (val) {
+                          setState(() => _selectedSemester = val);
+                        },
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: _buildDropdown("Section", _selectedSection, _sections, (val) {
-                        setState(() => _selectedSection = val);
-                      }),
+                      child: _buildDropdown(
+                        "Section",
+                        _selectedSection,
+                        _sections,
+                        (val) {
+                          setState(() => _selectedSection = val);
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -345,15 +410,20 @@ class _StudentListScreenState extends State<StudentListScreen> {
                   return StreamBuilder<QuerySnapshot>(
                     stream: _db.collection('students').snapshots(),
                     builder: (context, altSnapshot) {
-                      if (altSnapshot.connectionState == ConnectionState.waiting) {
+                      if (altSnapshot.connectionState ==
+                          ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
                       }
-                      if (!altSnapshot.hasData || altSnapshot.data!.docs.isEmpty) {
+                      if (!altSnapshot.hasData ||
+                          altSnapshot.data!.docs.isEmpty) {
                         return const Center(
                           child: Text("No students found in database."),
                         );
                       }
-                      return _buildStudentList(altSnapshot.data!.docs, primaryColor);
+                      return _buildStudentList(
+                        altSnapshot.data!.docs,
+                        primaryColor,
+                      );
                     },
                   );
                 }
@@ -367,7 +437,10 @@ class _StudentListScreenState extends State<StudentListScreen> {
     );
   }
 
-  Widget _buildStudentList(List<QueryDocumentSnapshot> docs, Color primaryColor) {
+  Widget _buildStudentList(
+    List<QueryDocumentSnapshot> docs,
+    Color primaryColor,
+  ) {
     final List<Map<String, dynamic>> rawList = docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
       data['docId'] = doc.id;
@@ -376,8 +449,14 @@ class _StudentListScreenState extends State<StudentListScreen> {
 
     // Filtering Logic
     final filteredDocs = rawList.where((data) {
-      final name = (data['name'] ?? data['fullName'] ?? '').toString().toLowerCase().trim();
-      final roll = (data['rollNo'] ?? data['roll'] ?? '').toString().toLowerCase().trim();
+      final name = (data['name'] ?? data['fullName'] ?? '')
+          .toString()
+          .toLowerCase()
+          .trim();
+      final roll = (data['rollNo'] ?? data['roll'] ?? '')
+          .toString()
+          .toLowerCase()
+          .trim();
 
       if (name.isEmpty && roll.isEmpty) return false;
 
@@ -401,7 +480,8 @@ class _StudentListScreenState extends State<StudentListScreen> {
       }
 
       if (_selectedSemester != null && _selectedSemester!.isNotEmpty) {
-        if (sem != _selectedSemester!.trim() && sem != "Semester ${_selectedSemester!.trim()}") {
+        if (sem != _selectedSemester!.trim() &&
+            sem != "Semester ${_selectedSemester!.trim()}") {
           return false;
         }
       }
@@ -417,7 +497,8 @@ class _StudentListScreenState extends State<StudentListScreen> {
     }).toList();
 
     // 💡 Dynamic Title for Summary Banner
-    bool hasFilter = _selectedDepartment != null ||
+    bool hasFilter =
+        _selectedDepartment != null ||
         _selectedSemester != null ||
         _selectedSection != null ||
         _searchQuery.isNotEmpty;
@@ -426,9 +507,15 @@ class _StudentListScreenState extends State<StudentListScreen> {
     if (hasFilter) {
       List<String> activeFilters = [];
       if (_selectedDepartment != null) activeFilters.add(_selectedDepartment!);
-      if (_selectedSemester != null) activeFilters.add("Sem ${_selectedSemester!}");
-      if (_selectedSection != null) activeFilters.add("Sec ${_selectedSection!}");
-      filterText = activeFilters.isNotEmpty ? activeFilters.join(" | ") : "Filtered Result";
+      if (_selectedSemester != null) {
+        activeFilters.add("Sem ${_selectedSemester!}");
+      }
+      if (_selectedSection != null) {
+        activeFilters.add("Sec ${_selectedSection!}");
+      }
+      filterText = activeFilters.isNotEmpty
+          ? activeFilters.join(" | ")
+          : "Filtered Result";
     }
 
     return Column(
@@ -439,16 +526,20 @@ class _StudentListScreenState extends State<StudentListScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: primaryColor.withOpacity(0.08),
+              color: primaryColor.withValues(alpha:0.08),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: primaryColor.withOpacity(0.2)),
+              border: Border.all(color: primaryColor.withValues(alpha:0.2)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.people_alt_outlined, color: primaryColor, size: 22),
+                    Icon(
+                      Icons.people_alt_outlined,
+                      color: primaryColor,
+                      size: 22,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       filterText,
@@ -461,7 +552,10 @@ class _StudentListScreenState extends State<StudentListScreen> {
                   ],
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: primaryColor,
                     borderRadius: BorderRadius.circular(20),
@@ -494,7 +588,8 @@ class _StudentListScreenState extends State<StudentListScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemBuilder: (context, index) {
                     final data = filteredDocs[index];
-                    final name = data['name'] ?? data['fullName'] ?? 'Unknown Student';
+                    final name =
+                        data['name'] ?? data['fullName'] ?? 'Unknown Student';
                     final email = data['email'] ?? 'No Email';
                     final roll = data['rollNo'] ?? data['roll'] ?? 'N/A';
                     final phone = data['phone'] ?? '';
@@ -505,7 +600,9 @@ class _StudentListScreenState extends State<StudentListScreen> {
 
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.all(12.0),
                         child: Row(
@@ -513,7 +610,7 @@ class _StudentListScreenState extends State<StudentListScreen> {
                           children: [
                             CircleAvatar(
                               radius: 24,
-                              backgroundColor: primaryColor.withOpacity(0.1),
+                              backgroundColor: primaryColor.withValues(alpha:0.1),
                               child: Text(
                                 name.isNotEmpty ? name[0].toUpperCase() : 'S',
                                 style: TextStyle(
@@ -546,10 +643,14 @@ class _StudentListScreenState extends State<StudentListScreen> {
                                           vertical: 2,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: primaryColor.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(6),
+                                          color: primaryColor.withValues(alpha:0.1),
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
                                           border: Border.all(
-                                            color: primaryColor.withOpacity(0.3),
+                                            color: primaryColor.withValues(alpha:
+                                              0.3,
+                                            ),
                                           ),
                                         ),
                                         child: Text(
@@ -564,20 +665,32 @@ class _StudentListScreenState extends State<StudentListScreen> {
                                     ],
                                   ),
                                   const SizedBox(height: 6),
-                                  Text("📧 $email",
-                                      style: const TextStyle(
-                                          fontSize: 13, color: Colors.black87)),
+                                  Text(
+                                    "📧 $email",
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
                                   if (phone.isNotEmpty) ...[
                                     const SizedBox(height: 2),
-                                    Text("📞 $phone",
-                                        style: const TextStyle(
-                                            fontSize: 13, color: Colors.black87)),
+                                    Text(
+                                      "📞 $phone",
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
                                   ],
                                   if (address.isNotEmpty) ...[
                                     const SizedBox(height: 2),
-                                    Text("🏠 $address",
-                                        style: const TextStyle(
-                                            fontSize: 13, color: Colors.black87)),
+                                    Text(
+                                      "🏠 $address",
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
                                   ],
                                   const SizedBox(height: 4),
                                   Text(
@@ -592,7 +705,10 @@ class _StudentListScreenState extends State<StudentListScreen> {
                               ),
                             ),
                             PopupMenuButton<String>(
-                              icon: const Icon(Icons.more_vert, color: Colors.grey),
+                              icon: const Icon(
+                                Icons.more_vert,
+                                color: Colors.grey,
+                              ),
                               onSelected: (value) {
                                 if (value == 'edit') {
                                   _showEditStudentDialog(data);
@@ -605,8 +721,11 @@ class _StudentListScreenState extends State<StudentListScreen> {
                                   value: 'edit',
                                   child: Row(
                                     children: [
-                                      Icon(Icons.edit_outlined,
-                                          color: Colors.blue, size: 20),
+                                      Icon(
+                                        Icons.edit_outlined,
+                                        color: Colors.blue,
+                                        size: 20,
+                                      ),
                                       SizedBox(width: 8),
                                       Text("Edit Details"),
                                     ],
@@ -616,11 +735,16 @@ class _StudentListScreenState extends State<StudentListScreen> {
                                   value: 'delete',
                                   child: Row(
                                     children: [
-                                      Icon(Icons.delete_outline,
-                                          color: Colors.red, size: 20),
+                                      Icon(
+                                        Icons.delete_outline,
+                                        color: Colors.red,
+                                        size: 20,
+                                      ),
                                       SizedBox(width: 8),
-                                      Text("Delete Student",
-                                          style: TextStyle(color: Colors.red)),
+                                      Text(
+                                        "Delete Student",
+                                        style: TextStyle(color: Colors.red),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -638,7 +762,11 @@ class _StudentListScreenState extends State<StudentListScreen> {
   }
 
   Widget _buildDropdown(
-      String hint, String? value, List<String> items, ValueChanged<String?> onChanged) {
+    String hint,
+    String? value,
+    List<String> items,
+    ValueChanged<String?> onChanged,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
@@ -648,14 +776,22 @@ class _StudentListScreenState extends State<StudentListScreen> {
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          hint: Text(hint, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+          hint: Text(
+            hint,
+            style: const TextStyle(fontSize: 11, color: Colors.grey),
+          ),
           value: value,
           isExpanded: true,
           items: items.map((item) {
             return DropdownMenuItem(
               value: item,
-              child:
-                  Text(item, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+              child: Text(
+                item,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             );
           }).toList(),
           onChanged: onChanged,

@@ -35,7 +35,9 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               title: const Text("Edit Assignment"),
               content: SingleChildScrollView(
                 child: Column(
@@ -43,13 +45,17 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                   children: [
                     TextField(
                       controller: titleController,
-                      decoration: const InputDecoration(labelText: "Assignment Title"),
+                      decoration: const InputDecoration(
+                        labelText: "Assignment Title",
+                      ),
                     ),
                     const SizedBox(height: 10),
                     TextField(
                       controller: descController,
                       maxLines: 3,
-                      decoration: const InputDecoration(labelText: "Description"),
+                      decoration: const InputDecoration(
+                        labelText: "Description",
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Row(
@@ -57,7 +63,10 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                         Expanded(
                           child: Text(
                             "Deadline:\n${DateFormat('yyyy-MM-dd hh:mm a').format(selectedDeadline)}",
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         TextButton(
@@ -68,10 +77,13 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                               firstDate: DateTime.now(),
                               lastDate: DateTime(2030),
                             );
+                            if (!context.mounted) return;
                             if (pickedDate != null) {
                               TimeOfDay? pickedTime = await showTimePicker(
                                 context: context,
-                                initialTime: TimeOfDay.fromDateTime(selectedDeadline),
+                                initialTime: TimeOfDay.fromDateTime(
+                                  selectedDeadline,
+                                ),
                               );
                               if (pickedTime != null) {
                                 setDialogState(() {
@@ -87,9 +99,9 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                             }
                           },
                           child: const Text("Change Date"),
-                        )
+                        ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -99,14 +111,19 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                   child: const Text("Cancel"),
                 ),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor ?? Colors.blue),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryColor ?? Colors.blue,
+                  ),
                   onPressed: () async {
                     try {
-                      await AdminAssignmentService.updateAssignment(_assignment.id, {
-                        'title': titleController.text.trim(),
-                        'description': descController.text.trim(),
-                        'deadline': Timestamp.fromDate(selectedDeadline),
-                      });
+                      await AdminAssignmentService.updateAssignment(
+                        _assignment.id,
+                        {
+                          'title': titleController.text.trim(),
+                          'description': descController.text.trim(),
+                          'deadline': Timestamp.fromDate(selectedDeadline),
+                        },
+                      );
 
                       setState(() {
                         _assignment = AssignmentModel(
@@ -123,18 +140,24 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                         );
                       });
 
-                      if (!mounted) return;
+                      if (!context.mounted) return;
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Updated successfully!"), backgroundColor: Colors.green),
+                        const SnackBar(
+                          content: Text("Updated successfully!"),
+                          backgroundColor: Colors.green,
+                        ),
                       );
                     } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Error: $e")),
-                      );
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text("Error: $e")));
                     }
                   },
-                  child: const Text("Save Updates", style: TextStyle(color: Colors.white)),
+                  child: const Text(
+                    "Save Updates",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             );
@@ -150,18 +173,27 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Delete Assignment"),
-        content: const Text("Are you sure you want to delete this assignment permanently?"),
+        content: const Text(
+          "Are you sure you want to delete this assignment permanently?",
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {
               await AdminAssignmentService.deleteAssignment(_assignment.id);
-              if (!mounted) return;
+              if (!context.mounted) return;
+
               Navigator.pop(context); // Close dialog
               Navigator.pop(context); // Go back to list screen
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Assignment Deleted"), backgroundColor: Colors.red),
+                const SnackBar(
+                  content: Text("Assignment Deleted"),
+                  backgroundColor: Colors.red,
+                ),
               );
             },
             child: const Text("Delete", style: TextStyle(color: Colors.white)),
@@ -173,14 +205,21 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = AppTheme.primaryColor ?? Colors.blue;
-    final createdStr = DateFormat('MMM dd, yyyy - hh:mm a').format(_assignment.createdDate);
-    final deadlineStr = DateFormat('MMM dd, yyyy - hh:mm a').format(_assignment.deadline);
+    //final primaryColor = AppTheme.primaryColor ?? Colors.blue;
+    final createdStr = DateFormat(
+      'MMM dd, yyyy - hh:mm a',
+    ).format(_assignment.createdDate);
+    final deadlineStr = DateFormat(
+      'MMM dd, yyyy - hh:mm a',
+    ).format(_assignment.deadline);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F5FB),
       appBar: AppBar(
-        title: const Text("Assignment Details", style: TextStyle(color: Colors.black)),
+        title: const Text(
+          "Assignment Details",
+          style: TextStyle(color: Colors.black),
+        ),
         backgroundColor: Colors.white,
         elevation: 0.5,
         iconTheme: const IconThemeData(color: Colors.black),
@@ -213,7 +252,9 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
           children: [
             // Header Info Card
             Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -221,21 +262,34 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                   children: [
                     Text(
                       _assignment.title,
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        const Icon(Icons.person_outline, size: 18, color: Colors.grey),
+                        const Icon(
+                          Icons.person_outline,
+                          size: 18,
+                          color: Colors.grey,
+                        ),
                         const SizedBox(width: 6),
-                        Text("Teacher: ${_assignment.teacherName}",
-                            style: const TextStyle(fontWeight: FontWeight.w500)),
+                        Text(
+                          "Teacher: ${_assignment.teacherName}",
+                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        const Icon(Icons.school_outlined, size: 18, color: Colors.grey),
+                        const Icon(
+                          Icons.school_outlined,
+                          size: 18,
+                          color: Colors.grey,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           "Dept: ${_assignment.department} | Sem: ${_assignment.semester} (${_assignment.section})",
@@ -263,12 +317,18 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text("📅 Posted Date & Time",
-                            style: TextStyle(fontSize: 12, color: Colors.grey)),
+                        const Text(
+                          "📅 Posted Date & Time",
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
                         const SizedBox(height: 4),
-                        Text(createdStr,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 13)),
+                        Text(
+                          createdStr,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -279,17 +339,22 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                       children: [
                         const Padding(
                           padding: EdgeInsets.only(left: 12.0),
-                          child: Text("⏰ Deadline",
-                              style: TextStyle(fontSize: 12, color: Colors.red)),
+                          child: Text(
+                            "⏰ Deadline",
+                            style: TextStyle(fontSize: 12, color: Colors.red),
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Padding(
                           padding: const EdgeInsets.only(left: 12.0),
-                          child: Text(deadlineStr,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13,
-                                  color: Colors.red)),
+                          child: Text(
+                            deadlineStr,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              color: Colors.red,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -301,14 +366,21 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
 
             // Description Box
             Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("Assignment Description",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const Text(
+                      "Assignment Description",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                     const Divider(),
                     const SizedBox(height: 6),
                     Text(

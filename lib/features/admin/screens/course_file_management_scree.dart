@@ -12,17 +12,39 @@ class CourseFileManagementScreen extends StatefulWidget {
   const CourseFileManagementScreen({super.key});
 
   @override
-  State<CourseFileManagementScreen> createState() => _CourseFileManagementScreenState();
+  State<CourseFileManagementScreen> createState() =>
+      _CourseFileManagementScreenState();
 }
 
-class _CourseFileManagementScreenState extends State<CourseFileManagementScreen> {
+class _CourseFileManagementScreenState
+    extends State<CourseFileManagementScreen> {
   String _selectedDepartment = 'Computer';
   String _selectedSemester = '1st';
   String _selectedSection = 'A';
 
   final List<String> _departments = ['Computer', 'Civil', 'Architecture'];
-  final List<String> _semesters8 = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th'];
-  final List<String> _semesters10 = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'];
+  final List<String> _semesters8 = [
+    '1st',
+    '2nd',
+    '3rd',
+    '4th',
+    '5th',
+    '6th',
+    '7th',
+    '8th',
+  ];
+  final List<String> _semesters10 = [
+    '1st',
+    '2nd',
+    '3rd',
+    '4th',
+    '5th',
+    '6th',
+    '7th',
+    '8th',
+    '9th',
+    '10th',
+  ];
   final List<String> _sections = ['A', 'B', 'C', 'D', 'E'];
 
   final ImagePicker _imagePicker = ImagePicker();
@@ -34,7 +56,7 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
   // 🔗 Helper Function: Cloudinary Link / File Link Open गर्ने
   Future<void> _openFileUrl(String urlString) async {
     if (urlString.isEmpty) return;
-    
+
     final Uri url = Uri.parse(urlString);
     try {
       if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
@@ -46,9 +68,9 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error opening file: $e")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Error opening file: $e")));
       }
     }
   }
@@ -117,12 +139,25 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
                   title: const Text("Browse Document (PDF, DOC, PPT...)"),
                   onTap: () async {
                     Navigator.pop(bottomSheetContext);
-                    FilePickerResult? result = await FilePicker.platform.pickFiles(
-                      type: FileType.custom,
-                      allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx', 'ppt', 'pptx'],
-                    );
+                    FilePickerResult? result = await FilePicker.platform
+                        .pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: [
+                            'pdf',
+                            'jpg',
+                            'jpeg',
+                            'png',
+                            'doc',
+                            'docx',
+                            'ppt',
+                            'pptx',
+                          ],
+                        );
                     if (result != null && result.files.single.path != null) {
-                      onFilePicked(File(result.files.single.path!), result.files.single.name);
+                      onFilePicked(
+                        File(result.files.single.path!),
+                        result.files.single.name,
+                      );
                     }
                   },
                 ),
@@ -136,8 +171,12 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
 
   // Add / Edit Dialog Box
   void _showAddOrEditDialog({CourseFileModel? existingFile}) {
-    final titleController = TextEditingController(text: existingFile?.title ?? '');
-    final subjectController = TextEditingController(text: existingFile?.subject ?? '');
+    final titleController = TextEditingController(
+      text: existingFile?.title ?? '',
+    );
+    final subjectController = TextEditingController(
+      text: existingFile?.subject ?? '',
+    );
 
     File? selectedFile;
     String? selectedFileName;
@@ -150,10 +189,17 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               title: Text(
-                existingFile == null ? "Add Course File / Note" : "Edit File Details",
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                existingFile == null
+                    ? "Add Course File / Note"
+                    : "Edit File Details",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
               content: SingleChildScrollView(
                 child: Column(
@@ -181,7 +227,10 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
                     if (existingFile == null) ...[
                       const Text(
                         "Attach Note / Document:",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
                       ),
                       const SizedBox(height: 6),
                       InkWell(
@@ -206,15 +255,23 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.add_a_photo_outlined, color: Colors.blue),
+                              const Icon(
+                                Icons.add_a_photo_outlined,
+                                color: Colors.blue,
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  selectedFileName ?? "Tap to capture photo or pick PDF/File...",
+                                  selectedFileName ??
+                                      "Tap to capture photo or pick PDF/File...",
                                   style: TextStyle(
-                                    color: selectedFileName == null ? Colors.grey.shade700 : Colors.black,
+                                    color: selectedFileName == null
+                                        ? Colors.grey.shade700
+                                        : Colors.black,
                                     fontSize: 12,
-                                    fontWeight: selectedFileName == null ? FontWeight.normal : FontWeight.bold,
+                                    fontWeight: selectedFileName == null
+                                        ? FontWeight.normal
+                                        : FontWeight.bold,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -232,7 +289,10 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
                           children: [
                             CircularProgressIndicator(),
                             SizedBox(height: 8),
-                            Text("Uploading file, please wait...", style: TextStyle(fontSize: 12)),
+                            Text(
+                              "Uploading file, please wait...",
+                              style: TextStyle(fontSize: 12),
+                            ),
                           ],
                         ),
                       ),
@@ -251,14 +311,20 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
                       : () async {
                           if (titleController.text.trim().isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Please enter a file title")),
+                              const SnackBar(
+                                content: Text("Please enter a file title"),
+                              ),
                             );
                             return;
                           }
 
                           if (existingFile == null && selectedFile == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Please attach a file or capture photo first")),
+                              const SnackBar(
+                                content: Text(
+                                  "Please attach a file or capture photo first",
+                                ),
+                              ),
                             );
                             return;
                           }
@@ -268,10 +334,11 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
                           try {
                             if (existingFile == null) {
                               // 1. Upload to Cloudinary
-                              String downloadUrl = await AdminCourseFileService.uploadFileToStorage(
-                                selectedFile!,
-                                selectedFileName!,
-                              );
+                              String downloadUrl =
+                                  await AdminCourseFileService.uploadFileToStorage(
+                                    selectedFile!,
+                                    selectedFileName!,
+                                  );
 
                               // 2. Save to Firestore
                               final newFile = CourseFileModel(
@@ -285,7 +352,9 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
                                 uploadedBy: 'Admin',
                                 createdAt: DateTime.now(),
                               );
-                              await AdminCourseFileService.addCourseFile(newFile);
+                              await AdminCourseFileService.addCourseFile(
+                                newFile,
+                              );
                             } else {
                               // Update Title & Subject
                               await AdminCourseFileService.updateCourseFile(
@@ -295,7 +364,9 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
                               );
                             }
 
-                            if (mounted) Navigator.pop(context);
+                            if (!context.mounted) return;
+
+                            Navigator.pop(context);
                           } catch (e) {
                             setDialogState(() => isUploading = false);
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -303,7 +374,9 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
                             );
                           }
                         },
-                  child: Text(existingFile == null ? "Upload & Save" : "Save Changes"),
+                  child: Text(
+                    existingFile == null ? "Upload & Save" : "Save Changes",
+                  ),
                 ),
               ],
             );
@@ -318,7 +391,10 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
     return Scaffold(
       backgroundColor: const Color(0xFFF6F5FB),
       appBar: AppBar(
-        title: const Text("Course Files & Notes", style: TextStyle(color: Colors.black, fontSize: 18)),
+        title: const Text(
+          "Course Files & Notes",
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
         backgroundColor: Colors.white,
         elevation: 0.5,
         iconTheme: const IconThemeData(color: Colors.black),
@@ -340,21 +416,31 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
                 Expanded(
                   flex: 3,
                   child: DropdownButtonFormField<String>(
-                    value: _selectedDepartment,
+                    initialValue: _selectedDepartment,
                     isExpanded: true,
                     style: const TextStyle(fontSize: 12, color: Colors.black),
                     decoration: const InputDecoration(
                       labelText: "Dept",
                       labelStyle: TextStyle(fontSize: 12),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 8,
+                      ),
                     ),
                     items: _departments
-                        .map((d) => DropdownMenuItem(value: d, child: Text(d, overflow: TextOverflow.ellipsis)))
+                        .map(
+                          (d) => DropdownMenuItem(
+                            value: d,
+                            child: Text(d, overflow: TextOverflow.ellipsis),
+                          ),
+                        )
                         .toList(),
                     onChanged: (val) {
                       setState(() {
                         _selectedDepartment = val!;
-                        if (!_getAvailableSemesters().contains(_selectedSemester)) {
+                        if (!_getAvailableSemesters().contains(
+                          _selectedSemester,
+                        )) {
                           _selectedSemester = '1st';
                         }
                       });
@@ -367,18 +453,27 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
                 Expanded(
                   flex: 2,
                   child: DropdownButtonFormField<String>(
-                    value: _selectedSemester,
+                    initialValue: _selectedSemester,
                     isExpanded: true,
                     style: const TextStyle(fontSize: 12, color: Colors.black),
                     decoration: const InputDecoration(
                       labelText: "Sem",
                       labelStyle: TextStyle(fontSize: 12),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 8,
+                      ),
                     ),
                     items: _getAvailableSemesters()
-                        .map((s) => DropdownMenuItem(value: s, child: Text(s, overflow: TextOverflow.ellipsis)))
+                        .map(
+                          (s) => DropdownMenuItem(
+                            value: s,
+                            child: Text(s, overflow: TextOverflow.ellipsis),
+                          ),
+                        )
                         .toList(),
-                    onChanged: (val) => setState(() => _selectedSemester = val!),
+                    onChanged: (val) =>
+                        setState(() => _selectedSemester = val!),
                   ),
                 ),
                 const SizedBox(width: 6),
@@ -387,16 +482,24 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
                 Expanded(
                   flex: 2,
                   child: DropdownButtonFormField<String>(
-                    value: _selectedSection,
+                    initialValue: _selectedSection,
                     isExpanded: true,
                     style: const TextStyle(fontSize: 12, color: Colors.black),
                     decoration: const InputDecoration(
                       labelText: "Sec",
                       labelStyle: TextStyle(fontSize: 12),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 8,
+                      ),
                     ),
                     items: _sections
-                        .map((sec) => DropdownMenuItem(value: sec, child: Text(sec, overflow: TextOverflow.ellipsis)))
+                        .map(
+                          (sec) => DropdownMenuItem(
+                            value: sec,
+                            child: Text(sec, overflow: TextOverflow.ellipsis),
+                          ),
+                        )
                         .toList(),
                     onChanged: (val) => setState(() => _selectedSection = val!),
                   ),
@@ -419,7 +522,9 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
                 }
 
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text("No course files found for this section."));
+                  return const Center(
+                    child: Text("No course files found for this section."),
+                  );
                 }
 
                 final files = snapshot.data!;
@@ -432,14 +537,24 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
 
                     return Card(
                       margin: const EdgeInsets.only(bottom: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       child: ListTile(
                         leading: const CircleAvatar(
                           backgroundColor: Color(0xFFE0F2FE),
-                          child: Icon(Icons.insert_drive_file_outlined, color: Colors.teal),
+                          child: Icon(
+                            Icons.insert_drive_file_outlined,
+                            color: Colors.teal,
+                          ),
                         ),
-                        title: Text(file.title, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text("Subject: ${file.subject}\nBy: ${file.uploadedBy}"),
+                        title: Text(
+                          file.title,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          "Subject: ${file.subject}\nBy: ${file.uploadedBy}",
+                        ),
                         isThreeLine: true,
                         trailing: PopupMenuButton<String>(
                           onSelected: (value) async {
@@ -450,28 +565,75 @@ class _CourseFileManagementScreenState extends State<CourseFileManagementScreen>
                               _showAddOrEditDialog(existingFile: file);
                             } else if (value == 'share') {
                               if (file.fileUrl.isNotEmpty) {
-                                Share.share("Check out this course file: ${file.title}\nLink: ${file.fileUrl}");
+                                SharePlus.instance.share(
+                                  ShareParams(
+                                    text:
+                                        "Check out this course file: ${file.title}\nLink: ${file.fileUrl}",
+                                  ),
+                                );
                               }
                             } else if (value == 'delete') {
-                              await AdminCourseFileService.deleteCourseFile(file.id);
+                              await AdminCourseFileService.deleteCourseFile(
+                                file.id,
+                              );
                             }
                           },
                           itemBuilder: (context) => [
                             const PopupMenuItem(
                               value: 'view',
-                              child: Row(children: [Icon(Icons.visibility, color: Colors.blue, size: 20), SizedBox(width: 8), Text("View")]),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.visibility,
+                                    color: Colors.blue,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text("View"),
+                                ],
+                              ),
                             ),
                             const PopupMenuItem(
                               value: 'edit',
-                              child: Row(children: [Icon(Icons.edit, color: Colors.orange, size: 20), SizedBox(width: 8), Text("Edit")]),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.edit,
+                                    color: Colors.orange,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text("Edit"),
+                                ],
+                              ),
                             ),
                             const PopupMenuItem(
                               value: 'share',
-                              child: Row(children: [Icon(Icons.share, color: Colors.green, size: 20), SizedBox(width: 8), Text("Share")]),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.share,
+                                    color: Colors.green,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text("Share"),
+                                ],
+                              ),
                             ),
                             const PopupMenuItem(
                               value: 'delete',
-                              child: Row(children: [Icon(Icons.delete, color: Colors.red, size: 20), SizedBox(width: 8), Text("Delete")]),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text("Delete"),
+                                ],
+                              ),
                             ),
                           ],
                         ),

@@ -23,15 +23,16 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
 
     // Clean URL (कुनै नचाहिने transformation छ भने हटाउने)
     final String cleanUrl = urlString.replaceAll('/fl_attachment/', '/');
-    
-    // Photo वा Image file भए सोझै खोल्ने, PDF भए Google Docs Viewer प्रयोग गर्ने
-    final bool isImage = cleanUrl.endsWith('.jpg') || 
-                         cleanUrl.endsWith('.jpeg') || 
-                         cleanUrl.endsWith('.png') || 
-                         cleanUrl.endsWith('.webp');
 
-    final String finalUrlToOpen = isImage 
-        ? cleanUrl 
+    // Photo वा Image file भए सोझै खोल्ने, PDF भए Google Docs Viewer प्रयोग गर्ने
+    final bool isImage =
+        cleanUrl.endsWith('.jpg') ||
+        cleanUrl.endsWith('.jpeg') ||
+        cleanUrl.endsWith('.png') ||
+        cleanUrl.endsWith('.webp');
+
+    final String finalUrlToOpen = isImage
+        ? cleanUrl
         : "https://docs.google.com/gview?embedded=true&url=${Uri.encodeComponent(cleanUrl)}";
 
     final Uri url = Uri.parse(finalUrlToOpen);
@@ -43,13 +44,16 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
       );
 
       if (!launched) {
-        await launchUrl(Uri.parse(cleanUrl), mode: LaunchMode.externalApplication);
+        await launchUrl(
+          Uri.parse(cleanUrl),
+          mode: LaunchMode.externalApplication,
+        );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error viewing attachment: $e")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Error viewing attachment: $e")));
       }
     }
   }
@@ -74,7 +78,9 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
         );
       } else if (!launched && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Could not launch browser for download")),
+          const SnackBar(
+            content: Text("Could not launch browser for download"),
+          ),
         );
       }
     } catch (e) {
@@ -116,7 +122,10 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                 title: const Text("Take Photo (Camera)"),
                 onTap: () async {
                   Navigator.pop(ctx);
-                  final photo = await _imagePicker.pickImage(source: ImageSource.camera, imageQuality: 85);
+                  final photo = await _imagePicker.pickImage(
+                    source: ImageSource.camera,
+                    imageQuality: 85,
+                  );
                   if (photo != null) {
                     onFilePicked(File(photo.path), photo.name);
                   }
@@ -130,7 +139,10 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                 title: const Text("Gallery Image"),
                 onTap: () async {
                   Navigator.pop(ctx);
-                  final image = await _imagePicker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+                  final image = await _imagePicker.pickImage(
+                    source: ImageSource.gallery,
+                    imageQuality: 85,
+                  );
                   if (image != null) {
                     onFilePicked(File(image.path), image.name);
                   }
@@ -144,9 +156,13 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                 title: const Text("Document / File (PDF, DOC...)"),
                 onTap: () async {
                   Navigator.pop(ctx);
-                  FilePickerResult? result = await FilePicker.platform.pickFiles();
+                  FilePickerResult? result = await FilePicker.platform
+                      .pickFiles();
                   if (result != null && result.files.single.path != null) {
-                    onFilePicked(File(result.files.single.path!), result.files.single.name);
+                    onFilePicked(
+                      File(result.files.single.path!),
+                      result.files.single.name,
+                    );
                   }
                 },
               ),
@@ -159,8 +175,12 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
 
   // 📝 Publish / Edit Notice Dialog
   void _showNoticeDialog({NoticeModel? existingNotice}) {
-    final titleController = TextEditingController(text: existingNotice?.title ?? '');
-    final descController = TextEditingController(text: existingNotice?.description ?? '');
+    final titleController = TextEditingController(
+      text: existingNotice?.title ?? '',
+    );
+    final descController = TextEditingController(
+      text: existingNotice?.description ?? '',
+    );
     String selectedAudience = existingNotice?.targetAudience ?? 'All';
     bool isPinned = existingNotice?.isPinned ?? false;
 
@@ -175,8 +195,12 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              title: Text(existingNotice == null ? "Publish New Notice" : "Edit Notice"),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: Text(
+                existingNotice == null ? "Publish New Notice" : "Edit Notice",
+              ),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -184,31 +208,50 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                   children: [
                     TextField(
                       controller: titleController,
-                      decoration: const InputDecoration(labelText: "Notice Title", border: OutlineInputBorder()),
+                      decoration: const InputDecoration(
+                        labelText: "Notice Title",
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: descController,
                       maxLines: 3,
-                      decoration: const InputDecoration(labelText: "Description / Details", border: OutlineInputBorder()),
+                      decoration: const InputDecoration(
+                        labelText: "Description / Details",
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: selectedAudience,
-                      decoration: const InputDecoration(labelText: "Target Audience", border: OutlineInputBorder()),
+                      initialValue: selectedAudience,
+                      decoration: const InputDecoration(
+                        labelText: "Target Audience",
+                        border: OutlineInputBorder(),
+                      ),
                       items: ['All', 'Students', 'Teachers']
-                          .map((a) => DropdownMenuItem(value: a, child: Text(a)))
+                          .map(
+                            (a) => DropdownMenuItem(value: a, child: Text(a)),
+                          )
                           .toList(),
-                      onChanged: (val) => setDialogState(() => selectedAudience = val!),
+                      onChanged: (val) =>
+                          setDialogState(() => selectedAudience = val!),
                     ),
                     const SizedBox(height: 12),
-                    
+
                     // 📌 Pin Option Checkbox
                     CheckboxListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text("Pin this Notice to Top 📌", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                      title: const Text(
+                        "Pin this Notice to Top 📌",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       value: isPinned,
-                      onChanged: (val) => setDialogState(() => isPinned = val ?? false),
+                      onChanged: (val) =>
+                          setDialogState(() => isPinned = val ?? false),
                     ),
                     const SizedBox(height: 8),
 
@@ -236,15 +279,23 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.add_a_photo_outlined, color: Colors.blue),
+                              const Icon(
+                                Icons.add_a_photo_outlined,
+                                color: Colors.blue,
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  attachedFileName ?? "Attach Photo (Camera/Gallery) or File...",
+                                  attachedFileName ??
+                                      "Attach Photo (Camera/Gallery) or File...",
                                   style: TextStyle(
-                                    color: attachedFileName == null ? Colors.grey.shade700 : Colors.black,
+                                    color: attachedFileName == null
+                                        ? Colors.grey.shade700
+                                        : Colors.black,
                                     fontSize: 12,
-                                    fontWeight: attachedFileName == null ? FontWeight.normal : FontWeight.bold,
+                                    fontWeight: attachedFileName == null
+                                        ? FontWeight.normal
+                                        : FontWeight.bold,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -274,7 +325,9 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                       : () async {
                           if (titleController.text.trim().isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Please enter a notice title")),
+                              const SnackBar(
+                                content: Text("Please enter a notice title"),
+                              ),
                             );
                             return;
                           }
@@ -283,7 +336,10 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                           try {
                             String? fileUrl = existingNotice?.attachmentUrl;
                             if (attachedFile != null) {
-                              fileUrl = await AdminNoticeService.uploadNoticeAttachment(attachedFile!);
+                              fileUrl =
+                                  await AdminNoticeService.uploadNoticeAttachment(
+                                    attachedFile!,
+                                  );
                             }
 
                             if (existingNotice == null) {
@@ -306,10 +362,13 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                                 selectedAudience,
                               );
                             }
-                            if (mounted) Navigator.pop(context);
+                            if (!context.mounted) return;
+                            Navigator.pop(context);
                           } catch (e) {
                             setDialogState(() => isSaving = false);
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Error: $e")),
+                            );
                           }
                         },
                   child: const Text("Publish"),
@@ -327,7 +386,10 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F5FB),
       appBar: AppBar(
-        title: const Text("Manage Notices", style: TextStyle(color: Colors.black, fontSize: 18)),
+        title: const Text(
+          "Manage Notices",
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
         backgroundColor: Colors.white,
         elevation: 0.5,
         iconTheme: const IconThemeData(color: Colors.black),
@@ -355,7 +417,9 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
             itemCount: notices.length,
             itemBuilder: (context, index) {
               final notice = notices[index];
-              final bool hasAttachment = notice.attachmentUrl != null && notice.attachmentUrl!.isNotEmpty;
+              final bool hasAttachment =
+                  notice.attachmentUrl != null &&
+                  notice.attachmentUrl!.isNotEmpty;
 
               return Card(
                 elevation: notice.isPinned ? 3 : 1,
@@ -372,7 +436,9 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CircleAvatar(
-                        backgroundColor: notice.isPinned ? Colors.orange.shade50 : const Color(0xFFE0F2FE),
+                        backgroundColor: notice.isPinned
+                            ? Colors.orange.shade50
+                            : const Color(0xFFE0F2FE),
                         child: Icon(
                           notice.isPinned ? Icons.push_pin : Icons.campaign,
                           color: notice.isPinned ? Colors.orange : Colors.blue,
@@ -389,26 +455,48 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                                 Expanded(
                                   child: Text(
                                     notice.title,
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                    ),
                                   ),
                                 ),
                                 if (notice.isPinned)
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: Colors.orange.shade100,
                                       borderRadius: BorderRadius.circular(4),
                                     ),
-                                    child: const Text("Pinned 📌", style: TextStyle(fontSize: 10, color: Colors.orange, fontWeight: FontWeight.bold)),
+                                    child: const Text(
+                                      "Pinned 📌",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.orange,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
                               ],
                             ),
                             const SizedBox(height: 4),
-                            Text(notice.description, style: const TextStyle(fontSize: 13, color: Colors.black87)),
+                            Text(
+                              notice.description,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Colors.black87,
+                              ),
+                            ),
                             const SizedBox(height: 8),
                             Text(
                               "Audience: ${notice.targetAudience} | Date: ${notice.createdAt.day}/${notice.createdAt.month}/${notice.createdAt.year}",
-                              style: const TextStyle(fontSize: 11, color: Colors.grey),
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey,
+                              ),
                             ),
                           ],
                         ),
@@ -422,7 +510,9 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                               _viewAttachment(notice.attachmentUrl!);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("No attachment available.")),
+                                const SnackBar(
+                                  content: Text("No attachment available."),
+                                ),
                               );
                             }
                           } else if (val == 'download') {
@@ -430,11 +520,16 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                               _downloadAttachment(notice.attachmentUrl!);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("No attachment available.")),
+                                const SnackBar(
+                                  content: Text("No attachment available."),
+                                ),
                               );
                             }
                           } else if (val == 'pin') {
-                            await AdminNoticeService.togglePinNotice(notice.id, notice.isPinned);
+                            await AdminNoticeService.togglePinNotice(
+                              notice.id,
+                              notice.isPinned,
+                            );
                           } else if (val == 'edit') {
                             _showNoticeDialog(existingNotice: notice);
                           } else if (val == 'delete') {
@@ -446,9 +541,22 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                             value: 'view',
                             child: Row(
                               children: [
-                                Icon(Icons.visibility_outlined, color: hasAttachment ? Colors.blue : Colors.grey, size: 20),
+                                Icon(
+                                  Icons.visibility_outlined,
+                                  color: hasAttachment
+                                      ? Colors.blue
+                                      : Colors.grey,
+                                  size: 20,
+                                ),
                                 const SizedBox(width: 8),
-                                Text("View Attachment", style: TextStyle(color: hasAttachment ? Colors.black : Colors.grey)),
+                                Text(
+                                  "View Attachment",
+                                  style: TextStyle(
+                                    color: hasAttachment
+                                        ? Colors.black
+                                        : Colors.grey,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -456,9 +564,22 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                             value: 'download',
                             child: Row(
                               children: [
-                                Icon(Icons.file_download_outlined, color: hasAttachment ? Colors.green : Colors.grey, size: 20),
+                                Icon(
+                                  Icons.file_download_outlined,
+                                  color: hasAttachment
+                                      ? Colors.green
+                                      : Colors.grey,
+                                  size: 20,
+                                ),
                                 const SizedBox(width: 8),
-                                Text("Download File", style: TextStyle(color: hasAttachment ? Colors.black : Colors.grey)),
+                                Text(
+                                  "Download File",
+                                  style: TextStyle(
+                                    color: hasAttachment
+                                        ? Colors.black
+                                        : Colors.grey,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -468,12 +589,18 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                             child: Row(
                               children: [
                                 Icon(
-                                  notice.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
+                                  notice.isPinned
+                                      ? Icons.push_pin_outlined
+                                      : Icons.push_pin,
                                   color: Colors.orange,
                                   size: 20,
                                 ),
                                 const SizedBox(width: 8),
-                                Text(notice.isPinned ? "Unpin Notice" : "Pin to Top"),
+                                Text(
+                                  notice.isPinned
+                                      ? "Unpin Notice"
+                                      : "Pin to Top",
+                                ),
                               ],
                             ),
                           ),
@@ -481,7 +608,11 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                             value: 'edit',
                             child: Row(
                               children: [
-                                Icon(Icons.edit_outlined, color: Colors.amber, size: 20),
+                                Icon(
+                                  Icons.edit_outlined,
+                                  color: Colors.amber,
+                                  size: 20,
+                                ),
                                 SizedBox(width: 8),
                                 Text("Edit Details"),
                               ],
@@ -491,7 +622,11 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
                             value: 'delete',
                             child: Row(
                               children: [
-                                Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                                Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.red,
+                                  size: 20,
+                                ),
                                 SizedBox(width: 8),
                                 Text("Delete"),
                               ],

@@ -26,7 +26,7 @@ class AttendanceSummaryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(.15),
+            color: Colors.grey.withValues(alpha:.15),
             blurRadius: 10,
             offset: const Offset(0, 4),
           )
@@ -124,7 +124,7 @@ class _SummaryItem extends StatelessWidget {
       margin: const EdgeInsets.all(6),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: color.withOpacity(.08),
+        color: color.withValues(alpha:.08),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -132,7 +132,7 @@ class _SummaryItem extends StatelessWidget {
 
           CircleAvatar(
             radius: 20,
-            backgroundColor: color.withOpacity(.15),
+            backgroundColor: color.withValues(alpha:.15),
             child: Icon(
               icon,
               color: color,

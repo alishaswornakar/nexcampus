@@ -55,12 +55,16 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: emailController,
-                      decoration: const InputDecoration(labelText: "Email Address"),
+                      decoration: const InputDecoration(
+                        labelText: "Email Address",
+                      ),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: phoneController,
-                      decoration: const InputDecoration(labelText: "Phone Number"),
+                      decoration: const InputDecoration(
+                        labelText: "Phone Number",
+                      ),
                     ),
                     const SizedBox(height: 8),
                     TextField(
@@ -69,15 +73,14 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                     ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      value: _departments.contains(selectedDept)
+                      initialValue: _departments.contains(selectedDept)
                           ? selectedDept
                           : _departments.first,
-                      decoration: const InputDecoration(labelText: "Department"),
+                      decoration: const InputDecoration(
+                        labelText: "Department",
+                      ),
                       items: _departments.map((dept) {
-                        return DropdownMenuItem(
-                          value: dept,
-                          child: Text(dept),
-                        );
+                        return DropdownMenuItem(value: dept, child: Text(dept));
                       }).toList(),
                       onChanged: (val) {
                         if (val != null) {
@@ -88,7 +91,9 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: qualController,
-                      decoration: const InputDecoration(labelText: "Qualification"),
+                      decoration: const InputDecoration(
+                        labelText: "Qualification",
+                      ),
                     ),
                   ],
                 ),
@@ -104,20 +109,25 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                   ),
                   onPressed: () async {
                     try {
-                      await _db.collection('teacherData').doc(teacher.id).update({
-                        'name': nameController.text.trim(),
-                        'email': emailController.text.trim(),
-                        'phone': phoneController.text.trim(),
-                        'address': addressController.text.trim(),
-                        'department': selectedDept,
-                        'qualification': qualController.text.trim(),
-                      });
+                      await _db
+                          .collection('teacherData')
+                          .doc(teacher.id)
+                          .update({
+                            'name': nameController.text.trim(),
+                            'email': emailController.text.trim(),
+                            'phone': phoneController.text.trim(),
+                            'address': addressController.text.trim(),
+                            'department': selectedDept,
+                            'qualification': qualController.text.trim(),
+                          });
 
-                      if (!mounted) return;
+                      if (!context.mounted) return;
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text("Teacher details updated successfully!"),
+                          content: Text(
+                            "Teacher details updated successfully!",
+                          ),
                           backgroundColor: Colors.green,
                         ),
                       );
@@ -131,7 +141,10 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                       );
                     }
                   },
-                  child: const Text("Save Updates", style: TextStyle(color: Colors.white)),
+                  child: const Text(
+                    "Save Updates",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             );
@@ -158,7 +171,7 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
             onPressed: () async {
               try {
                 await _db.collection('teacherData').doc(teacher.id).delete();
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -169,9 +182,9 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
               } catch (e) {
                 if (!mounted) return;
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Failed to delete: $e")),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text("Failed to delete: $e")));
               }
             },
             child: const Text("Delete", style: TextStyle(color: Colors.white)),
@@ -239,13 +252,15 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
 
                 // Department Dropdown
                 DropdownButtonFormField<String>(
-                  value: _selectedDepartment,
+                  initialValue: _selectedDepartment,
                   hint: const Text("All Departments"),
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.grey[100],
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide.none,
@@ -257,10 +272,7 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                       child: Text("All Departments"),
                     ),
                     ..._departments.map((dept) {
-                      return DropdownMenuItem(
-                        value: dept,
-                        child: Text(dept),
-                      );
+                      return DropdownMenuItem(value: dept, child: Text(dept));
                     }),
                   ],
                   onChanged: (val) {
@@ -284,15 +296,20 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                   return StreamBuilder<QuerySnapshot>(
                     stream: _db.collection('teachers').snapshots(),
                     builder: (context, altSnapshot) {
-                      if (altSnapshot.connectionState == ConnectionState.waiting) {
+                      if (altSnapshot.connectionState ==
+                          ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
                       }
-                      if (!altSnapshot.hasData || altSnapshot.data!.docs.isEmpty) {
+                      if (!altSnapshot.hasData ||
+                          altSnapshot.data!.docs.isEmpty) {
                         return const Center(
                           child: Text("No teachers found in database."),
                         );
                       }
-                      return _buildTeacherList(altSnapshot.data!.docs, primaryColor);
+                      return _buildTeacherList(
+                        altSnapshot.data!.docs,
+                        primaryColor,
+                      );
                     },
                   );
                 }
@@ -306,7 +323,10 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
     );
   }
 
-  Widget _buildTeacherList(List<QueryDocumentSnapshot> docs, Color primaryColor) {
+  Widget _buildTeacherList(
+    List<QueryDocumentSnapshot> docs,
+    Color primaryColor,
+  ) {
     final List<TeacherModel> allTeachers = docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
       return TeacherModel.fromMap(data, doc.id);
@@ -316,7 +336,9 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
     final filteredTeachers = allTeachers.where((teacher) {
       if (_searchQuery.isNotEmpty) {
         final matchesName = teacher.name.toLowerCase().contains(_searchQuery);
-        final matchesId = teacher.teacherId.toLowerCase().contains(_searchQuery);
+        final matchesId = teacher.teacherId.toLowerCase().contains(
+          _searchQuery,
+        );
         if (!matchesName && !matchesId) return false;
       }
 
@@ -349,16 +371,20 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.08),
+              color: Colors.orange.withValues(alpha:0.08),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.orange.withOpacity(0.3)),
+              border: Border.all(color: Colors.orange.withValues(alpha:0.3)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.school_outlined, color: Colors.orange, size: 22),
+                    const Icon(
+                      Icons.school_outlined,
+                      color: Colors.orange,
+                      size: 22,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       filterText,
@@ -371,7 +397,10 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                   ],
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.orange,
                     borderRadius: BorderRadius.circular(20),
@@ -418,7 +447,7 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                             // Avatar Circle
                             CircleAvatar(
                               radius: 24,
-                              backgroundColor: Colors.orange.withOpacity(0.1),
+                              backgroundColor: Colors.orange.withValues(alpha:0.1),
                               child: Text(
                                 teacher.name.isNotEmpty
                                     ? teacher.name[0].toUpperCase()
@@ -458,8 +487,9 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                                           ),
                                           decoration: BoxDecoration(
                                             color: Colors.blue.shade50,
-                                            borderRadius:
-                                                BorderRadius.circular(6),
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
                                             border: Border.all(
                                               color: Colors.blue.shade200,
                                             ),
@@ -477,19 +507,31 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                                   ),
                                   const SizedBox(height: 6),
 
-                                  Text("📧 ${teacher.email}",
-                                      style: const TextStyle(
-                                          fontSize: 13, color: Colors.black87)),
+                                  Text(
+                                    "📧 ${teacher.email}",
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
                                   const SizedBox(height: 2),
-                                  Text("📞 ${teacher.phone}",
-                                      style: const TextStyle(
-                                          fontSize: 13, color: Colors.black87)),
+                                  Text(
+                                    "📞 ${teacher.phone}",
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
 
                                   if (teacher.address.isNotEmpty) ...[
                                     const SizedBox(height: 2),
-                                    Text("🏠 ${teacher.address}",
-                                        style: const TextStyle(
-                                            fontSize: 13, color: Colors.black87)),
+                                    Text(
+                                      "🏠 ${teacher.address}",
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
                                   ],
 
                                   const SizedBox(height: 4),
@@ -507,8 +549,10 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
 
                             // 📌 THREE DOTS MENU (Edit / Delete Options)
                             PopupMenuButton<String>(
-                              icon: const Icon(Icons.more_vert,
-                                  color: Colors.grey),
+                              icon: const Icon(
+                                Icons.more_vert,
+                                color: Colors.grey,
+                              ),
                               onSelected: (value) {
                                 if (value == 'edit') {
                                   _showEditTeacherDialog(teacher);
@@ -521,8 +565,11 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                                   value: 'edit',
                                   child: Row(
                                     children: [
-                                      Icon(Icons.edit_outlined,
-                                          color: Colors.blue, size: 20),
+                                      Icon(
+                                        Icons.edit_outlined,
+                                        color: Colors.blue,
+                                        size: 20,
+                                      ),
                                       SizedBox(width: 8),
                                       Text("Edit Details"),
                                     ],
@@ -532,11 +579,16 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                                   value: 'delete',
                                   child: Row(
                                     children: [
-                                      Icon(Icons.delete_outline,
-                                          color: Colors.red, size: 20),
+                                      Icon(
+                                        Icons.delete_outline,
+                                        color: Colors.red,
+                                        size: 20,
+                                      ),
                                       SizedBox(width: 8),
-                                      Text("Delete Teacher",
-                                          style: TextStyle(color: Colors.red)),
+                                      Text(
+                                        "Delete Teacher",
+                                        style: TextStyle(color: Colors.red),
+                                      ),
                                     ],
                                   ),
                                 ),

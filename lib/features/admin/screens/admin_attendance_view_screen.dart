@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:nexcampus_app/core/constants/app_theme.dart';
+//import 'package:nexcampus_app/core/constants/app_theme.dart';
 import '../models/attendance_model.dart';
 
 class AdminAttendanceViewScreen extends StatefulWidget {
@@ -34,7 +34,7 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = AppTheme.primaryColor ?? Colors.blue;
+    //final primaryColor = AppTheme.primaryColor ?? Colors.blue;
     final currentSemesters = _getAvailableSemesters();
 
     return Scaffold(
@@ -59,7 +59,7 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
                     Expanded(
                       flex: 3,
                       child: DropdownButtonFormField<String>(
-                        value: _selectedDepartment,
+                        initialValue: _selectedDepartment,
                         isExpanded: true,
                         style: const TextStyle(fontSize: 12, color: Colors.black),
                         decoration: const InputDecoration(
@@ -89,7 +89,7 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
                     Expanded(
                       flex: 2,
                       child: DropdownButtonFormField<String>(
-                        value: _selectedSemester,
+                        initialValue: _selectedSemester,
                         isExpanded: true,
                         style: const TextStyle(fontSize: 12, color: Colors.black),
                         decoration: const InputDecoration(
@@ -112,7 +112,7 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
                     Expanded(
                       flex: 2,
                       child: DropdownButtonFormField<String>(
-                        value: _selectedSection,
+                        initialValue: _selectedSection,
                         isExpanded: true,
                         style: const TextStyle(fontSize: 12, color: Colors.black),
                         decoration: const InputDecoration(
@@ -210,7 +210,7 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5)],
+                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha:0.05), blurRadius: 5)],
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -239,7 +239,7 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
                                   margin: const EdgeInsets.only(bottom: 8),
                                   child: ListTile(
                                     leading: CircleAvatar(
-                                      backgroundColor: statusColor.withOpacity(0.1),
+                                      backgroundColor: statusColor.withValues(alpha:0.1),
                                       child: Text(
                                         record.studentRoll.isNotEmpty ? record.studentRoll : '${index + 1}',
                                         style: TextStyle(color: statusColor, fontWeight: FontWeight.bold),
@@ -250,7 +250,7 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
                                     trailing: Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                       decoration: BoxDecoration(
-                                        color: statusColor.withOpacity(0.1),
+                                        color: statusColor.withValues(alpha:0.1),
                                         borderRadius: BorderRadius.circular(20),
                                         border: Border.all(color: statusColor),
                                       ),

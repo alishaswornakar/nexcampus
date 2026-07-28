@@ -8,7 +8,9 @@ class ReportMonitoringScreen extends StatelessWidget {
   ReportMonitoringScreen({super.key});
 
   void _showFeedbackDialog(BuildContext context, ReportModel report) {
-    final feedbackController = TextEditingController(text: report.adminFeedback);
+    final feedbackController = TextEditingController(
+      text: report.adminFeedback,
+    );
     String selectedStatus = report.status;
 
     showDialog(
@@ -22,12 +24,14 @@ class ReportMonitoringScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   DropdownButtonFormField<String>(
-                    value: selectedStatus,
+                    initialValue: selectedStatus,
                     items: ['Pending', 'In Progress', 'Resolved', 'Rejected']
-                        .map((status) => DropdownMenuItem(
-                              value: status,
-                              child: Text(status),
-                            ))
+                        .map(
+                          (status) => DropdownMenuItem(
+                            value: status,
+                            child: Text(status),
+                          ),
+                        )
                         .toList(),
                     onChanged: (val) {
                       if (val != null) setState(() => selectedStatus = val);
@@ -91,7 +95,10 @@ class ReportMonitoringScreen extends StatelessWidget {
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: ListTile(
-                  title: Text(report.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  title: Text(
+                    report.title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -100,7 +107,10 @@ class ReportMonitoringScreen extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         "Feedback: ${report.adminFeedback.isEmpty ? 'No feedback yet' : report.adminFeedback}",
-                        style: const TextStyle(color: Colors.blueGrey, fontStyle: FontStyle.italic),
+                        style: const TextStyle(
+                          color: Colors.blueGrey,
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
                     ],
                   ),
@@ -109,8 +119,8 @@ class ReportMonitoringScreen extends StatelessWidget {
                     backgroundColor: report.status == 'Resolved'
                         ? Colors.green.shade100
                         : report.status == 'In Progress'
-                            ? Colors.orange.shade100
-                            : Colors.grey.shade200,
+                        ? Colors.orange.shade100
+                        : Colors.grey.shade200,
                   ),
                   onTap: () => _showFeedbackDialog(context, report),
                 ),

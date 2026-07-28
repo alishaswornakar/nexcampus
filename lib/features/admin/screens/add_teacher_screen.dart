@@ -112,7 +112,7 @@ class _AddTeacherScreenState extends State<AddTeacherScreen> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: _selectedDepartment,
+                initialValue: _selectedDepartment,
                 hint: const Text("Choose Department"),
                 decoration: _inputDecoration(),
                 items: _departments.map((dept) {
