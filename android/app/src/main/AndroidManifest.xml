@@ -40,9 +40,19 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
+<<<<<<< HEAD
        <meta-data
     android:name="com.google.firebase.messaging.default_notification_channel_id"
     android:value="high_importance_channel"/>
+=======
+        <!-- FCM: default channel + icon used for background/terminated pushes -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="nexcampus_notifications" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
+>>>>>>> d4a50284c0fcd92099a31e65c8281fc47dde0a8b
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

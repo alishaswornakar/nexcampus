@@ -148,11 +148,12 @@ class _QuickAccessGridState extends State<QuickAccessGrid> {
         const SizedBox(height: 10),
 
         GridView.count(
-          crossAxisCount: 4,
+          crossAxisCount: 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 10,
-          crossAxisSpacing: 10,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1.55,
           children: [
             QuickTile(
               icon: Icons.calendar_today,
@@ -167,7 +168,7 @@ class _QuickAccessGridState extends State<QuickAccessGrid> {
             ),
             QuickTile(
               icon: Icons.assignment,
-              label: "Tasks",
+              label: "Assignments",
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -180,7 +181,7 @@ class _QuickAccessGridState extends State<QuickAccessGrid> {
               ),
             ),
             QuickTile(
-              icon: Icons.queue,
+              icon: Icons.hourglass_bottom,
               label: "Digital Queue",
               onTap: () => Navigator.push(
                 context,
@@ -190,52 +191,14 @@ class _QuickAccessGridState extends State<QuickAccessGrid> {
                 ),
               ),
             ),
-            // QuickTile(
-            //   icon: Icons.notifications,
-            //   label: "Alerts",
-            //   onTap: () => Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //       builder: (context) => const AlertsScreen(),
-            //     ),
-            //   ),
-            // ),
-            // QuickTile(
-            //   icon: Icons.menu_book,
-            //   label: "Notes",
-            //   onTap: () => Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //       builder: (context) => const NotesScreen(),
-            //     ),
-            //   ),
-            // ),
             QuickTile(
-              icon: Icons.book,
+              icon: Icons.menu_book,
               label: "Syllabus",
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const SyllabusScreen()),
               ),
             ),
-            // QuickTile(
-            //   icon: Icons.schedule,
-            //   label: "Schedule",
-            //   onTap: () => Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //       builder: (context) => const ScheduleScreen(),
-            //     ),
-            //   ),
-            // ),
-            // QuickTile(
-            //   icon: Icons.payment,
-            //   label: "Fees",
-            //   onTap: () => Navigator.push(
-            //     context,
-            //     MaterialPageRoute(builder: (context) => const FeesScreen()),
-            //   ),
-            // ),
             QuickTile(
               icon: Icons.campaign,
               label: "Notices",
@@ -245,8 +208,8 @@ class _QuickAccessGridState extends State<QuickAccessGrid> {
               ),
             ),
             QuickTile(
-              icon: Icons.support_agent,
-              label: "Issue",
+              icon: Icons.report_problem,
+              label: "Reporting",
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -256,19 +219,9 @@ class _QuickAccessGridState extends State<QuickAccessGrid> {
                 ),
               ),
             ),
-            // QuickTile(
-            //   icon: Icons.local_library,
-            //   label: "Library",
-            //   onTap: () => Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //       builder: (context) => const LibraryScreen(),
-            //     ),
-            //   ),
-            // ),
             QuickTile(
-              icon: Icons.group,
-              label: "Team",
+              icon: Icons.groups,
+              label: "Team Finder",
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(

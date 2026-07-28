@@ -3,8 +3,8 @@ import 'package:nexcampus_app/features/teachers/teachers_features/notes/blocs/bl
 import 'package:nexcampus_app/features/teachers/teachers_features/notes/blocs/bloc/notes_state.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/notes/model/note_model.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/notes/repository/note_repository.dart';
-
-
+import 'package:nexcampus_app/features/student/blocs/notification/models/notification_model.dart';
+import 'package:nexcampus_app/features/student/blocs/notification/services/notification_service.dart';
 
 class NoteBloc extends Bloc<NoteEvent, NoteState> {
   final NoteRepository repository;
@@ -17,31 +17,40 @@ class NoteBloc extends Bloc<NoteEvent, NoteState> {
   }
 
   /// Load Notes
-  Future<void> _loadNotes(
-    LoadNotesEvent event,
-    Emitter<NoteState> emit,
-  ) async {
+  Future<void> _loadNotes(LoadNotesEvent event, Emitter<NoteState> emit) async {
     emit(NoteLoading());
 
     await emit.forEach<List<NoteModel>>(
-      repository.getNotes(
-        courseId: event.courseId,
-      ),
+      repository.getNotes(courseId: event.courseId),
       onData: (notes) => NotesLoaded(notes),
-      onError: (error, _) =>
-          NoteError(error.toString()),
+      onError: (error, _) => NoteError(error.toString()),
     );
   }
 
   /// Add Note
-  Future<void> _addNote(
-    AddNoteEvent event,
-    Emitter<NoteState> emit,
-  ) async {
+  Future<void> _addNote(AddNoteEvent event, Emitter<NoteState> emit) async {
     emit(NoteLoading());
 
     try {
       await repository.addNote(event.note);
+
+      try {
+        await NotificationService().createNotification(
+          NotificationModel(
+            id: '',
+            title: "New Note: ${event.note.title}",
+            body: event.note.description,
+            type: NotificationType.note,
+            targetType: NotificationTargetType.course,
+            targetId: event.note.courseId,
+            courseId: event.note.courseId,
+            courseName: event.note.courseName,
+            senderId: '',
+            senderName: event.note.uploadedBy,
+            createdAt: DateTime.now(),
+          ),
+        );
+      } catch (_) {}
 
       emit(NoteAdded());
     } catch (e) {

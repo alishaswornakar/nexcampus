@@ -8,8 +8,6 @@ import 'package:nexcampus_app/features/teachers/teachers_features/notices/servic
 import '../bloc/notices_bloc.dart';
 import '../bloc/notices_event.dart';
 import '../bloc/notices_state.dart';
-import '../repository/notice_repository.dart';
-import '../services/notice_service.dart';
 import '../widgets/notice_tile.dart';
 import 'notice_detail_screen.dart';
 
@@ -39,7 +37,7 @@ class NoticesScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Notices"),
           centerTitle: true,
-          backgroundColor: AppTheme.primary,
+          backgroundColor: AppTheme.secondary,
           foregroundColor: Colors.white,
         ),
 

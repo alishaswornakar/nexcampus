@@ -7,8 +7,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 
 import 'package:nexcampus_app/core/constants/app_theme.dart';
-
-import '../models/notice_model.dart';
 import 'pdf_viewer_screen.dart';
 
 /// Student-facing detail view for a single notice.
@@ -46,7 +44,7 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
       appBar: AppBar(
         title: const Text("Notice"),
         centerTitle: true,
-        backgroundColor: AppTheme.primary,
+        backgroundColor: AppTheme.secondary,
         foregroundColor: Colors.white,
       ),
 
@@ -64,7 +62,7 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
                   vertical: 7,
                 ),
                 decoration: BoxDecoration(
-                  color: AppTheme.secondary.withValues(alpha:0.1),
+                  color: AppTheme.secondary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: const Row(
@@ -91,7 +89,7 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
               style: const TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
+                color: AppTheme.background,
               ),
             ),
 
@@ -110,7 +108,7 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
                   children: [
                     CircleAvatar(
                       radius: 28,
-                      backgroundColor: AppTheme.primary.withValues(alpha:0.1),
+                      backgroundColor: AppTheme.primary.withValues(alpha: 0.1),
                       child: const Icon(
                         Icons.person,
                         size: 30,
@@ -213,8 +211,8 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
                     _downloading
                         ? "Downloading..."
                         : _isPdfAttachment
-                            ? "Tap to view"
-                            : "Tap to open",
+                        ? "Tap to view"
+                        : "Tap to open",
                     style: const TextStyle(color: AppTheme.textSecondary),
                   ),
 
@@ -228,9 +226,7 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
                           ),
                         )
                       : Icon(
-                          _isPdfAttachment
-                              ? Icons.visibility
-                              : Icons.download,
+                          _isPdfAttachment ? Icons.visibility : Icons.download,
                           color: AppTheme.primary,
                         ),
 
@@ -255,10 +251,8 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => PdfViewerScreen(
-            pdfUrl: url,
-            title: widget.notice.title,
-          ),
+          builder: (_) =>
+              PdfViewerScreen(pdfUrl: url, title: widget.notice.title),
         ),
       );
       return;

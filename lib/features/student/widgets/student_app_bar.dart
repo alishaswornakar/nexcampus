@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/authentication/services/auth_service.dart';
 import 'package:nexcampus_app/features/authentication/services/auth_wrapper.dart';
+import 'package:nexcampus_app/features/student/blocs/notification/bloc/notification_bloc.dart';
+import 'package:nexcampus_app/features/student/blocs/notification/bloc/notification_event.dart';
+import 'package:nexcampus_app/features/student/blocs/notification/widgets/notification_bell.dart';
 
 class StudentAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const StudentAppBar({super.key});
+  /// Needed to subscribe to this student's notifications (user.uid).
+  final String studentId;
+
+  const StudentAppBar({super.key, required this.studentId});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -19,7 +26,7 @@ class StudentAppBar extends StatelessWidget implements PreferredSizeWidget {
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
-          fontSize: 17,
+          fontSize: 15,
         ),
       ),
       leading: Padding(
@@ -27,7 +34,14 @@ class StudentAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: CircleAvatar(child: Image.asset("assets/images/App_image.png")),
       ),
       actions: [
-        const Icon(Icons.notifications_none, color: Colors.white),
+        // Own bloc instance scoped to the app bar, so it lives as long as
+        // the dashboard is on screen and disposes itself with it.
+        BlocProvider(
+          create: (_) =>
+              NotificationBloc()
+                ..add(NotificationSubscribeRequested(studentId)),
+          child: const NotificationBell(),
+        ),
 
         const SizedBox(width: 10),
 

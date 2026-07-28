@@ -8,8 +8,6 @@ import 'package:nexcampus_app/core/notifications/services/notification_api_servi
 import 'package:nexcampus_app/features/authentication/presentation/pages/login_screen.dart';
 //import 'package:nexcampus_app/features/student/blocs/schedule/screens/schedule_screen.dart';
 import 'package:nexcampus_app/features/teachers/shared_screens/department_semester_selection_screen.dart';
-import 'package:nexcampus_app/features/teachers/teachers_features/assignments/screens/grade_submission_screen.dart';
-import 'package:nexcampus_app/features/teachers/teachers_features/assignments/screens/teacher_submission_list_screen.dart';
 
 // import 'package:nexcampus_app/features/teachers/teachers_features/notes/screens/notes_screen.dart';
 
@@ -202,7 +200,92 @@ class TeacherDashboard extends StatelessWidget {
                 //     ),
                 //   );
                 // }),
+                _feature(Icons.campaign, "Notices", Colors.deepPurple, () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const NoticeScreen()),
+                  );
+                }),
 
+                //             _feature(
+
+                //               Icons.chat,
+                //               "Notes",
+                //               Colors.teal,
+
+                //               (){
+
+                //                      Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (_) => const NoteScreen(course: null,),
+                //   ),
+                // );
+
+                //               },
+
+                //             ),
+                _feature(Icons.menu_book, "Courses", Colors.indigo, () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const DepartmentSemesterSelectionScreen(
+                        feature: FeatureType.courses,
+                      ),
+                    ),
+                  );
+                }),
+
+                _feature(Icons.class_, "Classes", Colors.red, () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const DepartmentSemesterSelectionScreen(
+                        feature: FeatureType.classes,
+                      ),
+                    ),
+                  );
+                }),
+
+                _feature(Icons.calendar_today, "Attendance", Colors.blue, () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const DepartmentSemesterSelectionScreen(
+                        feature: FeatureType.attendance,
+                      ),
+                    ),
+                  );
+                }),
+
+                _feature(Icons.assignment, "Assignments", Colors.green, () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const DepartmentSemesterSelectionScreen(
+                        feature: FeatureType.assignments,
+                      ),
+                    ),
+                  );
+                }),
+
+                //             _feature(
+
+                //               Icons.grade,
+                //               "Grades",
+                //               Colors.orange,
+
+                //               (){
+                //                  Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (_) => TeacherSubmissionListScreen(assignment: assignment),
+                //   ),
+                // );
+
+                //               },
+
+                //             ),
                 _feature(Icons.campaign, "Notices", Colors.deepPurple, () {
                   Navigator.push(
                     context,
@@ -229,180 +312,6 @@ class TeacherDashboard extends StatelessWidget {
 
                 //             ),
                 _feature(
-
-                  Icons.menu_book,
-                  "Courses",
-                  Colors.indigo,
-
-                  (){
-
-                   Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (_) =>
-        const DepartmentSemesterSelectionScreen(
-      feature: FeatureType.courses,
-    ),
-  ),
-);
-
-                  },
-
-                ),
-
-
-
-
-                _feature(
-
-                  Icons.class_,
-                  "Classes",
-                  Colors.red,
-
-
-                  (){
-
-                   Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (_) =>
-        const DepartmentSemesterSelectionScreen(
-      feature: FeatureType.classes,
-    ),
-  ),
-);
-
-                  },
-
-                ),
-
-
-
-
-                _feature(
-
-                  Icons.calendar_today,
-                  "Attendance",
-                  Colors.blue,
-
-
-                  (){
-
-
-                    Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (_) =>
-        const DepartmentSemesterSelectionScreen(
-      feature: FeatureType.attendance,
-    ),
-  ),
-);
-
-
-                  },
-
-
-                ),
-
-
-
-
-
-                _feature(
-
-                  Icons.assignment,
-                  "Assignments",
-                  Colors.green,
-
-
-                  (){
-
-
-                    Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (_) =>
-        const DepartmentSemesterSelectionScreen(
-      feature: FeatureType.assignments,
-    ),
-  ),
-);
-
-                  },
-
-
-                ),
-
-
-
-
-
-    //             _feature(
-
-    //               Icons.grade,
-    //               "Grades",
-    //               Colors.orange,
-
-
-    //               (){
-    //                  Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (_) => TeacherSubmissionListScreen(assignment: assignment),
-    //   ),
-    // );
-
-
-    //               },
-
-
-    //             ),
-
-
-
-
-
-               _feature(
-  Icons.campaign,
-  "Notices",
-  Colors.deepPurple,
-  () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const NoticeScreen(),
-      ),
-    );
-  },
-),
-
-
-
-               
-
-
-    //             _feature(
-
-    //               Icons.chat,
-    //               "Notes",
-    //               Colors.teal,
-
-
-    //               (){
-                    
-    //                      Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (_) => const NoteScreen(course: null,),
-    //   ),
-    // );
-
-    //               },
-
-    //             ),
-     _feature(
-
                   Icons.calendar_view_month_rounded,
                   "schedules",
                   Colors.teal,

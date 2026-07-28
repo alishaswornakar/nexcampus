@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/notice_model.dart';
 import '../../repository/teacher_notice_repository.dart';
+import 'package:nexcampus_app/features/student/blocs/notification/models/notification_model.dart';
+import 'package:nexcampus_app/features/student/blocs/notification/services/notification_service.dart';
 import 'notices_event.dart';
 import 'notices_state.dart';
 
@@ -30,8 +32,7 @@ class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
     await emit.forEach<List<TeacherNoticeModel>>(
       repository.getNotices(),
       onData: (notices) => NoticesLoaded(notices),
-      onError: (error, stackTrace) =>
-          NoticeError(error.toString()),
+      onError: (error, stackTrace) => NoticeError(error.toString()),
     );
   }
 
@@ -43,11 +44,26 @@ class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
     try {
       await repository.addNotice(event.notice);
 
+      try {
+        await NotificationService().createNotification(
+          NotificationModel(
+            id: '',
+            title: event.notice.isPinned
+                ? "📌 ${event.notice.title}"
+                : event.notice.title,
+            body: event.notice.description,
+            type: NotificationType.notice,
+            targetType: NotificationTargetType.all,
+            senderId: event.notice.teacherId,
+            senderName: event.notice.teacherName,
+            createdAt: DateTime.now(),
+          ),
+        );
+      } catch (_) {}
+
       emit(const NoticeAdded());
     } catch (e) {
-      emit(
-        NoticeError(e.toString()),
-      );
+      emit(NoticeError(e.toString()));
     }
   }
 
@@ -61,9 +77,7 @@ class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
 
       emit(const NoticeUpdated());
     } catch (e) {
-      emit(
-        NoticeError(e.toString()),
-      );
+      emit(NoticeError(e.toString()));
     }
   }
 
@@ -73,15 +87,11 @@ class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
     Emitter<NoticeState> emit,
   ) async {
     try {
-      await repository.deleteNotice(
-        event.noticeId,
-      );
+      await repository.deleteNotice(event.noticeId);
 
       emit(const NoticeDeleted());
     } catch (e) {
-      emit(
-        NoticeError(e.toString()),
-      );
+      emit(NoticeError(e.toString()));
     }
   }
 
@@ -96,9 +106,7 @@ class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
         isPinned: event.isPinned,
       );
     } catch (e) {
-      emit(
-        NoticeError(e.toString()),
-      );
+      emit(NoticeError(e.toString()));
     }
   }
 }

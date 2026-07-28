@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:nexcampus_app/features/student/widgets/bottom_nav_bar.dart';
 import 'package:nexcampus_app/features/student/screens/student_dashboard_screen.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'syllabus_subject_screen.dart';
@@ -67,10 +66,13 @@ class _SyllabusScreenState extends State<SyllabusScreen> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: const Text('Syllabus'),
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back),
+          ),
           backgroundColor: AppTheme.secondary,
           foregroundColor: Colors.white,
         ),
-        bottomNavigationBar: const AppBottomNavBar(currentIndex: 0),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
