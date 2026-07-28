@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
@@ -123,6 +125,7 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                       );
                     } catch (e) {
                       if (!mounted) return;
+                      // ignore: use_build_context_synchronously
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text("Failed to update: $e"),
