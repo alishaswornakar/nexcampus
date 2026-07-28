@@ -27,11 +27,11 @@ class CloudinaryService {
         // Cloudinary ले दिएको secure URL (https://res.cloudinary.com/...)
         return jsonMap['secure_url'] as String?;
       } else {
-        print("Cloudinary Upload Error: ${jsonMap['error']?['message']}");
+        debugPrint("Cloudinary Upload Error: ${jsonMap['error']?['message']}");
         return null;
       }
     } catch (e) {
-      print("Cloudinary Exception: $e");
+      debugPrint("Cloudinary Exception: $e");
       return null;
     }
   }

@@ -13,6 +13,8 @@ class TeacherNoticeModel {
   final String? attachmentUrl;
   final String? attachmentName;
 
+  final String targetAudience;
+
   final bool isPinned;
 
   final DateTime createdAt;
@@ -25,6 +27,7 @@ class TeacherNoticeModel {
     required this.teacherName,
     this.attachmentUrl,
     this.attachmentName,
+    this.targetAudience = 'All',
     this.isPinned = false,
     required this.createdAt,
   });
@@ -43,6 +46,8 @@ class TeacherNoticeModel {
 
       attachmentUrl: map["attachmentUrl"],
       attachmentName: map["attachmentName"],
+
+      targetAudience: map["targetAudience"] ?? 'All',
 
       isPinned: map["isPinned"] ?? false,
 
@@ -63,6 +68,8 @@ class TeacherNoticeModel {
       "attachmentUrl": attachmentUrl,
       "attachmentName": attachmentName,
 
+      "targetAudience": targetAudience,
+
       "isPinned": isPinned,
 
       "createdAt": Timestamp.fromDate(createdAt),
@@ -77,6 +84,7 @@ class TeacherNoticeModel {
     String? teacherName,
     String? attachmentUrl,
     String? attachmentName,
+    String? targetAudience,
     bool? isPinned,
     DateTime? createdAt,
   }) {
@@ -92,6 +100,8 @@ class TeacherNoticeModel {
           attachmentUrl ?? this.attachmentUrl,
       attachmentName:
           attachmentName ?? this.attachmentName,
+
+      targetAudience: targetAudience ?? this.targetAudience,
 
       isPinned: isPinned ?? this.isPinned,
 
