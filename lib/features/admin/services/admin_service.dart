@@ -13,10 +13,12 @@ class AdminService {
 
       // Fallback values यदि केही नमिलेमा
       studentData['role'] = 'student';
-      if ((studentData['department'] ?? '').isEmpty)
+      if ((studentData['department'] ?? '').isEmpty) {
         studentData['department'] = 'Computer';
-      if ((studentData['semester'] ?? '').isEmpty)
+      }
+      if ((studentData['semester'] ?? '').isEmpty) {
         studentData['semester'] = '1';
+      }
       if ((studentData['section'] ?? '').isEmpty) studentData['section'] = 'A';
 
       // 'studentData' Collection मा document थप्ने
