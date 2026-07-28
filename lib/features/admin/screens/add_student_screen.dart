@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
-import 'package:nexcampus_app/features/teachers/teachers_features/classes/models/student_model.dart';
+import 'package:nexcampus_app/features/admin/models/student_model.dart';
 import 'package:nexcampus_app/features/admin/services/admin_service.dart';
 
 class AddStudentScreen extends StatefulWidget {
@@ -54,13 +54,15 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
 
       try {
         final newStudent = StudentModel(
-          fullName: _nameController.text.trim(),
-          roll: _rollController.text.trim(),
+          id: '',
+          name: _nameController.text.trim(),
+          section: _selectedSection!,
+          rollNo: _rollController.text.trim(),
           email: _emailController.text.trim(),
-          role: 'Student',
+          phone: String.fromCharCode(int.parse(_phoneController.text.trim())),
           department: _selectedDepartment!,
           semester: _selectedSemester.toString(),
-          photoUrl: '',
+          address: _addressController.text.trim(),
           uid: '',
         );
 
@@ -71,7 +73,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Student ${newStudent.fullName} added successfully!'),
+            content: Text('Student ${newStudent.name} added successfully!'),
             backgroundColor: Colors.green,
           ),
         );

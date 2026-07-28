@@ -20,7 +20,8 @@ class AdminNoticeService {
   }
 
   // ➕ Add Notice
-  static Future<void> addNotice(NoticeModel notice) async {
+
+  static Future<void> addNotice(TeacherNoticeModel notice) async {
     await _db.collection(_collection).add(notice.toMap());
   }
 
@@ -51,14 +52,14 @@ class AdminNoticeService {
   }
 
   // 📋 Get Admin Notices (Sorted by Pinned first, then Created At)
-  static Stream<List<NoticeModel>> getAdminNotices() {
+  static Stream<List<TeacherNoticeModel>> getAdminNotices() {
     return _db
         .collection(_collection)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
           final list = snapshot.docs
-              .map((doc) => NoticeModel.fromMap(doc.data(), doc.id))
+              .map((doc) => TeacherNoticeModel.fromMap(doc.data(), doc.id))
               .toList();
 
           // Pin गरिएका नोटिसहरूलाई माथि (Top) ल्याउने Sort Logic
@@ -74,14 +75,14 @@ class AdminNoticeService {
   }
 
   // 👤 Get User Notices
-  static Stream<List<NoticeModel>> getNoticesForUser(String role) {
+  static Stream<List<TeacherNoticeModel>> getNoticesForUser(String role) {
     return _db
         .collection(_collection)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
           final list = snapshot.docs
-              .map((doc) => NoticeModel.fromMap(doc.data(), doc.id))
+              .map((doc) => TeacherNoticeModel.fromMap(doc.data(), doc.id))
               .where(
                 (notice) =>
                     notice.targetAudience == 'All' ||

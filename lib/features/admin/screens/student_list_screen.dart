@@ -38,7 +38,7 @@ class _StudentListScreenState extends State<StudentListScreen> {
   }
 
   // ✏️ STUDENT EDIT / UPDATE DIALOG
-  void _showEditStudentDialog(Map<String, dynamic> data) {
+  void showEditStudentDialog(Map<String, dynamic> data) {
     final docId = data['docId'];
     final nameController = TextEditingController(
       text: data['name'] ?? data['fullName'] ?? '',
@@ -715,7 +715,7 @@ class _StudentListScreenState extends State<StudentListScreen> {
                               ),
                               onSelected: (value) {
                                 if (value == 'edit') {
-                                  _showEditStudentDialog(data);
+                                  showEditStudentDialog(data);
                                 } else if (value == 'delete') {
                                   _confirmDeleteStudent(data['docId'], name);
                                 }

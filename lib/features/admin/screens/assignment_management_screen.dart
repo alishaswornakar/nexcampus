@@ -25,7 +25,7 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
   String? _selectedSemester;
   String? _selectedSection;
 
-  final List<String> _departments = ['Computer', 'Civil', 'Architecture'];
+  final List<String> departments = ['Computer', 'Civil', 'Architecture'];
   
   // 8 Semesters List for Computer and Civil
   final List<String> _semesters8 = [
@@ -107,6 +107,7 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
                               lastDate: DateTime(2030),
                             );
                             if (pickedDate != null) {
+                              if(!context.mounted) return;
                               TimeOfDay? pickedTime = await showTimePicker(
                                 context: context,
                                 initialTime: TimeOfDay.fromDateTime(selectedDeadline),
@@ -143,7 +144,7 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
                       'description': descController.text.trim(),
                       'deadline': Timestamp.fromDate(selectedDeadline),
                     });
-                    if (!mounted) return;
+                    if (!context.mounted) return;
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Assignment updated!")),
@@ -160,7 +161,7 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
   }
 
   // 👁️ VIEW DETAILS DIALOG
-  void _showViewDetailsDialog(String title, String content, String metadata) {
+  void showViewDetailsDialog(String title, String content, String metadata) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -225,7 +226,7 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
                     decoration: const InputDecoration(labelText: "Dept", contentPadding: EdgeInsets.symmetric(horizontal: 8)),
                     items: [
                       const DropdownMenuItem(value: null, child: Text("All")),
-                      ..._departments.map((d) => DropdownMenuItem(value: d, child: Text(d))),
+                      ...departments.map((d) => DropdownMenuItem(value: d, child: Text(d))),
                     ],
                     onChanged: (val) {
                       setState(() {

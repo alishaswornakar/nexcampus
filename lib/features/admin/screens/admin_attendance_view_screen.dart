@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:nexcampus_app/core/constants/app_theme.dart';
+//import 'package:nexcampus_app/core/constants/app_theme.dart';
 import '../models/attendance_model.dart';
 
 class AdminAttendanceViewScreen extends StatefulWidget {
@@ -34,7 +34,7 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = AppTheme.primaryColor ?? Colors.blue;
+    //final primaryColor = AppTheme.primaryColor ?? Colors.blue;
     final currentSemesters = _getAvailableSemesters();
 
     return Scaffold(

@@ -11,6 +11,8 @@ class PdfViewerScreen extends StatelessWidget {
     required this.title,
   });
 
+  //get SfPdfViewer => null;
+
   @override
   Widget build(BuildContext context) {
     // ignore: avoid_print

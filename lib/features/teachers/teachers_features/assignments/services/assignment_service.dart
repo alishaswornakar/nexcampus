@@ -85,21 +85,33 @@
 //   }
 // }
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:nexcampus_app/core/notifications/services/notification_api_service.dart';
+import 'package:flutter/foundation.dart';
 import '../models/assignment_model.dart';
 
 class AssignmentService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final NotificationApiService _notificationApiService =
+      NotificationApiService();
 
   CollectionReference get assignmentCollection =>
       firestore.collection("assignments");
 
   /// Create Assignment
   Future<void> createAssignment({required AssignmentModel assignment}) async {
+    // Save assignment first
+    await assignmentCollection.doc(assignment.id).set(assignment.toMap());
+
+    // Try to notify students, but don't fail the upload
     try {
-      await assignmentCollection.doc(assignment.id).set(assignment.toMap());
+      await _notificationApiService.sendToStudents(
+        department: assignment.department,
+        semester: assignment.semester,
+        title: "📚 New Assignment",
+        body: "${assignment.subject}: ${assignment.title}has been uploaded.",
+      );
     } catch (e) {
-      throw Exception("Failed to create assignment: $e");
+      debugPrint("Notification error: $e");
     }
   }
 

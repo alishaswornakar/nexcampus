@@ -1,132 +1,395 @@
 import 'package:flutter/material.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
-import 'user_management_screen.dart';
+import 'package:nexcampus_app/features/admin/screens/assignment_management_screen.dart';
+import 'package:nexcampus_app/features/admin/services/admin_service.dart';
 import 'notice_management_screen.dart';
 import 'report_monitoring_screen.dart';
 import '../../authentication/presentation/pages/login_screen.dart';
+import 'student_management_screen.dart';
+import 'teacher_management_screen.dart';
+import 'admin_attendance_view_screen.dart'; 
+import 'course_file_management_scree.dart';
 
-class AdminDashboardScreen extends StatelessWidget {
+class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
 
   @override
+  State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
+}
+
+class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
+  int _selectedIndex = 0;
+
+  @override
   Widget build(BuildContext context) {
+    final primaryColor = AppTheme.primaryColor ?? Colors.blue;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F5FB),
-      appBar: AppBar(
-        backgroundColor: AppTheme.primaryColor,
-        title: const Text(
-          "Admin Dashboard",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      body: SafeArea(
+        child: FutureBuilder<List<dynamic>>(
+          future: AdminService.getStudents(),
+          builder: (context, snapshot) {
+            // List of Dashboard Grid Items
+            final List<Map<String, dynamic>> dashboardItems = [
+              {
+                'title': 'View Attendance',
+                'subtitle': '',
+                'icon': Icons.fact_check_outlined,
+                'color': Colors.purple,
+                'onTap': () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AdminAttendanceViewScreen(),
+                    ),
+                  );
+                },
+              },
+              {
+                'title': 'Course Files',
+                'subtitle': '',
+                'icon': Icons.folder_open_outlined,
+                'color': Colors.teal,
+                'onTap': () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CourseFileManagementScreen(),
+                    ),
+                  );
+                },
+              },
+              {
+                'title': 'Notices',
+                'subtitle': '',
+                'icon': Icons.edit_note_outlined,
+                'color': Colors.orange,
+                'onTap': () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NoticeManagementScreen(),
+                    ),
+                  );
+                },
+              },
+              {
+                'title': 'Issue Reports',
+                'subtitle': '',
+                'icon': Icons.bar_chart_outlined,
+                'color': Colors.deepPurple,
+                'onTap': () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ReportMonitoringScreen(),
+                    ),
+                  );
+                },
+              },
+              {
+                'title': 'Add New Student',
+                'subtitle': '',
+                'icon': Icons.person_add_alt_1_outlined,
+                'color': Colors.pink,
+                'onTap': () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const StudentManagementScreen(),
+                    ),
+                  );
+                  setState(() {});
+                },
+              },
+              {
+                'title': 'Add New Teacher',
+                'subtitle': '',
+                'icon': Icons.person_add_outlined,
+                'color': Colors.pink,
+                'onTap': () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TeacherManagementScreen(),
+                    ),
+                  );
+                },
+              },
+              {
+                'title': 'Assignments',
+                'subtitle': '',
+                'icon': Icons.assignment_outlined,
+                'color': Colors.blueAccent,
+                'onTap': () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AssignmentManagementScreen(),
+                    ),
+                  );
+                },
+              },
+
+              // 🆕 १. Digital Queue (डिजिटल क्यु)
+              {
+                'title': 'Digital Queue',
+                'subtitle': '',
+                'icon': Icons.confirmation_number_outlined, // Queue को लागि उपयुक्त icon
+                'color': Colors.indigo,
+                'onTap': () {
+                  // TODO: DigitalQueueScreen() मा नेभिगेट गराउनुहोस्
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Opening Digital Queue...')),
+                  );
+                  /*
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DigitalQueueScreen(),
+                    ),
+                  );
+                  */
+                },
+              },
+
+              // 🆕 २. Team (टिम व्यवस्थापन)
+              {
+                'title': 'Our Team',
+                'subtitle': '',
+                'icon': Icons.groups_outlined, // Team को लागि उपयुक्त icon
+                'color': Colors.blue,
+                'onTap': () {
+                  // TODO: TeamManagementScreen() मा नेभिगेट गराउनुहोस्
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Opening Team Management...')),
+                  );
+                  /*
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TeamManagementScreen(),
+                    ),
+                  );
+                  */
+                },
+              },
+            ];
+
+            return CustomScrollView(
+              slivers: [
+                // 1. Blue Header Banner
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(20.0),
+                      decoration: BoxDecoration(
+                        color: primaryColor,
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF1E6091), Color(0xFF0077B6)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.blue.withValues(alpha:0.2),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Welcome Back,",
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                "Administrator 👋",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                "Manage your institution with ease",
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                          
+                          // Logout Action
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginScreen(),
+                                ),
+                                (route) => false,
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha:0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.logout_outlined,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // 2. 2-Column Dashboard Cards Grid
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  sliver: SliverGrid(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12.0,
+                      mainAxisSpacing: 12.0,
+                      childAspectRatio: 1.1,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final item = dashboardItems[index];
+                        return _buildServiceCard(item);
+                      },
+                      childCount: dashboardItems.length,
+                    ),
+                  ),
+                ),
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 20),
+                ),
+              ],
+            );
+          },
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.black),
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
-                (route) => false,
-              );
-            },
+      ),
+
+      // 3. Bottom Navigation Bar
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        selectedItemColor: primaryColor,
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.grid_view_rounded),
+            label: 'Dashboard',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.campaign_outlined),
+            label: 'Notices',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            label: 'Profile',
           ),
         ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Admin Services",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimaryColor,
-              ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              "Select a service to manage NexCampus operations",
-              style: TextStyle(color: AppTheme.textSecondaryColor),
-            ),
-            const SizedBox(height: 25),
-
-            // Grid View for Admin Services
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                children: [
-                  _buildServiceCard(
-                    context,
-                    title: "User Management",
-                    icon: Icons.manage_accounts,
-                    color: Colors.blue,
-                    targetScreen: const UserManagementScreen(),
-                  ),
-                  _buildServiceCard(
-                    context,
-                    title: "Notice Management",
-                    icon: Icons.campaign,
-                    color: Colors.orange,
-                    targetScreen: const NoticeManagementScreen(),
-                  ),
-                  _buildServiceCard(
-                    context,
-                    title: "Report Monitoring",
-                    icon: Icons.analytics,
-                    color: Colors.green,
-                    targetScreen: const ReportMonitoringScreen(),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
 
-  Widget _buildServiceCard(
-    BuildContext context, {
-    required String title,
-    required IconData icon,
-    required Color color,
-    required Widget targetScreen,
-  }) {
-    return InkWell(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => targetScreen),
+  // Card Widget Builder
+  Widget _buildServiceCard(Map<String, dynamic> item) {
+    bool hasSubtitle = item['subtitle'].toString().isNotEmpty;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha:0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: item['onTap'],
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Circular Background Icon
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: (item['color'] as Color).withValues(alpha:0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    item['icon'],
+                    color: item['color'],
+                    size: 26,
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                // Main Text / Number
+                Text(
+                  item['title'],
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: hasSubtitle ? 20 : 13,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+
+                // Subtitle (if available)
+                if (hasSubtitle) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    item['subtitle'],
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ],
             ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundColor: color.withValues(alpha: 0.1),
-              child: Icon(icon, color: color, size: 32),
-            ),
-            const SizedBox(height: 15),
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
-          ],
+          ),
         ),
       ),
     );

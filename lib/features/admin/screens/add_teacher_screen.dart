@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
-import 'package:nexcampus_app/features/teachers/teachers_features/classes/models/teacher_model.dart';
+import 'package:nexcampus_app/features/admin/models/teacher_model.dart';
 
 class AddTeacherScreen extends StatefulWidget {
   const AddTeacherScreen({super.key});

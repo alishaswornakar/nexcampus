@@ -118,7 +118,7 @@ class _CreateAssignmentScreenState
 
     try {
       // Let user pick a PDF file first
-      final picked = await FilePicker.pickFiles(
+      final picked = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf'],
       );

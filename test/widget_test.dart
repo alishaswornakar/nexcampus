@@ -7,8 +7,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nexcampus_app/core/startup/app.dart';
 
-import 'package:nexcampus_app/main.dart';
+//import 'package:nexcampus_app/main.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {

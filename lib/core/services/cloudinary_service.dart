@@ -24,23 +24,14 @@ class CloudinaryService {
       final jsonMap = jsonDecode(responseData);
 
       if (response.statusCode == 200) {
-        String? secureUrl = jsonMap['secure_url'] as String?;
-        String format = jsonMap['format'] ?? '';
-
-        // 💡 यदि PDF हो तर URL को अन्तिममा .pdf छैन भने थपिदिने
-        if (secureUrl != null &&
-            format == 'pdf' &&
-            !secureUrl.endsWith('.pdf')) {
-          secureUrl = "$secureUrl.pdf";
-        }
-
-        return secureUrl;
+        // Cloudinary ले दिएको secure URL (https://res.cloudinary.com/...)
+        return jsonMap['secure_url'] as String?;
       } else {
-        debugPrint("Cloudinary Upload Error: ${jsonMap['error']?['message']}");
+        print("Cloudinary Upload Error: ${jsonMap['error']?['message']}");
         return null;
       }
     } catch (e) {
-      debugPrint("Cloudinary Exception: $e");
+      print("Cloudinary Exception: $e");
       return null;
     }
   }

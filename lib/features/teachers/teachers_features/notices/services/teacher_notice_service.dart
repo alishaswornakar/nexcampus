@@ -1,37 +1,37 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:nexcampus_app/core/notifications/services/notification_api_service.dart';
+import 'package:flutter/foundation.dart';
 import '../models/notice_model.dart';
 
 class TeacherNoticeService {
-  final FirebaseFirestore _firestore =
-      FirebaseFirestore.instance;
-
-  CollectionReference<Map<String, dynamic>>
-      get noticesRef =>
-          _firestore.collection("notices");
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final NotificationApiService _notificationApiService =
+      NotificationApiService();
+  CollectionReference<Map<String, dynamic>> get noticesRef =>
+      _firestore.collection("notices");
 
   /// Add Notice
-  Future<void> addNotice(
-    TeacherNoticeModel notice,
-  ) async {
-    await noticesRef.doc(notice.id).set(
-          notice.toMap(),
-        );
+  Future<void> addNotice(TeacherNoticeModel notice) async {
+    await noticesRef.doc(notice.id).set(notice.toMap());
+    try {
+      await _notificationApiService.sendToStudents(
+        department: "Computer Engineering",
+        semester: "1",
+        title: "📚 New Assignment",
+        body: "notice has been uploaded.",
+      );
+    } catch (e) {
+      debugPrint("Notification error: $e");
+    }
   }
 
   /// Update Notice
-  Future<void> updateNotice(
-    TeacherNoticeModel notice,
-  ) async {
-    await noticesRef.doc(notice.id).update(
-          notice.toMap(),
-        );
+  Future<void> updateNotice(TeacherNoticeModel notice) async {
+    await noticesRef.doc(notice.id).update(notice.toMap());
   }
 
   /// Delete Notice
-  Future<void> deleteNotice(
-    String noticeId,
-  ) async {
+  Future<void> deleteNotice(String noticeId) async {
     await noticesRef.doc(noticeId).delete();
   }
 
@@ -40,48 +40,30 @@ class TeacherNoticeService {
     required String noticeId,
     required bool isPinned,
   }) async {
-    await noticesRef.doc(noticeId).update({
-      "isPinned": isPinned,
-    });
+    await noticesRef.doc(noticeId).update({"isPinned": isPinned});
   }
 
   /// Get All Notices
   Stream<List<TeacherNoticeModel>> getNotices() {
     return noticesRef
-        .orderBy(
-          "isPinned",
-          descending: true,
-        )
-        .orderBy(
-          "createdAt",
-          descending: true,
-        )
+        .orderBy("isPinned", descending: true)
+        .orderBy("createdAt", descending: true)
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
-              .map(
-                (doc) => TeacherNoticeModel.fromMap(
-                  doc.data(),
-                  doc.id,
-                ),
-              )
+              .map((doc) => TeacherNoticeModel.fromMap(doc.data(), doc.id))
               .toList(),
         );
   }
 
   /// Get Single Notice
-  Future<TeacherNoticeModel?> getNotice(
-    String noticeId,
-  ) async {
+  Future<TeacherNoticeModel?> getNotice(String noticeId) async {
     final doc = await noticesRef.doc(noticeId).get();
 
     if (!doc.exists) {
       return null;
     }
 
-    return TeacherNoticeModel.fromMap(
-      doc.data()!,
-      doc.id,
-    );
+    return TeacherNoticeModel.fromMap(doc.data()!, doc.id);
   }
 }

@@ -121,7 +121,7 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                             'qualification': qualController.text.trim(),
                           });
 
-                      if (!mounted) return;
+                      if (!context.mounted) return;
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -171,7 +171,7 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
             onPressed: () async {
               try {
                 await _db.collection('teacherData').doc(teacher.id).delete();
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -371,9 +371,9 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.orange.withValues(alpha:0.08),
+              color: Colors.orange.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.orange.withValues(alpha:0.3)),
+              border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -447,7 +447,9 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                             // Avatar Circle
                             CircleAvatar(
                               radius: 24,
-                              backgroundColor: Colors.orange.withValues(alpha:0.1),
+                              backgroundColor: Colors.orange.withValues(
+                                alpha: 0.1,
+                              ),
                               child: Text(
                                 teacher.name.isNotEmpty
                                     ? teacher.name[0].toUpperCase()
