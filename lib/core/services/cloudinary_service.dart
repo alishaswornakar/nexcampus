@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class CloudinaryService {
-  // तपाईंको Dashboard बाट लिइएको exact credentials
   static const String _cloudName = "hyrruxkf"; 
   static const String _uploadPreset = "nex_campus"; 
 
@@ -13,6 +12,7 @@ class CloudinaryService {
       
       final request = http.MultipartRequest("POST", url)
         ..fields['upload_preset'] = _uploadPreset
+        ..fields['resource_type'] = 'auto' // 👈 १. यहाँ resource_type थप्ने
         ..files.add(await http.MultipartFile.fromPath('file', file.path));
 
       final response = await request.send();
@@ -20,8 +20,15 @@ class CloudinaryService {
       final jsonMap = jsonDecode(responseData);
 
       if (response.statusCode == 200) {
-        // Cloudinary ले दिएको secure URL (https://res.cloudinary.com/...)
-        return jsonMap['secure_url'] as String?;
+        String? secureUrl = jsonMap['secure_url'] as String?;
+        String format = jsonMap['format'] ?? '';
+
+        // 💡 यदि PDF हो तर URL को अन्तिममा .pdf छैन भने थपिदिने
+        if (secureUrl != null && format == 'pdf' && !secureUrl.endsWith('.pdf')) {
+          secureUrl = "$secureUrl.pdf";
+        }
+
+        return secureUrl;
       } else {
         print("Cloudinary Upload Error: ${jsonMap['error']?['message']}");
         return null;
