@@ -28,7 +28,9 @@ class NotificationService {
       android: androidSettings,
     );
 
-    await _localNotifications.initialize(settings);
+    await _localNotifications.initialize(
+  settings: settings,
+);
 
     // Save FCM token
     await saveToken();
@@ -71,12 +73,12 @@ class NotificationService {
       android: android,
     );
 
-    await _localNotifications.show(
-      message.hashCode,
-      message.notification?.title ?? '',
-      message.notification?.body ?? '',
-      details,
-    );
+   await _localNotifications.show(
+  id: message.hashCode,
+  title: message.notification?.title ?? '',
+  body: message.notification?.body ?? '',
+  notificationDetails: details,
+);
   }
 
   static Future<void> saveToken({
