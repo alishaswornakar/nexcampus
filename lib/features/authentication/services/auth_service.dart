@@ -112,6 +112,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:nexcampus_app/core/notifications/services/fcm_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -120,15 +121,21 @@ class AuthService {
   // =========================
   // LOGIN
   // =========================
-  Future<UserCredential> login({
-    required String email,
-    required String password,
-  }) async {
-    return await _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-  }
+ Future<UserCredential> login({
+  required String email,
+  required String password,
+}) async {
+  final credential =
+      await _auth.signInWithEmailAndPassword(
+    email: email,
+    password: password,
+  );
+
+  await FCMService.saveToken();
+  FCMService.listenTokenRefresh();
+
+  return credential;
+}
 
   // =========================
   // SIGNUP (EMAIL)
@@ -165,6 +172,8 @@ class AuthService {
       'role': role,
       'createdAt': FieldValue.serverTimestamp(),
     });
+    await FCMService.saveToken();
+FCMService.listenTokenRefresh();
   }
 
   // =========================
@@ -213,6 +222,8 @@ class AuthService {
           });
         }
       }
+      await FCMService.saveToken();
+FCMService.listenTokenRefresh();
 
       return userCredential;
     } catch (e) {

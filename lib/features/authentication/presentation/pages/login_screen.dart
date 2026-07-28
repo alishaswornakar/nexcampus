@@ -234,6 +234,7 @@ import 'package:flutter/material.dart' ;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
+import 'package:nexcampus_app/core/notifications/services/notifications_services.dart';
 
 import 'package:nexcampus_app/features/authentication/blocs/auth/auth_bloc.dart';
 import 'package:nexcampus_app/features/authentication/blocs/auth/auth_event.dart';
@@ -294,7 +295,7 @@ class _LoginScreenState extends State<LoginScreen> {
  @override
 Widget build(BuildContext context) {
   return BlocListener<AuthBloc, AuthState>(
-    listener: (context, state) {
+    listener: (context, state) async {
       if (state is AuthLoading) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Please wait...")),
@@ -302,6 +303,7 @@ Widget build(BuildContext context) {
       }
 
       if (state is AuthAuthenticated) {
+        await NotificationService.saveToken();
         if (state.role == 'admin') {
           Navigator.pushReplacement(
             context,

@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:nexcampus_app/core/notifications/services/notification_api_service.dart';
 
 import '../models/notice_model.dart';
 
 class TeacherNoticeService {
   final FirebaseFirestore _firestore =
       FirebaseFirestore.instance;
-
+  final NotificationApiService _notificationApiService =
+    NotificationApiService();
   CollectionReference<Map<String, dynamic>>
       get noticesRef =>
           _firestore.collection("notices");
@@ -17,6 +19,16 @@ class TeacherNoticeService {
     await noticesRef.doc(notice.id).set(
           notice.toMap(),
         );
+         try {
+    await _notificationApiService.sendToStudents(
+      department: "Computer Engineering",
+      semester:"1",
+      title: "📚 New Assignment",
+      body: "notice has been uploaded.",
+    );
+  } catch (e) {
+    print("Notification error: $e");
+  }
   }
 
   /// Update Notice

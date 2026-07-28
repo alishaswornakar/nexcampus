@@ -26,7 +26,6 @@ class NoticesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-<<<<<<< HEAD
       create: (_) => NoticeBloc(
         TeacherNoticeRepository(
           TeacherNoticeService(),
@@ -34,11 +33,6 @@ class NoticesScreen extends StatelessWidget {
       )..add(
           LoadNoticesEvent(),
         ),
-=======
-      create: (_) =>
-          NoticeBloc(NoticeRepository(NoticeService()))
-            ..add(LoadNoticesEvent()),
->>>>>>> caa77f0da2b9b39e33077d005b2bdd2c2f118c73
       child: Scaffold(
         backgroundColor: AppTheme.background,
 

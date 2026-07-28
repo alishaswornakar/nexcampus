@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:nexcampus_app/core/notifications/services/notification_api_service.dart';
 
 import 'package:nexcampus_app/features/authentication/presentation/pages/login_screen.dart';
 //import 'package:nexcampus_app/features/student/blocs/schedule/screens/schedule_screen.dart';
@@ -403,7 +404,7 @@ class TeacherDashboard extends StatelessWidget {
      _feature(
 
                   Icons.calendar_view_month_rounded,
-                  "",
+                  "schedules",
                   Colors.teal,
 
                   () {
@@ -506,7 +507,19 @@ class TeacherDashboard extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            ],
+               ElevatedButton(
+  onPressed: () async {
+    final success = await NotificationApiService().sendToStudents(
+      department: "Computer Engineering",
+      semester: "1",
+      title: "Testing",
+      body: "Hello students!",
+    );
+
+    print(success);
+  },
+  child: const Text("Send Notification"),
+)            ],
           ),
         );
       },
@@ -620,6 +633,7 @@ class TeacherDashboard extends StatelessWidget {
         ],
       ),
     );
+   
 
     if (result == true) {
       await FirebaseAuth.instance.signOut();
@@ -634,5 +648,7 @@ class TeacherDashboard extends StatelessWidget {
         );
       }
     }
+
   }
+  
 }
