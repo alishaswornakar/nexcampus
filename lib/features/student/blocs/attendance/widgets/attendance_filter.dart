@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-//import 'package:nexcampus_app/core/constants/app_theme.dart%20';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 class AttendanceFilterScreen extends StatefulWidget {
@@ -19,13 +18,7 @@ class _AttendanceFilterScreenState extends State<AttendanceFilterScreen> {
   String? _selectedMonth;
   String? _selectedYear;
 
-  final List<String> statuses = const [
-    'All',
-    'Present',
-    'Absent',
-    'Late',
-    'Leave',
-  ];
+  final List<String> statuses = const ['All', 'Present', 'Absent'];
 
   final List<String> months = const [
     'All',

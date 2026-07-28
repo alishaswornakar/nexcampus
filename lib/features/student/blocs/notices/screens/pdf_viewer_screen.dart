@@ -65,6 +65,17 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
 
       if (!mounted) return;
       setState(() => _localPath = filePath);
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response?.statusCode == 401) {
+        setState(() {
+          _error =
+              'This PDF isn\'t available right now.\nAsk your teacher to '
+              're-check the attachment settings.';
+        });
+      } else {
+        setState(() => _error = 'Could not load the attachment.\n$e');
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() => _error = 'Could not load the attachment.\n$e');

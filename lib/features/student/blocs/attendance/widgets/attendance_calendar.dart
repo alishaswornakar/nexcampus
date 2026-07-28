@@ -23,11 +23,9 @@ class _AttendanceCalendarState extends State<AttendanceCalendar> {
   DateTime? _selectedDay;
 
   // Status palette — kept distinct from AppTheme brand colors on purpose,
-  // since these need to read instantly as "good/bad/warning/neutral".
+  // since these need to read instantly as "good/bad".
   static const Color _present = Color(0xFF16A34A);
   static const Color _absent = Color(0xFFDC2626);
-  static const Color _late = Color(0xFFD97706);
-  static const Color _leave = Color(0xFF2563EB);
 
   AttendanceModel? _attendanceForDay(DateTime day) {
     for (final attendance in widget.attendanceList) {
@@ -40,20 +38,7 @@ class _AttendanceCalendarState extends State<AttendanceCalendar> {
     return null;
   }
 
-  Color _statusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'present':
-        return _present;
-      case 'absent':
-        return _absent;
-      case 'late':
-        return _late;
-      case 'leave':
-        return _leave;
-      default:
-        return AppTheme.textSecondary;
-    }
-  }
+  Color _statusColor(bool isPresent) => isPresent ? _present : _absent;
 
   Widget _dayCell(
     DateTime day, {
@@ -63,7 +48,7 @@ class _AttendanceCalendarState extends State<AttendanceCalendar> {
   }) {
     final attendance = _attendanceForDay(day);
     final statusColor = attendance != null
-        ? _statusColor(attendance.status)
+        ? _statusColor(attendance.isPresent)
         : null;
 
     Color background = Colors.transparent;
@@ -255,8 +240,6 @@ class _AttendanceCalendarState extends State<AttendanceCalendar> {
             children: [
               _legendDot(_present, 'Present'),
               _legendDot(_absent, 'Absent'),
-              _legendDot(_late, 'Late'),
-              _legendDot(_leave, 'Leave'),
             ],
           ),
         ],

@@ -125,12 +125,13 @@ class _AttendanceViewState extends State<_AttendanceView> {
 
     return source.where((attendance) {
       final statusMatch = attendance.status.toLowerCase().contains(query);
-      final remarksMatch = attendance.remarks.toLowerCase().contains(query);
+      final nameMatch = attendance.fullName.toLowerCase().contains(query);
+      final rollMatch = attendance.roll.toLowerCase().contains(query);
       final dateMatch =
           '${attendance.date.day}/${attendance.date.month}/${attendance.date.year}'
               .contains(query);
 
-      return statusMatch || remarksMatch || dateMatch;
+      return statusMatch || nameMatch || rollMatch || dateMatch;
     }).toList();
   }
 
@@ -443,7 +444,11 @@ class _AttendanceViewState extends State<_AttendanceView> {
             padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: Row(
               children: [
-                Icon(Icons.history_rounded, size: 18, color: AppTheme.secondary),
+                Icon(
+                  Icons.history_rounded,
+                  size: 18,
+                  color: AppTheme.secondary,
+                ),
                 SizedBox(width: 8),
                 Text(
                   'Recent Attendance',

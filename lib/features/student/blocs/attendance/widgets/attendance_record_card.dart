@@ -12,7 +12,6 @@ class AttendanceRecordCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('dd MMM yyyy');
-    final timeFormat = DateFormat('hh:mm a');
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -26,7 +25,6 @@ class AttendanceRecordCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// Date
               Row(
                 children: [
                   const Icon(Icons.calendar_today, size: 18),
@@ -40,26 +38,15 @@ class AttendanceRecordCard extends StatelessWidget {
                   ),
                 ],
               ),
-
               const SizedBox(height: 16),
-
               _buildInfoRow(
                 "Status",
                 attendance.status,
                 valueColor: _statusColor(attendance.status),
               ),
-
-              _buildInfoRow("Check In", timeFormat.format(attendance.checkIn)),
-
-              _buildInfoRow(
-                "Check Out",
-                timeFormat.format(attendance.checkOut),
-              ),
-
-              _buildInfoRow(
-                "Remarks",
-                attendance.remarks.isEmpty ? "-" : attendance.remarks,
-              ),
+              _buildInfoRow("Roll No", attendance.roll),
+              _buildInfoRow("Department", attendance.department),
+              _buildInfoRow("Semester", attendance.semester),
             ],
           ),
         ),
@@ -96,10 +83,6 @@ class AttendanceRecordCard extends StatelessWidget {
         return Colors.green;
       case 'absent':
         return Colors.red;
-      case 'late':
-        return Colors.orange;
-      case 'leave':
-        return Colors.blue;
       default:
         return Colors.black;
     }
