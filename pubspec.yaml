@@ -40,7 +40,7 @@ dependencies:
 
   # File & Image
   image_picker: ^1.2.3
-  file_picker: ^11.0.2
+  file_picker: ^10.3.3
   open_filex: ^4.5.0
   flutter_file_dialog: ^3.0.2
 
@@ -72,6 +72,9 @@ dependencies:
   cached_network_image: ^3.4.1
   crypto: ^3.0.7
   flutter_local_notifications: ^22.2.0
+
+  # for admin
+  share_plus: ^11.1.0
   
  
 

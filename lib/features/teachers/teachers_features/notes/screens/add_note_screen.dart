@@ -80,7 +80,7 @@ class _AddNoteScreenState
 
   Future<void> pickFile() async {
     final result =
-        await FilePicker.pickFiles(
+        await FilePicker.platform.pickFiles(
 
       type: FileType.custom,
       allowedExtensions: [

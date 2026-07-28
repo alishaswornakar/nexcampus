@@ -223,7 +223,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
             });
           },
           onViewCreated: (controller) {
-            pdfController = controller;
+            pdfController = controller as PDFViewController?;
           },
           onError: (error) {
             if (!mounted) return;
@@ -324,4 +324,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
       ),
     );
   }
+}
+
+class PDFViewController {
 }

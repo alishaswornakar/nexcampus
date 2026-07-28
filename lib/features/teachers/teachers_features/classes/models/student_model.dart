@@ -16,7 +16,7 @@ class StudentModel {
     required this.semester,
     required this.roll,
     required this.role,
-    required this.photoUrl,
+    required this.photoUrl, required String name, required String rollNo,
   });
 
   factory StudentModel.fromMap(
@@ -31,7 +31,7 @@ class StudentModel {
     semester: map['semester']?.toString(),
     roll: map['roll'] ?? '',
     role: map['role'] ?? '',
-    photoUrl: map['photoUrl'] ?? '',
+    photoUrl: map['photoUrl'] ?? '', name: '', rollNo: '',
   );
 }
 

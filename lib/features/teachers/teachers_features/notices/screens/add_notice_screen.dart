@@ -100,7 +100,7 @@ class _AddNoticeScreenState extends State<AddNoticeScreen> {
 
   Future<void> pickAttachment() async {
     final result =
-        await FilePicker.pickFiles(
+        await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: [
         "pdf",
