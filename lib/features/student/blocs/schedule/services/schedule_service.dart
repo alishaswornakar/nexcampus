@@ -1,6 +1,6 @@
 // lib/features/student/blocs/schedule/services/schedule_service.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
+//import 'package:flutter/foundation.dart';
 import 'package:nexcampus_app/features/student/blocs/schedule/model/schedule_model.dart';
 
 /// Read-only counterpart of the teacher's ScheduleService
@@ -29,9 +29,6 @@ class ScheduleService {
         .orderBy("day")
         .orderBy("startTime")
         .snapshots()
-        .handleError((e) {
-          debugPrint("Firestore Error (student schedule): $e");
-        })
         .map(
           (snapshot) => snapshot.docs
               .map(
