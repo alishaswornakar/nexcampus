@@ -371,9 +371,9 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.orange.withValues(alpha: 0.08),
+              color: Colors.orange.withValues(alpha:0.08),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+              border: Border.all(color: Colors.orange.withValues(alpha:0.3)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -447,9 +447,7 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
                             // Avatar Circle
                             CircleAvatar(
                               radius: 24,
-                              backgroundColor: Colors.orange.withValues(
-                                alpha: 0.1,
-                              ),
+                              backgroundColor: Colors.orange.withValues(alpha:0.1),
                               child: Text(
                                 teacher.name.isNotEmpty
                                     ? teacher.name[0].toUpperCase()

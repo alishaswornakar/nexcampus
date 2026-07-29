@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import '../blocs/bloc/course_bloc.dart';
 import 'add_course_screen.dart';
@@ -34,35 +35,54 @@ class _CourseListScreenState extends State<CourseListScreen> {
     });
   }
 
+  void _openAddCourse() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: context.read<CourseBloc>(),
+          child: AddCourseScreen(
+            department: widget.department,
+            semester: widget.semester,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF5F7FA),
+      backgroundColor: const Color(0xFFF5F7FA),
 
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        title: Text(
-          "${widget.department} - Semester ${widget.semester}",
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
+        elevation: 0,
+        surfaceTintColor: Colors.white,
+        scrolledUnderElevation: 0,
+        title: const Text(
+          "My Courses",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
 
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
-        child: const Icon(Icons.add, color: Colors.white),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => BlocProvider.value(
-                value: context.read<CourseBloc>(),
-                child: AddCourseScreen(
-                  department: widget.department,
-                  semester: widget.semester,
-                ),
-              ),
-            ),
-          );
+      floatingActionButton: BlocBuilder<CourseBloc, CourseState>(
+        builder: (context, state) {
+          if (state is CoursesLoaded && state.courses.isNotEmpty) {
+            return FloatingActionButton.extended(
+              backgroundColor: AppTheme.primaryColor,
+              foregroundColor: Colors.white,
+              icon: const Icon(Icons.add),
+              label: const Text("Add Course"),
+              onPressed: _openAddCourse,
+            );
+          }
+
+          return const SizedBox.shrink();
         },
       ),
 
@@ -94,127 +114,293 @@ class _CourseListScreenState extends State<CourseListScreen> {
 
           if (state is CoursesLoaded) {
             if (state.courses.isEmpty) {
-              return const Center(
-                child: Text(
-                  "No courses available",
-                  style: TextStyle(fontSize: 18),
+  return Center(
+    child: SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 28),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 170,
+            height: 170,
+            decoration: BoxDecoration(
+              color: AppTheme.primaryColor?.withOpacity(.08),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.menu_book_rounded,
+              size: 70,
+              color: AppTheme.primaryColor?.withOpacity(.45),
+            ),
+          ),
+
+          const SizedBox(height: 36),
+
+          const Text(
+            "No courses added yet",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          Text(
+            "Add your first course to start managing\nattendance, assignments and study materials.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 16,
+              height: 1.5,
+            ),
+          ),
+
+          const SizedBox(height: 40),
+
+          SizedBox(
+            width: 190,
+            height: 52,
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryColor,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
                 ),
-              );
-            }
+              ),
+              onPressed: _openAddCourse,
+              icon: const Icon(Icons.add),
+              label: const Text(
+                "Add Course",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: state.courses.length,
-              itemBuilder: (context, index) {
-                final course = state.courses[index];
+return Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Padding(
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            widget.department,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
 
-                return Card(
-                  elevation: 4,
-                  margin: const EdgeInsets.only(bottom: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+          const SizedBox(height: 4),
+
+          Text(
+            "Semester ${widget.semester}",
+            style: TextStyle(
+              fontSize: 15,
+              color: Colors.grey.shade600,
+            ),
+          ),
+        ],
+      ),
+    ),
+
+    Expanded(
+      child: ListView.builder(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+        itemCount: state.courses.length,
+        itemBuilder: (context, index) {
+          final course = state.courses[index];
+          return Container(
+  margin: const EdgeInsets.only(bottom: 16),
+  decoration: BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(18),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(0.05),
+        blurRadius: 12,
+        offset: const Offset(0, 4),
+      ),
+    ],
+  ),
+  child: InkWell(
+    borderRadius: BorderRadius.circular(18),
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CourseDetailScreen(
+            course: course,
+          ),
+        ),
+      );
+    },
+    child: Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 14,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: AppTheme.primaryColor?.withOpacity(.08),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(
+              Icons.menu_book_rounded,
+              color: AppTheme.primaryColor,
+              size: 26,
+            ),
+          ),
+
+          const SizedBox(width: 16),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  course.courseName,
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
                   ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(16),
+                ),
 
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => CourseDetailScreen(
-                            course: course,
-                          ),
-                        ),
-                      );
-                    },
+                const SizedBox(height: 6),
 
-                    leading: CircleAvatar(
-                      radius: 25,
-                      backgroundColor: Colors.blue.shade100,
+                Row(
+                  children: [
+                    Icon(
+                      Icons.tag,
+                      size: 15,
+                      color: Colors.grey.shade600,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      course.courseCode,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 6),
+
+                Row(
+                  children: [
+                    Icon(
+                      Icons.school_outlined,
+                      size: 15,
+                      color: Colors.grey.shade600,
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
                       child: Text(
-                        "${index + 1}",
-                        style: const TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
+                        "${course.department} • Semester ${course.semester}",
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade600,
                         ),
                       ),
                     ),
+                  ],
+                ),
+              ],
+            ),
+          ),
 
-                    title: Text(
-                      course.courseName,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17,
+          PopupMenuButton<String>(
+            icon: Icon(
+              Icons.more_vert,
+              color: Colors.grey.shade700,
+            ),
+            onSelected: (value) {
+              switch (value) {
+                case "details":
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CourseDetailScreen(
+                        course: course,
                       ),
                     ),
+                  );
+                  break;
 
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Course Code : ${course.courseCode}"),
-                          const SizedBox(height: 4),
-                          Text("Department : ${course.department}"),
-                          const SizedBox(height: 4),
-                          Text("Semester : ${course.semester}"),
-                        ],
-                      ),
+                case "delete":
+                  context.read<CourseBloc>().add(
+                        DeleteCourseEvent(course.id),
+                      );
+                  break;
+              }
+            },
+            itemBuilder: (_) => const [
+              PopupMenuItem(
+                value: "details",
+                child: Row(
+                  children: [
+                    Icon(Icons.visibility_outlined),
+                    SizedBox(width: 10),
+                    Text("View Details"),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: "delete",
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.delete_outline,
+                      color: Colors.red,
                     ),
-
-                    trailing: PopupMenuButton<String>(
-                      onSelected: (value) {
-                        if (value == "delete") {
-                          context.read<CourseBloc>().add(
-                                DeleteCourseEvent(course.id),
-                              );
-                        }
-
-                        if (value == "details") {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => CourseDetailScreen(
-                                course: course,
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                      itemBuilder: (context) => const [
-                        PopupMenuItem(
-                          value: "details",
-                          child: Row(
-                            children: [
-                              Icon(Icons.visibility),
-                              SizedBox(width: 10),
-                              Text("View Details"),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: "delete",
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete, color: Colors.red),
-                              SizedBox(width: 10),
-                              Text("Delete"),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            );
-          }
-
-          return const Center(
-            child: Text("No data found"),
-          );
+                    SizedBox(width: 10),
+                    Text("Delete"),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ),
+  ),
+);
         },
       ),
-    );
-  }
+    ),
+  ]);
+}
+
+return const Center(
+  child: Text(
+    "No data found",
+    style: TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+    ),
+  ),
+);
+},
+),
+);
+}
 }

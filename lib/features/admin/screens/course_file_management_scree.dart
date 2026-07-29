@@ -22,8 +22,8 @@ class _CourseFileManagementScreenState
   String _selectedSemester = '1st';
   String _selectedSection = 'A';
 
-  final List<String> departments = ['Computer', 'Civil', 'Architecture'];
-  final List<String> semesters8 = [
+  final List<String> _departments = ['Computer', 'Civil', 'Architecture'];
+  final List<String> _semesters8 = [
     '1st',
     '2nd',
     '3rd',
@@ -33,7 +33,7 @@ class _CourseFileManagementScreenState
     '7th',
     '8th',
   ];
-  final List<String> semesters10 = [
+  final List<String> _semesters10 = [
     '1st',
     '2nd',
     '3rd',
@@ -45,12 +45,12 @@ class _CourseFileManagementScreenState
     '9th',
     '10th',
   ];
-  final List<String> sections = ['A', 'B', 'C', 'D', 'E'];
+  final List<String> _sections = ['A', 'B', 'C', 'D', 'E'];
 
   final ImagePicker _imagePicker = ImagePicker();
 
   List<String> _getAvailableSemesters() {
-    return _selectedDepartment == 'Architecture' ? semesters10 : semesters8;
+    return _selectedDepartment == 'Architecture' ? _semesters10 : _semesters8;
   }
 
   // 🔗 Helper Function: Cloudinary Link / File Link Open गर्ने
@@ -426,7 +426,7 @@ class _CourseFileManagementScreenState
                         vertical: 8,
                       ),
                     ),
-                    items: departments
+                    items: _departments
                         .map(
                           (d) => DropdownMenuItem(
                             value: d,
@@ -492,7 +492,7 @@ class _CourseFileManagementScreenState
                         vertical: 8,
                       ),
                     ),
-                    items: sections
+                    items: _sections
                         .map(
                           (sec) => DropdownMenuItem(
                             value: sec,

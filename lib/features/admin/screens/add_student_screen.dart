@@ -156,11 +156,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
               const SizedBox(height: 8),
               DropdownButtonFormField<int>(
                 initialValue: _selectedSemester,
-                hint: Text(
-                  _selectedDepartment == null
-                      ? "First select a department"
-                      : "Choose Semester (1 - $maxSemester)",
-                ),
+                hint: Text(_selectedDepartment == null
+                    ? "First select a department"
+                    : "Choose Semester (1 - $maxSemester)"),
                 decoration: _inputDecoration(),
                 items: _selectedDepartment == null
                     ? []

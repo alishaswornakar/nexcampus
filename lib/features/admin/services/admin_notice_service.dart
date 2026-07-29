@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/core/services/cloudinary_service.dart';
-import 'package:nexcampus_app/features/teachers/teachers_features/notices/models/notice_model.dart';
+import '../models/notice_model.dart';
 import 'package:flutter/foundation.dart';
 
 class AdminNoticeService {
@@ -20,8 +20,7 @@ class AdminNoticeService {
   }
 
   // ➕ Add Notice
-
-  static Future<void> addNotice(TeacherNoticeModel notice) async {
+  static Future<void> addNotice(NoticeModel notice) async {
     await _db.collection(_collection).add(notice.toMap());
   }
 
@@ -52,14 +51,14 @@ class AdminNoticeService {
   }
 
   // 📋 Get Admin Notices (Sorted by Pinned first, then Created At)
-  static Stream<List<TeacherNoticeModel>> getAdminNotices() {
+  static Stream<List<NoticeModel>> getAdminNotices() {
     return _db
         .collection(_collection)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
           final list = snapshot.docs
-              .map((doc) => TeacherNoticeModel.fromMap(doc.data(), doc.id))
+              .map((doc) => NoticeModel.fromMap(doc.data(), doc.id))
               .toList();
 
           // Pin गरिएका नोटिसहरूलाई माथि (Top) ल्याउने Sort Logic
@@ -75,14 +74,14 @@ class AdminNoticeService {
   }
 
   // 👤 Get User Notices
-  static Stream<List<TeacherNoticeModel>> getNoticesForUser(String role) {
+  static Stream<List<NoticeModel>> getNoticesForUser(String role) {
     return _db
         .collection(_collection)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
           final list = snapshot.docs
-              .map((doc) => TeacherNoticeModel.fromMap(doc.data(), doc.id))
+              .map((doc) => NoticeModel.fromMap(doc.data(), doc.id))
               .where(
                 (notice) =>
                     notice.targetAudience == 'All' ||

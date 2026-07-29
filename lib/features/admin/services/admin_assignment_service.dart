@@ -36,6 +36,6 @@ class AdminAssignmentService {
         "Semester: $sem\n"
         "Deadline: $deadline\n\n"
         "Please check the NexCampus app for full details.";
-    SharePlus.instance.share((ShareParams(text: text)));
+    SharePlus.instance.share(ShareParams(text: text));
   }
 }
