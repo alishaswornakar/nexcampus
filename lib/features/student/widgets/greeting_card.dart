@@ -1,5 +1,6 @@
 // lib/features/student/widgets/greeting_card.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nexcampus_app/features/authentication/services/auth_service.dart';
 import 'package:nexcampus_app/features/authentication/services/auth_wrapper.dart';
@@ -125,125 +126,138 @@ class _GreetingCardBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<UserProfileBloc, UserProfileState>(
-      // Assignments need department + semester, which only exist once the
-      // profile has loaded. Fire LoadAssignments exactly once, the moment
-      // both become available (not on every profile emission).
-      listenWhen: (previous, current) =>
-          current.profile != null &&
-          current.profile!.department != null &&
-          current.profile!.semester != null &&
-          (previous.profile?.department != current.profile?.department ||
-              previous.profile?.semester != current.profile?.semester),
-      listener: (context, state) {
-        final profile = state.profile!;
-        context.read<AssignmentBloc>().add(
-          LoadAssignments(
-            department: profile.department!,
-            semester: profile.semester!,
-            studentId: studentId,
-          ),
-        );
-      },
-      child: Container(
-        color: AppTheme.secondary,
-        height: 180, // INCREASE THIS VALUE to move the blue line further down!
-        width: double.infinity,
-        padding: const EdgeInsets.only(top: 0, left: 0, right: 0),
-        // Leaves room for the stats card to overlap the bottom edge
-        // without covering whatever comes next in the dashboard's Column.
-        margin: const EdgeInsets.only(bottom: 2),
-        child: SafeArea(
-          bottom: false,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 44),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: BlocBuilder<UserProfileBloc, UserProfileState>(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
+      child: BlocListener<UserProfileBloc, UserProfileState>(
+        // Assignments need department + semester, which only exist once the
+        // profile has loaded. Fire LoadAssignments exactly once, the moment
+        // both become available (not on every profile emission).
+        listenWhen: (previous, current) =>
+            current.profile != null &&
+            current.profile!.department != null &&
+            current.profile!.semester != null &&
+            (previous.profile?.department != current.profile?.department ||
+                previous.profile?.semester != current.profile?.semester),
+        listener: (context, state) {
+          final profile = state.profile!;
+          context.read<AssignmentBloc>().add(
+            LoadAssignments(
+              department: profile.department!,
+              semester: profile.semester!,
+              studentId: studentId,
+            ),
+          );
+        },
+        child: Container(
+          color: AppTheme.primary,
+          height:
+              180, // INCREASE THIS VALUE to move the blue line further down!
+          width: double.infinity,
+          padding: const EdgeInsets.only(top: 0, left: 0, right: 0),
+          // Leaves room for the stats card to overlap the bottom edge
+          // without covering whatever comes next in the dashboard's Column.
+          margin: const EdgeInsets.only(bottom: 2),
+          child: SafeArea(
+            bottom: false,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 44),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: BlocBuilder<UserProfileBloc, UserProfileState>(
+                          builder: (context, state) {
+                            final name = state.profile?.fullName;
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Namaste,',
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 2,
+                                ), // this is for the namaste
+                                Text(
+                                  (name == null || name.isEmpty)
+                                      ? 'Student'
+                                      : name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 2,
+                                ), // this is for the name
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 4), // this is for the avatar
+                      BlocProvider.value(
+                        value: context.read<NotificationBloc>(),
+                        child: const NotificationBell(),
+                      ),
+                      const SizedBox(width: 12), // this is for the bell
+                      BlocBuilder<UserProfileBloc, UserProfileState>(
                         builder: (context, state) {
-                          final name = state.profile?.fullName;
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Namaste,',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 14,
-                                ),
+                          final photoUrl = state.profile?.photoUrl;
+                          return GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const UserProfileScreen(),
                               ),
-                              const SizedBox(
-                                height: 2,
-                              ), // this is for the namaste
-                              Text(
-                                (name == null || name.isEmpty)
-                                    ? 'Student'
-                                    : name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 2), // this is for the name
-                            ],
+                            ),
+                            child: CircleAvatar(
+                              radius: 20,
+                              backgroundColor: Colors.white24,
+                              backgroundImage:
+                                  (photoUrl != null && photoUrl.isNotEmpty)
+                                  ? NetworkImage(photoUrl)
+                                  : null,
+                              child: (photoUrl == null || photoUrl.isEmpty)
+                                  ? const Icon(
+                                      Icons.person,
+                                      color: Colors.white,
+                                    )
+                                  : null,
+                            ),
                           );
                         },
                       ),
-                    ),
-                    const SizedBox(height: 4), // this is for the avatar
-                    BlocProvider.value(
-                      value: context.read<NotificationBloc>(),
-                      child: const NotificationBell(),
-                    ),
-                    const SizedBox(width: 12), // this is for the bell
-                    BlocBuilder<UserProfileBloc, UserProfileState>(
-                      builder: (context, state) {
-                        final photoUrl = state.profile?.photoUrl;
-                        return GestureDetector(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const UserProfileScreen(),
-                            ),
-                          ),
-                          child: CircleAvatar(
-                            radius: 20,
-                            backgroundColor: Colors.white24,
-                            backgroundImage:
-                                (photoUrl != null && photoUrl.isNotEmpty)
-                                ? NetworkImage(photoUrl)
-                                : null,
-                            child: (photoUrl == null || photoUrl.isEmpty)
-                                ? const Icon(Icons.person, color: Colors.white)
-                                : null,
-                          ),
-                        );
-                      },
-                    ),
-                    // NEW — logout, top-right, after the avatar
-                    IconButton(
-                      icon: const Icon(Icons.logout, color: Colors.white),
-                      onPressed: () => _showLogoutDialog(context),
-                    ),
-                  ],
+                      // NEW — logout, top-right, after the avatar
+                      IconButton(
+                        icon: const Icon(Icons.logout, color: Colors.white),
+                        onPressed: () => _showLogoutDialog(context),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Positioned(
-                top: 86,
-                left: 16,
-                right: 16,
-                bottom: 4,
-                child: _StatsRow(),
-              ),
-            ],
+                Positioned(
+                  top: 86,
+                  left: 16,
+                  right: 16,
+                  bottom: 4,
+                  child: _StatsRow(),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -370,7 +384,7 @@ class _StatItem extends StatelessWidget {
           style: const TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w600,
-            color: AppTheme.textSecondary,
+            color: AppTheme.textPrimary,
             letterSpacing: 0.3,
           ),
         ),
@@ -380,7 +394,7 @@ class _StatItem extends StatelessWidget {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: AppTheme.secondary,
+            color: AppTheme.primary,
           ),
         ),
       ],

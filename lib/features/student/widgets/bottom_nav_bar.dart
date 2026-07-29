@@ -4,12 +4,13 @@ import 'package:nexcampus_app/features/student/blocs/question_bank/screens/quest
 import 'package:nexcampus_app/features/student/blocs/courses/screens/courses_screen.dart';
 import 'package:nexcampus_app/features/student/blocs/user_profile/screens/user_profile_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 class AppBottomNavBar extends StatelessWidget {
   final int currentIndex; // 0=Home 1=Courses 2=QNB 3=Profile
   const AppBottomNavBar({super.key, required this.currentIndex});
 
-  static const _primary = Color(0xFF1B4F9B);
+  static const Color _primary = AppTheme.primary;
 
   void _onTap(BuildContext context, int index) {
     final user = FirebaseAuth.instance.currentUser;
@@ -33,7 +34,6 @@ class AppBottomNavBar extends StatelessWidget {
         );
         break;
       case 2:
-        // PoU center button — goes home (acts as brand home button)
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const QuestionBankScreen()),

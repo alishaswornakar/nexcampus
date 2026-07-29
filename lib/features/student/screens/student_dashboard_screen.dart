@@ -19,9 +19,9 @@ class StudentDashboardScreen extends StatelessWidget {
         // Set your custom height here (e.g., 150.0 pixels)
         preferredSize: const Size.fromHeight(0.0),
         child: AppBar(
-          backgroundColor: AppTheme.secondary,
+          backgroundColor: AppTheme.primary,
           bottom: const PreferredSize(
-            preferredSize: Size.fromHeight(80.0),
+            preferredSize: Size.fromHeight(0.0),
             child: Padding(
               padding: EdgeInsets.all(
                 16.0,
