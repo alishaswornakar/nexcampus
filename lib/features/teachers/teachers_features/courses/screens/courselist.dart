@@ -124,13 +124,13 @@ class _CourseListScreenState extends State<CourseListScreen> {
             width: 170,
             height: 170,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor?.withOpacity(.08),
+              color: AppTheme.primaryColor?.withValues(alpha: .08),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.menu_book_rounded,
               size: 70,
-              color: AppTheme.primaryColor?.withOpacity(.45),
+              color: AppTheme.primaryColor?.withValues(alpha: .45),
             ),
           ),
 
@@ -230,7 +230,7 @@ return Column(
     borderRadius: BorderRadius.circular(18),
     boxShadow: [
       BoxShadow(
-        color: Colors.black.withOpacity(0.05),
+        color: Colors.black.withValues(alpha: 0.05),
         blurRadius: 12,
         offset: const Offset(0, 4),
       ),
@@ -259,7 +259,7 @@ return Column(
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor?.withOpacity(.08),
+              color: AppTheme.primaryColor?.withValues(alpha: .08),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(

@@ -58,7 +58,7 @@ class _DepartmentSemesterSelectionScreenState
 
   @override
   Widget build(BuildContext context) {
-    String _getTitle() {
+    String getTitle() {
       switch (widget.feature) {
         case FeatureType.attendance:
           return "Attendance";
@@ -87,7 +87,7 @@ class _DepartmentSemesterSelectionScreenState
         centerTitle: false,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-        title: Text(_getTitle()),
+        title: Text(getTitle()),
       ),
 
       body: SafeArea(
@@ -129,7 +129,7 @@ class _DepartmentSemesterSelectionScreenState
           const SizedBox(height: 10),
 
           DropdownButtonFormField<String>(
-            value: selectedDepartment,
+            initialValue: selectedDepartment,
             isExpanded: true,
             decoration: InputDecoration(
               hintText: "Select Department",
@@ -178,7 +178,7 @@ class _DepartmentSemesterSelectionScreenState
 
           const SizedBox(height: 10),
                     DropdownButtonFormField<String>(
-            value: selectedSemester,
+            initialValue: selectedSemester,
             isExpanded: true,
             decoration: InputDecoration(
               hintText: "Select Semester",
