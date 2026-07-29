@@ -50,7 +50,7 @@ class _CourseFileManagementScreenState
   final ImagePicker _imagePicker = ImagePicker();
 
   List<String> _getAvailableSemesters() {
-    return _selectedDepartment == 'Architecture' ? semesters10 : semesters8;
+    return _selectedDepartment == 'Architecture' ? _semesters10 : _semesters8;
   }
 
   // 🔗 Helper Function: Cloudinary Link / File Link Open गर्ने
