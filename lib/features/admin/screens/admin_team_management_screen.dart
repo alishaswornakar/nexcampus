@@ -10,7 +10,8 @@ class AdminTeamManagementScreen extends StatefulWidget {
       _AdminTeamManagementScreenState();
 }
 
-class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
+class _AdminTeamManagementScreenState
+    extends State<AdminTeamManagementScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final AdminTeamService _teamService = AdminTeamService();
@@ -32,28 +33,14 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
     if (selectedDept == 'Architecture') {
       return [
         'All Sem',
-        'Sem 1',
-        'Sem 2',
-        'Sem 3',
-        'Sem 4',
-        'Sem 5',
-        'Sem 6',
-        'Sem 7',
-        'Sem 8',
-        'Sem 9',
-        'Sem 10',
+        'Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5',
+        'Sem 6', 'Sem 7', 'Sem 8', 'Sem 9', 'Sem 10'
       ];
     } else {
       return [
         'All Sem',
-        'Sem 1',
-        'Sem 2',
-        'Sem 3',
-        'Sem 4',
-        'Sem 5',
-        'Sem 6',
-        'Sem 7',
-        'Sem 8',
+        'Sem 1', 'Sem 2', 'Sem 3', 'Sem 4',
+        'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'
       ];
     }
   }
@@ -125,10 +112,7 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
           indicatorColor: Colors.white,
           indicatorWeight: 3,
           isScrollable: false,
-          labelStyle: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 13,
-          ),
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
           tabs: const [
@@ -143,23 +127,24 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
         children: [
           // Single Row Filters (Department र Semester मात्र)
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10.0,
-              vertical: 10.0,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
             child: Row(
               children: [
                 // 1. Department Dropdown
                 Expanded(
-                  child: _buildDropdown(selectedDept, departmentList, (val) {
-                    setState(() {
-                      selectedDept = val!;
-                      if (selectedDept != 'Architecture' &&
-                          (selectedSem == 'Sem 9' || selectedSem == 'Sem 10')) {
-                        selectedSem = 'All Sem';
-                      }
-                    });
-                  }),
+                  child: _buildDropdown(
+                    selectedDept,
+                    departmentList,
+                    (val) {
+                      setState(() {
+                        selectedDept = val!;
+                        if (selectedDept != 'Architecture' &&
+                            (selectedSem == 'Sem 9' || selectedSem == 'Sem 10')) {
+                          selectedSem = 'All Sem';
+                        }
+                      });
+                    },
+                  ),
                 ),
                 const SizedBox(width: 8),
 
@@ -193,10 +178,7 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
   }
 
   Widget _buildDropdown(
-    String value,
-    List<String> items,
-    ValueChanged<String?> onChanged,
-  ) {
+      String value, List<String> items, ValueChanged<String?> onChanged) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
       decoration: BoxDecoration(
@@ -209,16 +191,9 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
           value: items.contains(value) ? value : items.first,
           isExpanded: true,
           icon: const Icon(Icons.keyboard_arrow_down, size: 20),
-          style: const TextStyle(
-            color: Colors.black87,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
+          style: const TextStyle(color: Colors.black87, fontSize: 12, fontWeight: FontWeight.w500),
           items: items.map((item) {
-            return DropdownMenuItem(
-              value: item,
-              child: Text(item, overflow: TextOverflow.ellipsis),
-            );
+            return DropdownMenuItem(value: item, child: Text(item, overflow: TextOverflow.ellipsis));
           }).toList(),
           onChanged: onChanged,
         ),
@@ -242,11 +217,7 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
 
         // Apply Local Department Filter
         if (selectedDept != 'All Dept') {
-          teams = teams
-              .where(
-                (t) => t.department.toLowerCase() == selectedDept.toLowerCase(),
-              )
-              .toList();
+          teams = teams.where((t) => t.department.toLowerCase() == selectedDept.toLowerCase()).toList();
         }
 
         // Apply Local Semester Filter
@@ -295,7 +266,7 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withValues(alpha:0.03),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -378,11 +349,7 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
             children: [
               Row(
                 children: [
-                  const Icon(
-                    Icons.group_outlined,
-                    size: 14,
-                    color: Colors.grey,
-                  ),
+                  const Icon(Icons.group_outlined, size: 14, color: Colors.grey),
                   const SizedBox(width: 4),
                   Text(
                     "${team.filledSlots}/${team.totalSlots} filled",
@@ -428,35 +395,17 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
                   onPressed: () async {
                     await _teamService.updateTeamStatus(team.id, 'Approved');
                   },
-                  icon: const Icon(
-                    Icons.check_circle,
-                    color: Colors.green,
-                    size: 16,
-                  ),
-                  label: const Text(
-                    "Approve",
-                    style: TextStyle(color: Colors.green, fontSize: 12),
-                  ),
+                  icon: const Icon(Icons.check_circle, color: Colors.green, size: 16),
+                  label: const Text("Approve", style: TextStyle(color: Colors.green, fontSize: 12)),
                 ),
               if (team.status != 'Rejected')
                 TextButton.icon(
                   onPressed: () => _showRejectDialog(context, team.id),
-                  icon: const Icon(
-                    Icons.cancel,
-                    color: Colors.orange,
-                    size: 16,
-                  ),
-                  label: const Text(
-                    "Reject",
-                    style: TextStyle(color: Colors.orange, fontSize: 12),
-                  ),
+                  icon: const Icon(Icons.cancel, color: Colors.orange, size: 16),
+                  label: const Text("Reject", style: TextStyle(color: Colors.orange, fontSize: 12)),
                 ),
               IconButton(
-                icon: const Icon(
-                  Icons.delete_outline,
-                  color: Colors.red,
-                  size: 18,
-                ),
+                icon: const Icon(Icons.delete_outline, color: Colors.red, size: 18),
                 onPressed: () async {
                   await _teamService.deleteTeam(team.id);
                 },

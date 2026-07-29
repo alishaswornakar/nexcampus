@@ -1,20 +1,50 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Permissions -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+
+   
+ 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- 🌐 Network Permissions -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    
+    <!-- 📸 Hardware & Storage Permissions -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- 🌐 Web / Download & Process Text Intents -->
+    <queries>
+        <!-- Flutter Engine Process Text -->
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+
+        <!-- HTTPS URLs / Downloads view गर्न -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <category android:name="android.intent.category.BROWSABLE"/>
+            <data android:scheme="https"/>
+        </intent>
+
+        <!-- HTTP URLs view गर्न -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="http"/>
+        </intent>
+    </queries>
 
     <application
         android:name="${applicationName}"
         android:label="NexCampus"
-        android:icon="@mipmap/ic_launcher">
+
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true"> <!-- 👈 HTTP र Secure Traffic Allow गर्न थपिएको -->
 
         <activity
             android:name=".MainActivity"
@@ -27,6 +57,7 @@
             android:windowSoftInputMode="adjustResize">
 
             <!-- Theme shown while Flutter initializes -->
+            
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
@@ -70,4 +101,6 @@
 
     </queries>
 
+
+    </application>
 </manifest>

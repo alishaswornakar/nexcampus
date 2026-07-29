@@ -149,7 +149,6 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                         ),
                       );
                     } catch (e) {
-                      if (!context.mounted) return;
                       ScaffoldMessenger.of(
                         context,
                       ).showSnackBar(SnackBar(content: Text("Error: $e")));
