@@ -71,7 +71,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final primaryColor = AppTheme.primaryColor ?? Colors.blue;
 
     final List<Map<String, dynamic>> dashboardItems = [
-      {'title': 'View Attendance', 'icon': Icons.fact_check_outlined, 'color': Colors.purple, 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AdminAttendanceHistoryScreen()))},
+      {'title': 'View Attendance', 'icon': Icons.fact_check_outlined, 'color': Colors.purple, 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AdminAttendanceViewScreen()))},
       {'title': 'Course Files', 'icon': Icons.folder_open_outlined, 'color': Colors.teal, 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CourseFileManagementScreen()))},
       {'title': 'Notices', 'icon': Icons.campaign_outlined, 'color': Colors.orange, 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const NoticeManagementScreen()))},
       {'title': 'Student Reports', 'icon': Icons.report_problem_outlined, 'color': Colors.deepPurple, 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => ReportMonitoringScreen()))},
