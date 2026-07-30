@@ -110,7 +110,7 @@ Widget build(BuildContext context) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-          Text(
+         Text(
   "Select Academic Details",
   style: TextStyle(
     fontSize: width * 0.07,
@@ -170,7 +170,7 @@ DropdownButtonFormField<String>(
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(width * 0.035),
-      borderSide: const BorderSide(
+      borderSide: BorderSide(
         color: AppTheme.primary,
         width: 1.5,
       ),
@@ -197,8 +197,7 @@ DropdownButtonFormField<String>(
 
 SizedBox(height: height * 0.03),
 
-
-          Text(
+Text(
   "Semester",
   style: TextStyle(
     fontSize: width * 0.040,
@@ -306,64 +305,47 @@ SizedBox(
 ),
 
 SizedBox(height: height * 0.02),
-        ],
+          ],
+        ),
       ),
     ),
-  ),
-);}
-void _navigateToFeature() {
-  final department = selectedDepartment!;
-  final semester = selectedSemester!;
+  );
+}
 
-  Widget screen;
+void _navigateToFeature() {
+  late final Widget screen;
 
   switch (widget.feature) {
     case FeatureType.attendance:
-      screen = AttendanceSubjectScreen(
-        department: department,
-        semester: semester,
-      );
-      break;
-
+     screen = AttendanceSubjectScreen(department: selectedDepartment!,semester: selectedSemester!);
+     break;
     case FeatureType.assignments:
-      screen = AssignmentSubjectScreen(
-        department: department,
-        semester: semester,
-      );
+      screen = AssignmentSubjectScreen(department: selectedDepartment!, semester: selectedSemester!);
       break;
-
     case FeatureType.courses:
-      screen = CourseListScreen(
-        department: department,
-        semester: semester,
-      );
+      screen = CourseListScreen(department: selectedDepartment!, semester: selectedSemester!);
       break;
-
     case FeatureType.classes:
       screen = StudentListScreen(
-        department: department,
-        semester: semester,
+        department: selectedDepartment!,
+        semester: selectedSemester!,
       );
       break;
-
     case FeatureType.schedules:
       screen = TeacherScheduleScreen(
-        department: department,
-        semester: semester,
+        department: selectedDepartment!,
+        semester: selectedSemester!,
       );
       break;
-
     case FeatureType.notices:
       screen = const NoticeScreen();
       break;
-
     case FeatureType.students:
       screen = StudentListScreen(
-        department: department,
-        semester: semester,
+        department: selectedDepartment!,
+        semester: selectedSemester!,
       );
       break;
-
     case FeatureType.notes:
       throw UnimplementedError();
   }
@@ -375,4 +357,4 @@ void _navigateToFeature() {
     ),
   );
 }
-  }
+}

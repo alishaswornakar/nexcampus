@@ -1,29 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 //import 'package:nexcampus_app/core/constants/app_theme.dart';
 import '../models/attendance_model.dart';
+import '../models/admin_subject_model.dart';
+import '../services/admin_attendance_service.dart';
 
 class AdminAttendanceViewScreen extends StatefulWidget {
   const AdminAttendanceViewScreen({super.key});
 
   @override
-  State<AdminAttendanceViewScreen> createState() => _AdminAttendanceViewScreenState();
+  State<AdminAttendanceViewScreen> createState() =>
+      _AdminAttendanceViewScreenState();
 }
 
 class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-
   // Filters
-  String? _selectedDepartment = 'Computer';
-  String? _selectedSemester = '1st';
-  String? _selectedSection = 'A';
+  String? _selectedDepartment = 'Computer Engineering';
+  String? _selectedSemester = '1';
+
+  /// Subject filter
+  String? _selectedSubjectId;
+  String _selectedSubjectName = 'All Subjects';
+
+  /// Date filter
   DateTime _selectedDate = DateTime.now();
 
-  final List<String> _departments = ['Computer', 'Civil', 'Architecture'];
-  final List<String> _semesters8 = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th'];
-  final List<String> _semesters10 = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'];
-  final List<String> _sections = ['A', 'B', 'C', 'D', 'E'];
+  final List<String> _departments = [
+    'Computer Engineering',
+    'Civil Engineering',
+    'Architecture',
+  ];
+
+  final List<String> _semesters8 = ['1', '2', '3', '4', '5', '6', '7', '8'];
+
+  final List<String> _semesters10 = [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10',
+  ];
 
   List<String> _getAvailableSemesters() {
     if (_selectedDepartment == 'Architecture') {
@@ -40,14 +61,17 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F5FB),
       appBar: AppBar(
-        title: const Text("Student Attendance View", style: TextStyle(color: Colors.black, fontSize: 18)),
+        title: const Text(
+          "Student Attendance View",
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
         backgroundColor: Colors.white,
         elevation: 0.5,
         iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Column(
         children: [
-          // 🔍 FILTERS SECTION (Overflow Fixed)
+          // 🔍 FILTERS SECTION
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
             color: Colors.white,
@@ -57,28 +81,44 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
                   children: [
                     // Dept Dropdown
                     Expanded(
-                      flex: 3,
+                      flex: 1,
                       child: DropdownButtonFormField<String>(
                         initialValue: _selectedDepartment,
                         isExpanded: true,
-                        style: const TextStyle(fontSize: 12, color: Colors.black),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.black,
+                        ),
                         decoration: const InputDecoration(
                           labelText: "Dept",
                           labelStyle: TextStyle(fontSize: 12),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 8,
+                          ),
                         ),
                         items: _departments
-                            .map((d) => DropdownMenuItem(
-                                  value: d,
-                                  child: Text(d, overflow: TextOverflow.ellipsis),
-                                ))
+                            .map(
+                              (d) => DropdownMenuItem(
+                                value: d,
+                                child: Text(d, overflow: TextOverflow.ellipsis),
+                              ),
+                            )
                             .toList(),
                         onChanged: (val) {
                           setState(() {
                             _selectedDepartment = val;
-                            if (_selectedSemester != null && !_getAvailableSemesters().contains(_selectedSemester)) {
+                            if (_selectedSemester != null &&
+                                !_getAvailableSemesters().contains(
+                                  _selectedSemester,
+                                )) {
                               _selectedSemester = '1st';
                             }
+                            // Subject list depends on department/semester,
+                            // so any previously selected subject may no
+                            // longer be valid — fall back to "All Subjects".
+                            _selectedSubjectId = null;
+                            _selectedSubjectName = 'All Subjects';
                           });
                         },
                       ),
@@ -87,49 +127,115 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
 
                     // Sem Dropdown
                     Expanded(
-                      flex: 2,
+                      flex: 1,
                       child: DropdownButtonFormField<String>(
                         initialValue: _selectedSemester,
                         isExpanded: true,
-                        style: const TextStyle(fontSize: 12, color: Colors.black),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.black,
+                        ),
                         decoration: const InputDecoration(
                           labelText: "Sem",
                           labelStyle: TextStyle(fontSize: 12),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 8,
+                          ),
                         ),
                         items: currentSemesters
-                            .map((s) => DropdownMenuItem(
-                                  value: s,
-                                  child: Text(s, overflow: TextOverflow.ellipsis),
-                                ))
+                            .map(
+                              (s) => DropdownMenuItem(
+                                value: s,
+                                child: Text(s, overflow: TextOverflow.ellipsis),
+                              ),
+                            )
                             .toList(),
-                        onChanged: (val) => setState(() => _selectedSemester = val),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-
-                    // Sec Dropdown
-                    Expanded(
-                      flex: 2,
-                      child: DropdownButtonFormField<String>(
-                        initialValue: _selectedSection,
-                        isExpanded: true,
-                        style: const TextStyle(fontSize: 12, color: Colors.black),
-                        decoration: const InputDecoration(
-                          labelText: "Sec",
-                          labelStyle: TextStyle(fontSize: 12),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                        ),
-                        items: _sections
-                            .map((sec) => DropdownMenuItem(
-                                  value: sec,
-                                  child: Text(sec, overflow: TextOverflow.ellipsis),
-                                ))
-                            .toList(),
-                        onChanged: (val) => setState(() => _selectedSection = val),
+                        onChanged: (val) => setState(() {
+                          _selectedSemester = val;
+                          _selectedSubjectId = null;
+                          _selectedSubjectName = 'All Subjects';
+                        }),
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 10),
+
+                // Subject Dropdown Row — scoped to the selected
+                // department + semester, matching the teacher-side
+                // subject-selection flow.
+                StreamBuilder<List<AdminSubjectModel>>(
+                  stream: AdminAttendanceService.getSubjects(
+                    department: _selectedDepartment ?? '',
+                    semester: _selectedSemester ?? '',
+                  ),
+                  builder: (context, subjectSnapshot) {
+                    final subjects = subjectSnapshot.data ?? [];
+
+                    // Keep the current selection if it's still valid for
+                    // this department/semester; otherwise fall back.
+                    final validIds = subjects.map((s) => s.id).toSet();
+                    if (_selectedSubjectId != null &&
+                        !validIds.contains(_selectedSubjectId)) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) {
+                          setState(() {
+                            _selectedSubjectId = null;
+                            _selectedSubjectName = 'All Subjects';
+                          });
+                        }
+                      });
+                    }
+
+                    return DropdownButtonFormField<String>(
+                      initialValue: _selectedSubjectId,
+                      isExpanded: true,
+                      style: const TextStyle(fontSize: 12, color: Colors.black),
+                      decoration: const InputDecoration(
+                        labelText: "Subject",
+                        labelStyle: TextStyle(fontSize: 12),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 8,
+                        ),
+                      ),
+                      items: [
+                        const DropdownMenuItem<String>(
+                          value: null,
+                          child: Text(
+                            "All Subjects",
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        ...subjects.map(
+                          (s) => DropdownMenuItem<String>(
+                            value: s.id,
+                            child: Text(
+                              s.name,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ],
+                      onChanged: (val) {
+                        setState(() {
+                          _selectedSubjectId = val;
+                          _selectedSubjectName = val == null
+                              ? 'All Subjects'
+                              : subjects
+                                    .firstWhere(
+                                      (s) => s.id == val,
+                                      orElse: () => AdminSubjectModel(
+                                        id: val,
+                                        name: 'Unknown Subject',
+                                      ),
+                                    )
+                                    .name;
+                        });
+                      },
+                    );
+                  },
                 ),
                 const SizedBox(height: 10),
 
@@ -147,7 +253,10 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
                     }
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 12,
+                    ),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey.shade400),
                       borderRadius: BorderRadius.circular(8),
@@ -157,9 +266,16 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
                       children: [
                         Text(
                           "Selected Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}",
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
                         ),
-                        const Icon(Icons.calendar_today, size: 18, color: Colors.blue),
+                        const Icon(
+                          Icons.calendar_today,
+                          size: 18,
+                          color: Colors.blue,
+                        ),
                       ],
                     ),
                   ),
@@ -170,24 +286,37 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
 
           // 📊 ATTENDANCE STREAM LIST
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: _db
-                  .collection('attendance')
-                  .where('department', isEqualTo: _selectedDepartment)
-                  .where('semester', isEqualTo: _selectedSemester)
-                  .where('section', isEqualTo: _selectedSection)
-                  .snapshots(),
+            child: StreamBuilder<List<AttendanceModel>>(
+              // Real schema: one doc per class session, with a `students`
+              // array. There is no `section` field to filter on.
+              // Filtering now goes department -> semester -> subject, so
+              // switching subjects here matches what the teacher already
+              // sees for that department/semester/subject combination.
+              stream: AdminAttendanceService.getAttendanceByFilter(
+                department: _selectedDepartment ?? '',
+                semester: _selectedSemester ?? '',
+                subjectId: _selectedSubjectId,
+              ),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(child: Text("No attendance records found for this section."));
+                if (snapshot.hasError) {
+                  return Center(child: Text("Error: ${snapshot.error}"));
                 }
 
-                final docs = snapshot.data!.docs;
-                final allRecords = docs.map((doc) => AttendanceModel.fromMap(doc.data() as Map<String, dynamic>, doc.id)).toList();
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "No attendance records found for this department/semester/$_selectedSubjectName.",
+                    ),
+                  );
+                }
+
+                // Already flattened to one record per student by
+                // AdminAttendanceService.getAttendanceByFilter.
+                final allRecords = snapshot.data!;
 
                 // Filter for selected date
                 final dateRecords = allRecords.where((r) {
@@ -196,10 +325,11 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
                       r.date.day == _selectedDate.day;
                 }).toList();
 
-                // Stats calculation for the selected date
-                int presentCount = dateRecords.where((r) => r.status.toLowerCase() == 'present').length;
-                int absentCount = dateRecords.where((r) => r.status.toLowerCase() == 'absent').length;
-                int leaveCount = dateRecords.where((r) => r.status.toLowerCase() == 'leave').length;
+                // Stats calculation for the selected date. Only
+                // Present/Absent exist in the real data (isPresent is a
+                // bool), so there is no separate Leave bucket.
+                int presentCount = dateRecords.where((r) => r.isPresent).length;
+                int absentCount = dateRecords.where((r) => !r.isPresent).length;
 
                 return Column(
                   children: [
@@ -210,14 +340,22 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha:0.05), blurRadius: 5)],
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 5,
+                          ),
+                        ],
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          _buildStatBadge("Present", presentCount, Colors.green),
+                          _buildStatBadge(
+                            "Present",
+                            presentCount,
+                            Colors.green,
+                          ),
                           _buildStatBadge("Absent", absentCount, Colors.red),
-                          _buildStatBadge("Leave", leaveCount, Colors.orange),
                         ],
                       ),
                     ),
@@ -225,38 +363,78 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
                     // List of Students Status
                     Expanded(
                       child: dateRecords.isEmpty
-                          ? const Center(child: Text("No attendance taken for this date."))
+                          ? Center(
+                              child: Text(
+                                "No attendance taken for this date${_selectedSubjectId != null ? ' in $_selectedSubjectName' : ''}.",
+                              ),
+                            )
                           : ListView.builder(
                               itemCount: dateRecords.length,
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
                               itemBuilder: (context, index) {
                                 final record = dateRecords[index];
-                                Color statusColor = Colors.green;
-                                if (record.status.toLowerCase() == 'absent') statusColor = Colors.red;
-                                if (record.status.toLowerCase() == 'leave') statusColor = Colors.orange;
+                                final statusColor = record.isPresent
+                                    ? Colors.green
+                                    : Colors.red;
 
                                 return Card(
                                   margin: const EdgeInsets.only(bottom: 8),
                                   child: ListTile(
                                     leading: CircleAvatar(
-                                      backgroundColor: statusColor.withValues(alpha:0.1),
-                                      child: Text(
-                                        record.studentRoll.isNotEmpty ? record.studentRoll : '${index + 1}',
-                                        style: TextStyle(color: statusColor, fontWeight: FontWeight.bold),
+                                      backgroundColor: statusColor.withValues(
+                                        alpha: 0.1,
+                                      ),
+                                      backgroundImage:
+                                          record.photoUrl.isNotEmpty
+                                          ? NetworkImage(record.photoUrl)
+                                          : null,
+                                      child: record.photoUrl.isEmpty
+                                          ? Text(
+                                              record.roll.isNotEmpty
+                                                  ? record.roll
+                                                  : '${index + 1}',
+                                              style: TextStyle(
+                                                color: statusColor,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            )
+                                          : null,
+                                    ),
+                                    title: Text(
+                                      record.fullName,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    title: Text(record.studentName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                    subtitle: Text("Roll No: ${record.studentRoll}"),
+                                    // Subject name shown alongside roll no. so
+                                    // it's clear which subject the student was
+                                    // marked present/absent for — especially
+                                    // useful when "All Subjects" is selected.
+                                    subtitle: Text(
+                                      "Roll No: ${record.roll}"
+                                      "${record.subjectName.isNotEmpty ? ' • ${record.subjectName}' : ''}",
+                                    ),
                                     trailing: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: statusColor.withValues(alpha:0.1),
+                                        color: statusColor.withValues(
+                                          alpha: 0.1,
+                                        ),
                                         borderRadius: BorderRadius.circular(20),
                                         border: Border.all(color: statusColor),
                                       ),
                                       child: Text(
                                         record.status.toUpperCase(),
-                                        style: TextStyle(color: statusColor, fontWeight: FontWeight.bold, fontSize: 12),
+                                        style: TextStyle(
+                                          color: statusColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -279,12 +457,13 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
       children: [
         Text(
           "$count",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
         ),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, color: Colors.grey),
-        ),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
       ],
     );
   }
