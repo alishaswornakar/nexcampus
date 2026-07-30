@@ -56,209 +56,256 @@ class _DepartmentSemesterSelectionScreenState
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    String _getTitle() {
-      switch (widget.feature) {
-        case FeatureType.attendance:
-          return "Attendance";
-        case FeatureType.assignments:
-          return "Assignments";
-        case FeatureType.courses:
-          return "Courses";
-        case FeatureType.classes:
-          return "Classes";
-        case FeatureType.notices:
-          return "Notices";
-        case FeatureType.schedules:
-          return "Schedule";
-        case FeatureType.students:
-          return "Students";
-        case FeatureType.notes:
-          return "Notes";
-      }
+ @override
+Widget build(BuildContext context) {
+  final size = MediaQuery.of(context).size;
+  final width = size.width;
+  final height = size.height;
+
+  String getTitle() {
+    switch (widget.feature) {
+      case FeatureType.attendance:
+        return "Attendance";
+      case FeatureType.assignments:
+        return "Assignments";
+      case FeatureType.courses:
+        return "Courses";
+      case FeatureType.classes:
+        return "Classes";
+      case FeatureType.notices:
+        return "Notices";
+      case FeatureType.schedules:
+        return "Schedule";
+      case FeatureType.students:
+        return "Students";
+      case FeatureType.notes:
+        return "Notes";
     }
+  }
 
-    return Scaffold(
-      backgroundColor: const Color(0xffF5F7FA),
+  return Scaffold(
+    backgroundColor: const Color(0xffF5F7FA),
 
-      appBar: AppBar(
-        elevation: 0,
-        centerTitle: false,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        title: Text(_getTitle()),
+    appBar: AppBar(
+      elevation: 0,
+      centerTitle: false,
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+      title: Text(
+        getTitle(),
+        style: TextStyle(
+          fontSize: width * 0.05,
+          fontWeight: FontWeight.w600,
+        ),
       ),
+    ),
 
-      body: SafeArea(
-    child: SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-
-          const Text(
-            "Select Academic Details",
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-              color: AppTheme.primary,
-            ),
-          ),
-
-          const SizedBox(height: 8),
+    body: SafeArea(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(
+          horizontal: width * 0.06,
+          vertical: height * 0.025,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
 
           Text(
-            "Choose your department and semester to continue.",
-            style: TextStyle(
-              color: Colors.grey.shade600,
-              height: 1.5,
+  "Select Academic Details",
+  style: TextStyle(
+    fontSize: width * 0.07,
+    fontWeight: FontWeight.bold,
+    color: AppTheme.primary,
+  ),
+),
+
+SizedBox(height: height * 0.01),
+
+Text(
+  "Choose your department and semester to continue.",
+  style: TextStyle(
+    color: Colors.grey.shade600,
+    fontSize: width * 0.038,
+    height: 1.5,
+  ),
+),
+
+SizedBox(height: height * 0.045),
+
+Text(
+  "Department",
+  style: TextStyle(
+    fontSize: width * 0.040,
+    fontWeight: FontWeight.w600,
+  ),
+),
+
+SizedBox(height: height * 0.012),
+
+DropdownButtonFormField<String>(
+  value: selectedDepartment,
+  isExpanded: true,
+  decoration: InputDecoration(
+    hintText: "Select Department",
+    hintStyle: TextStyle(
+      fontSize: width * 0.038,
+    ),
+    filled: true,
+    fillColor: Colors.white,
+    contentPadding: EdgeInsets.symmetric(
+      horizontal: width * 0.045,
+      vertical: height * 0.020,
+    ),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(width * 0.035),
+      borderSide: BorderSide(
+        color: Colors.grey.shade300,
+      ),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(width * 0.035),
+      borderSide: BorderSide(
+        color: Colors.grey.shade300,
+      ),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(width * 0.035),
+      borderSide: const BorderSide(
+        color: AppTheme.primary,
+        width: 1.5,
+      ),
+    ),
+  ),
+  items: departments.keys.map((department) {
+    return DropdownMenuItem<String>(
+      value: department,
+      child: Text(
+        department,
+        style: TextStyle(
+          fontSize: width * 0.038,
+        ),
+      ),
+    );
+  }).toList(),
+  onChanged: (value) {
+    setState(() {
+      selectedDepartment = value;
+      selectedSemester = null;
+    });
+  },
+),
+
+SizedBox(height: height * 0.03),
+
+
+          Text(
+  "Semester",
+  style: TextStyle(
+    fontSize: width * 0.040,
+    fontWeight: FontWeight.w600,
+  ),
+),
+
+SizedBox(height: height * 0.012),
+
+DropdownButtonFormField<String>(
+  value: selectedSemester,
+  isExpanded: true,
+  decoration: InputDecoration(
+    hintText: "Select Semester",
+    hintStyle: TextStyle(
+      fontSize: width * 0.038,
+    ),
+    filled: true,
+    fillColor: Colors.white,
+    contentPadding: EdgeInsets.symmetric(
+      horizontal: width * 0.045,
+      vertical: height * 0.020,
+    ),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(width * 0.035),
+      borderSide: BorderSide(
+        color: Colors.grey.shade300,
+      ),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(width * 0.035),
+      borderSide: BorderSide(
+        color: Colors.grey.shade300,
+      ),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(width * 0.035),
+      borderSide: const BorderSide(
+        color: AppTheme.primary,
+        width: 1.5,
+      ),
+    ),
+  ),
+  items: semesters.map((semester) {
+    return DropdownMenuItem<String>(
+      value: semester,
+      child: Text(
+        "Semester $semester",
+        style: TextStyle(
+          fontSize: width * 0.038,
+        ),
+      ),
+    );
+  }).toList(),
+  onChanged: selectedDepartment == null
+      ? null
+      : (value) {
+          setState(() {
+            selectedSemester = value;
+          });
+        },
+),
+
+SizedBox(height: height * 0.06),
+
+SizedBox(
+  width: double.infinity,
+  height: height * 0.07,
+  child: ElevatedButton.icon(
+    icon: Icon(
+      Icons.arrow_forward,
+      size: width * 0.05,
+    ),
+    label: Text(
+      "Continue",
+      style: TextStyle(
+        fontSize: width * 0.043,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+    style: ElevatedButton.styleFrom(
+      backgroundColor: AppTheme.primary,
+      foregroundColor: Colors.white,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(width * 0.035),
+      ),
+    ),
+    onPressed: () {
+      if (selectedDepartment == null ||
+          selectedSemester == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Please select both department and semester.",
             ),
           ),
+        );
+        return;
+      }
 
-          const SizedBox(height: 35),
+      _navigateToFeature();
+    },
+  ),
+),
 
-          const Text(
-            "Department",
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-
-          const SizedBox(height: 10),
-
-          DropdownButtonFormField<String>(
-            value: selectedDepartment,
-            isExpanded: true,
-            decoration: InputDecoration(
-              hintText: "Select Department",
-              filled: true,
-              fillColor: Colors.white,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(
-                  color: Colors.grey.shade300,
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(
-                  color: Colors.grey.shade300,
-                ),
-              ),
-            ),
-            items: departments.keys.map((department) {
-              return DropdownMenuItem(
-                value: department,
-                child: Text(department),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                selectedDepartment = value;
-                selectedSemester = null;
-              });
-            },
-          ),
-
-          const SizedBox(height: 25),
-
-          const Text(
-            "Semester",
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-
-          const SizedBox(height: 10),
-                    DropdownButtonFormField<String>(
-            value: selectedSemester,
-            isExpanded: true,
-            decoration: InputDecoration(
-              hintText: "Select Semester",
-              filled: true,
-              fillColor: Colors.white,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(
-                  color: Colors.grey.shade300,
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(
-                  color: Colors.grey.shade300,
-                ),
-              ),
-            ),
-            items: semesters.map((semester) {
-              return DropdownMenuItem<String>(
-                value: semester,
-                child: Text("Semester $semester"),
-              );
-            }).toList(),
-            onChanged: selectedDepartment == null
-                ? null
-                : (value) {
-                    setState(() {
-                      selectedSemester = value;
-                    });
-                  },
-          ),
-
-          const SizedBox(height: 40),
-
-          SizedBox(
-            width: double.infinity,
-            height: 55,
-            child: ElevatedButton.icon(
-              
-              icon: const Icon(Icons.arrow_forward),
-              label: const Text(
-                "Continue",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w600,
-                  
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              onPressed: () {
-                if (selectedDepartment == null ||
-                    selectedSemester == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        "Please select both department and semester.",
-                      ),
-                    ),
-                  );
-                  return;
-                }
-
-                _navigateToFeature();
-              },
-            ),
-          ),
-
-          const SizedBox(height: 20),
+SizedBox(height: height * 0.02),
         ],
       ),
     ),

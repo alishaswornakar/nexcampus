@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
-import 'package:nexcampus_app/features/teachers/screens/teacher_dashboard_screen.dart';
 
 import 'package:nexcampus_app/features/teachers/shared_screens/department_semester_selection_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/notices/screens/notice_screen.dart';
