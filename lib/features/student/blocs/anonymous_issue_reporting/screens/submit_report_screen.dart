@@ -78,6 +78,10 @@ class _SubmitReportScreenState extends State<SubmitReportScreen> {
           'Submit a Report',
           style: TextStyle(color: Colors.white),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
