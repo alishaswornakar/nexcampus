@@ -63,7 +63,7 @@ class _AttendanceCalendarState extends State<AttendanceCalendar> {
       textColor = Colors.white;
       weight = FontWeight.w700;
     } else if (isToday) {
-      border = Border.all(color: AppTheme.secondary, width: 1.6);
+      border = Border.all(color: AppTheme.primary, width: 1.6);
       textColor = AppTheme.secondary;
       weight = FontWeight.w700;
     } else if (statusColor != null && !isOutside) {
@@ -156,7 +156,7 @@ class _AttendanceCalendarState extends State<AttendanceCalendar> {
               Icon(
                 Icons.calendar_month_rounded,
                 size: 18,
-                color: AppTheme.secondary,
+                color: AppTheme.primary,
               ),
               SizedBox(width: 8),
               Text(
@@ -197,11 +197,11 @@ class _AttendanceCalendarState extends State<AttendanceCalendar> {
               ),
               leftChevronIcon: Icon(
                 Icons.chevron_left_rounded,
-                color: AppTheme.secondary,
+                color: AppTheme.primary,
               ),
               rightChevronIcon: Icon(
                 Icons.chevron_right_rounded,
-                color: AppTheme.secondary,
+                color: AppTheme.primary,
               ),
               headerPadding: EdgeInsets.symmetric(vertical: 10),
             ),

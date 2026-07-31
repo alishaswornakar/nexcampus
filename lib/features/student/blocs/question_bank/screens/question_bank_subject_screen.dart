@@ -15,7 +15,7 @@ class QuestionBankSubjectScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppTheme.secondary,
+        backgroundColor: AppTheme.primary,
         title: Text(
           "Semester $semester",
           style: const TextStyle(

@@ -77,7 +77,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: const Text('Courses'),
-          backgroundColor: AppTheme.secondary,
+          backgroundColor: AppTheme.primary,
           foregroundColor: Colors.white,
         ),
         bottomNavigationBar: const AppBottomNavBar(currentIndex: 1),
@@ -188,7 +188,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                   : AppTheme.secondary.withValues(alpha: 0.08),
               child: Icon(
                 icon,
-                color: selected ? Colors.white : AppTheme.secondary,
+                color: selected ? Colors.white : AppTheme.primary,
                 size: 24,
               ),
             ),
@@ -500,7 +500,7 @@ class _SubjectsScreenState extends State<_SubjectsScreen> {
       backgroundColor: AppTheme.background,
       appBar: AppBar(
         title: Text('Semester ${widget.semester} Courses'),
-        backgroundColor: AppTheme.secondary,
+        backgroundColor: AppTheme.primary,
         foregroundColor: Colors.white,
       ),
       bottomNavigationBar: const AppBottomNavBar(currentIndex: 1),

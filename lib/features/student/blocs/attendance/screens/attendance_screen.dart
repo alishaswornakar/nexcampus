@@ -216,7 +216,7 @@ class _AttendanceViewState extends State<_AttendanceView> {
       title: _isSearching
           ? _buildSearchField()
           : const Text('Attendance', style: TextStyle(color: Colors.white)),
-      backgroundColor: AppTheme.secondary,
+      backgroundColor: AppTheme.primary,
       foregroundColor: Colors.white,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
@@ -317,7 +317,7 @@ class _AttendanceViewState extends State<_AttendanceView> {
               const SizedBox(height: 20),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.secondary,
+                  backgroundColor: AppTheme.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
@@ -444,11 +444,7 @@ class _AttendanceViewState extends State<_AttendanceView> {
             padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: Row(
               children: [
-                Icon(
-                  Icons.history_rounded,
-                  size: 18,
-                  color: AppTheme.secondary,
-                ),
+                Icon(Icons.history_rounded, size: 18, color: AppTheme.primary),
                 SizedBox(width: 8),
                 Text(
                   'Recent Attendance',

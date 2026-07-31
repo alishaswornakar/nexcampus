@@ -70,7 +70,7 @@ class _NotesScreenState extends State<NotesScreen> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: const Text('Notes'),
-          backgroundColor: AppTheme.secondary,
+          backgroundColor: AppTheme.primary,
           foregroundColor: Colors.white,
         ),
         body: SingleChildScrollView(
@@ -180,7 +180,7 @@ class _NotesScreenState extends State<NotesScreen> {
                   : AppTheme.secondary.withValues(alpha: 0.08),
               child: Icon(
                 icon,
-                color: selected ? Colors.white : AppTheme.secondary,
+                color: selected ? Colors.white : AppTheme.primary,
                 size: 24,
               ),
             ),

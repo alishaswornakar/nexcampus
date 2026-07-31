@@ -80,7 +80,7 @@ class _DriveWebViewScreenState extends State<DriveWebViewScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: AppTheme.secondary,
+          backgroundColor: AppTheme.primary,
           iconTheme: const IconThemeData(color: Colors.white),
           title: Text(
             widget.title,

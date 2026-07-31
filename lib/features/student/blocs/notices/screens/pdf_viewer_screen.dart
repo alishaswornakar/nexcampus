@@ -93,7 +93,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
           style: const TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: AppTheme.secondary,
+        backgroundColor: AppTheme.primary,
         foregroundColor: Colors.white,
         actions: [
           if (_isRendered && _totalPages > 0)

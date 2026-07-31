@@ -39,7 +39,7 @@ class UserProfileScreen extends StatelessWidget {
             textAlign: TextAlign.left,
           ),
           iconTheme: const IconThemeData(color: Colors.white),
-          backgroundColor: AppTheme.secondary,
+          backgroundColor: AppTheme.primary,
         ),
         body: BlocBuilder<UserProfileBloc, UserProfileState>(
           builder: (context, state) {

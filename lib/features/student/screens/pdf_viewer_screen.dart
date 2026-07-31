@@ -153,7 +153,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppTheme.secondary,
+        backgroundColor: AppTheme.primary,
         title: Text(
           _shortenTitle(widget.title),
           style: const TextStyle(color: Colors.white),
@@ -326,5 +326,4 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
   }
 }
 
-class PDFViewController {
-}
+class PDFViewController {}

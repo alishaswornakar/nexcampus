@@ -33,7 +33,7 @@ class _QuestionBankView extends StatelessWidget {
           textAlign: TextAlign.left,
         ),
 
-        backgroundColor: AppTheme.secondary,
+        backgroundColor: AppTheme.primary,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: BlocBuilder<QuestionBankBloc, QuestionBankState>(
@@ -62,7 +62,7 @@ class _QuestionBankView extends StatelessWidget {
                   child: ListTile(
                     leading: CircleAvatar(
                       radius: 22,
-                      backgroundColor: AppTheme.secondary,
+                      backgroundColor: AppTheme.primary,
                       child: Text(
                         semester.toString(),
                         style: const TextStyle(
