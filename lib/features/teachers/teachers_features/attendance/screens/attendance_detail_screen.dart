@@ -7,21 +7,14 @@ import '../models/attendance_model.dart';
 class AttendanceDetailScreen extends StatefulWidget {
   final AttendanceModel attendance;
 
-  const AttendanceDetailScreen({
-    super.key,
-    required this.attendance,
-  });
+  const AttendanceDetailScreen({super.key, required this.attendance});
 
   @override
-  State<AttendanceDetailScreen> createState() =>
-      _AttendanceDetailScreenState();
+  State<AttendanceDetailScreen> createState() => _AttendanceDetailScreenState();
 }
 
-class _AttendanceDetailScreenState
-    extends State<AttendanceDetailScreen> {
-
-  final TextEditingController _searchController =
-      TextEditingController();
+class _AttendanceDetailScreenState extends State<AttendanceDetailScreen> {
+  final TextEditingController _searchController = TextEditingController();
 
   String selectedFilter = "All Students";
 
@@ -33,7 +26,6 @@ class _AttendanceDetailScreenState
 
   @override
   Widget build(BuildContext context) {
-
     final width = MediaQuery.of(context).size.width;
 
     double s(double value) => width * value / 390;
@@ -42,9 +34,7 @@ class _AttendanceDetailScreenState
         .where((e) => e.isPresent)
         .length;
 
-    final absentStudents =
-        widget.attendance.students.length -
-            presentStudents;
+    final absentStudents = widget.attendance.students.length - presentStudents;
 
     return Scaffold(
       backgroundColor: const Color(0xffF5F7FA),
@@ -58,42 +48,25 @@ class _AttendanceDetailScreenState
         titleSpacing: 0,
         title: Text(
           "Attendance Details",
-          style: TextStyle(
-            fontSize: s(22),
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: s(22), fontWeight: FontWeight.bold),
         ),
       ),
 
       body: ListView(
-        padding: EdgeInsets.only(
-          bottom: s(20),
-        ),
+        padding: EdgeInsets.only(bottom: s(20)),
         children: [
-
           /// HEADER
           Padding(
-            padding: EdgeInsets.fromLTRB(
-              s(16),
-              s(8),
-              s(16),
-              s(12),
-            ),
+            padding: EdgeInsets.fromLTRB(s(16), s(8), s(16), s(12)),
             child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: s(16),
-                vertical: s(12),
-              ),
+              padding: EdgeInsets.symmetric(horizontal: s(16), vertical: s(12)),
               decoration: BoxDecoration(
                 color: AppTheme.primary,
-                borderRadius:
-                    BorderRadius.circular(s(16)),
+                borderRadius: BorderRadius.circular(s(16)),
               ),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   Text(
                     widget.attendance.subjectName,
                     style: TextStyle(
@@ -112,8 +85,7 @@ class _AttendanceDetailScreenState
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white24,
-                      borderRadius:
-                          BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       "${widget.attendance.department} • Semester ${widget.attendance.semester}",
@@ -129,7 +101,6 @@ class _AttendanceDetailScreenState
 
                   Row(
                     children: [
-
                       Icon(
                         Icons.calendar_today_outlined,
                         color: Colors.white70,
@@ -139,14 +110,11 @@ class _AttendanceDetailScreenState
                       SizedBox(width: s(6)),
 
                       Text(
-                        DateFormat("dd MMM yyyy")
-                            .format(widget.attendance.date),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: s(12),
-                        ),
+                        DateFormat(
+                          "dd MMM yyyy",
+                        ).format(widget.attendance.date),
+                        style: TextStyle(color: Colors.white, fontSize: s(12)),
                       ),
-
                     ],
                   ),
 
@@ -154,7 +122,6 @@ class _AttendanceDetailScreenState
 
                   Row(
                     children: [
-
                       Expanded(
                         child: _summaryCard(
                           "Present",
@@ -180,69 +147,55 @@ class _AttendanceDetailScreenState
                       Expanded(
                         child: _summaryCard(
                           "Total",
-                          widget.attendance.students.length
-                              .toString(),
+                          widget.attendance.students.length.toString(),
                           Colors.white,
                           s,
                         ),
                       ),
-
                     ],
                   ),
-
                 ],
               ),
             ),
           ),
-                    /// Search Bar
+
+          /// Search Bar
           Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: s(16),
-            ),
+            padding: EdgeInsets.symmetric(horizontal: s(16)),
             child: TextField(
               controller: _searchController,
               onChanged: (_) => setState(() {}),
               decoration: InputDecoration(
-                hintText:
-                    "Search by student name or roll no...",
+                hintText: "Search by student name or roll no...",
                 prefixIcon: const Icon(Icons.search),
 
-                suffixIcon:
-                    _searchController.text.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () {
-                              _searchController.clear();
-                              setState(() {});
-                            },
-                          )
-                        : null,
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() {});
+                        },
+                      )
+                    : null,
 
                 filled: true,
                 fillColor: Colors.white,
 
-                contentPadding:
-                    EdgeInsets.symmetric(
-                  vertical: s(16),
-                ),
+                contentPadding: EdgeInsets.symmetric(vertical: s(16)),
 
                 border: OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(s(16)),
+                  borderRadius: BorderRadius.circular(s(16)),
                   borderSide: BorderSide.none,
                 ),
 
-                enabledBorder:
-                    OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(s(16)),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(s(16)),
                   borderSide: BorderSide.none,
                 ),
 
-                focusedBorder:
-                    OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(s(16)),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(s(16)),
                   borderSide: const BorderSide(
                     color: AppTheme.primary,
                     width: 1.5,
@@ -259,30 +212,17 @@ class _AttendanceDetailScreenState
             height: s(42),
             child: ListView(
               scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(
-                horizontal: s(16),
-              ),
+              padding: EdgeInsets.symmetric(horizontal: s(16)),
               children: [
-
-                _filterChip(
-                  "All Students",
-                  s,
-                ),
+                _filterChip("All Students", s),
 
                 SizedBox(width: s(10)),
 
-                _filterChip(
-                  "Present",
-                  s,
-                ),
+                _filterChip("Present", s),
 
                 SizedBox(width: s(10)),
 
-                _filterChip(
-                  "Absent",
-                  s,
-                ),
-
+                _filterChip("Absent", s),
               ],
             ),
           ),
@@ -290,14 +230,10 @@ class _AttendanceDetailScreenState
           SizedBox(height: s(22)),
 
           Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: s(16),
-            ),
+            padding: EdgeInsets.symmetric(horizontal: s(16)),
             child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-
                 Text(
                   "Students Attendance",
                   style: TextStyle(
@@ -313,53 +249,37 @@ class _AttendanceDetailScreenState
                     color: Colors.grey.shade600,
                   ),
                 ),
-
               ],
             ),
           ),
 
           SizedBox(height: s(16)),
-                    Builder(
+          Builder(
             builder: (context) {
-              var students = List.of(
-                widget.attendance.students,
-              );
+              var students = List.of(widget.attendance.students);
 
               /// Search
               if (_searchController.text.isNotEmpty) {
-                final query = _searchController.text
-                    .toLowerCase();
+                final query = _searchController.text.toLowerCase();
 
                 students = students.where((student) {
-                  return student.fullName
-                          .toLowerCase()
-                          .contains(query) ||
-                      student.roll
-                          .toLowerCase()
-                          .contains(query);
+                  return student.fullName.toLowerCase().contains(query) ||
+                      student.roll.toLowerCase().contains(query);
                 }).toList();
               }
 
               /// Filter
               if (selectedFilter == "Present") {
-                students = students
-                    .where((e) => e.isPresent)
-                    .toList();
+                students = students.where((e) => e.isPresent).toList();
               } else if (selectedFilter == "Absent") {
-                students = students
-                    .where((e) => !e.isPresent)
-                    .toList();
+                students = students.where((e) => !e.isPresent).toList();
               }
 
               if (students.isEmpty) {
                 return Padding(
-                  padding: EdgeInsets.only(
-                    top: s(40),
-                    bottom: s(30),
-                  ),
+                  padding: EdgeInsets.only(top: s(40), bottom: s(30)),
                   child: Column(
                     children: [
-
                       Icon(
                         Icons.people_outline_rounded,
                         size: s(80),
@@ -375,7 +295,6 @@ class _AttendanceDetailScreenState
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-
                     ],
                   ),
                 );
@@ -383,58 +302,45 @@ class _AttendanceDetailScreenState
 
               return ListView.separated(
                 shrinkWrap: true,
-                physics:
-                    const NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.symmetric(
-                  horizontal: s(16),
-                ),
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: s(16)),
                 itemCount: students.length,
-                separatorBuilder: (_, __) =>
-                    SizedBox(height: s(12)),
+                separatorBuilder: (_, __) => SizedBox(height: s(12)),
                 itemBuilder: (context, index) {
-
                   final student = students[index];
 
                   return Container(
                     padding: EdgeInsets.all(s(14)),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius:
-                          BorderRadius.circular(s(18)),
+                      borderRadius: BorderRadius.circular(s(18)),
                       boxShadow: [
-
                         BoxShadow(
-                          color: Colors.black.withOpacity(.05),
+                          color: Colors.black.withValues(alpha:0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 3),
                         ),
-
                       ],
                     ),
 
                     child: Row(
                       children: [
-
                         CircleAvatar(
                           radius: s(26),
-                          backgroundColor:
-                              AppTheme.primary.withOpacity(.12),
+                          backgroundColor: AppTheme.primary.withValues(
+                            alpha: 0.12,
+                          ),
 
-                          backgroundImage:
-                              student.photoUrl.isNotEmpty
-                                  ? NetworkImage(
-                                      student.photoUrl,
-                                    )
-                                  : null,
+                          backgroundImage: student.photoUrl.isNotEmpty
+                              ? NetworkImage(student.photoUrl)
+                              : null,
 
                           child: student.photoUrl.isEmpty
                               ? Text(
-                                  student.fullName[0]
-                                      .toUpperCase(),
+                                  student.fullName[0].toUpperCase(),
                                   style: TextStyle(
                                     color: AppTheme.primary,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontWeight: FontWeight.bold,
                                     fontSize: s(18),
                                   ),
                                 )
@@ -445,15 +351,12 @@ class _AttendanceDetailScreenState
 
                         Expanded(
                           child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-
                               Text(
                                 student.fullName,
                                 style: TextStyle(
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontWeight: FontWeight.bold,
                                   fontSize: s(17),
                                 ),
                               ),
@@ -467,39 +370,32 @@ class _AttendanceDetailScreenState
                                   fontSize: s(13),
                                 ),
                               ),
-
                             ],
                           ),
                         ),
 
                         Container(
-                          padding:
-                              EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                             horizontal: s(14),
                             vertical: s(8),
                           ),
                           decoration: BoxDecoration(
                             color: student.isPresent
-                                ? Colors.green.withOpacity(.15)
-                                : Colors.red.withOpacity(.15),
-                            borderRadius:
-                                BorderRadius.circular(30),
+                                ? Colors.green.withValues(alpha:.15)
+                                : Colors.red.withValues(alpha:.15),
+                            borderRadius: BorderRadius.circular(30),
                           ),
                           child: Text(
-                            student.isPresent
-                                ? "Present"
-                                : "Absent",
+                            student.isPresent ? "Present" : "Absent",
                             style: TextStyle(
                               color: student.isPresent
                                   ? Colors.green
                                   : Colors.red,
-                              fontWeight:
-                                  FontWeight.bold,
+                              fontWeight: FontWeight.bold,
                               fontSize: s(13),
                             ),
                           ),
                         ),
-
                       ],
                     ),
                   );
@@ -507,31 +403,26 @@ class _AttendanceDetailScreenState
               );
             },
           ),
-
         ],
       ),
     );
   }
-    Widget _summaryCard(
+
+  Widget _summaryCard(
     String title,
     String value,
     Color valueColor,
     double Function(double) s,
   ) {
     return Container(
-      padding: EdgeInsets.symmetric(
-        vertical: s(10),
-      ),
+      padding: EdgeInsets.symmetric(vertical: s(10)),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(.15),
-        borderRadius: BorderRadius.circular(
-          s(12),
-        ),
+        color: Colors.white.withValues(alpha:.15),
+        borderRadius: BorderRadius.circular(s(12)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-
           Text(
             value,
             style: TextStyle(
@@ -552,16 +443,12 @@ class _AttendanceDetailScreenState
               letterSpacing: 0.5,
             ),
           ),
-
         ],
       ),
     );
   }
 
-  Widget _filterChip(
-    String title,
-    double Function(double) s,
-  ) {
+  Widget _filterChip(String title, double Function(double) s) {
     final bool selected = selectedFilter == title;
 
     return InkWell(
@@ -570,36 +457,21 @@ class _AttendanceDetailScreenState
           selectedFilter = title;
         });
       },
-      borderRadius: BorderRadius.circular(
-        s(12),
-      ),
+      borderRadius: BorderRadius.circular(s(12)),
       child: AnimatedContainer(
-        duration: const Duration(
-          milliseconds: 250,
-        ),
-        padding: EdgeInsets.symmetric(
-          horizontal: s(18),
-          vertical: s(10),
-        ),
+        duration: const Duration(milliseconds: 250),
+        padding: EdgeInsets.symmetric(horizontal: s(18), vertical: s(10)),
         decoration: BoxDecoration(
-          color: selected
-              ? AppTheme.primary
-              : const Color(0xffECEFF5),
-          borderRadius: BorderRadius.circular(
-            s(12),
-          ),
+          color: selected ? AppTheme.primary : const Color(0xffECEFF5),
+          borderRadius: BorderRadius.circular(s(12)),
           border: Border.all(
-            color: selected
-                ? AppTheme.primary
-                : Colors.transparent,
+            color: selected ? AppTheme.primary : Colors.transparent,
           ),
         ),
         child: Text(
           title,
           style: TextStyle(
-            color: selected
-                ? Colors.white
-                : Colors.black87,
+            color: selected ? Colors.white : Colors.black87,
             fontWeight: FontWeight.w600,
             fontSize: s(13),
           ),

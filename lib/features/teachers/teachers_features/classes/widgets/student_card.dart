@@ -49,7 +49,7 @@ class StudentCard extends StatelessWidget {
         bottom: isTablet ? 16 : 12,
       ),
       elevation: 2,
-      shadowColor: Colors.black.withOpacity(.08),
+      shadowColor: Colors.black.withValues(alpha:.08),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
       ),
@@ -164,7 +164,7 @@ class StudentCard extends StatelessWidget {
                 width: isTablet ? 42 : 36,
                 height: isTablet ? 42 : 36,
                 decoration: BoxDecoration(
-                  color: AppTheme.primary.withOpacity(.08),
+                  color: AppTheme.primary.withValues(alpha:.08),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(
