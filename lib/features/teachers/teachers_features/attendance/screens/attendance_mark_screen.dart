@@ -141,6 +141,7 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
           //final absentStudents = getAbsentCount(students.length);
 
+          // ignore: unused_element
           Widget summaryCard({
             required String title,
             required String value,
