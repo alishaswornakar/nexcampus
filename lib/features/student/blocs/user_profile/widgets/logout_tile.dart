@@ -19,10 +19,7 @@ class LogoutTile extends StatelessWidget {
           ),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text(
-              'Log out',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Log out', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -30,7 +27,7 @@ class LogoutTile extends StatelessWidget {
 
     if (confirmed == true) {
       onLogout?.call();
-      // TODO: Hook into your AuthBloc, e.g.:
+      // Hook into your AuthBloc, e.g.:
       // context.read<AuthBloc>().add(AuthLogoutRequested());
     }
   }

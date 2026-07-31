@@ -5,10 +5,8 @@ import 'package:nexcampus_app/features/teachers/teachers_features/attendance/scr
 import 'package:nexcampus_app/features/teachers/teachers_features/classes/screens/student_list_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/courses/screens/courselist.dart';
 
-
 import 'package:nexcampus_app/features/teachers/teachers_features/notices/screens/notice_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/schedule/screens/teacher_schedule_screen.dart';
-
 
 enum FeatureType {
   attendance,
@@ -25,10 +23,7 @@ enum FeatureType {
 class DepartmentSemesterSelectionScreen extends StatefulWidget {
   final FeatureType feature;
 
-  const DepartmentSemesterSelectionScreen({
-    super.key,
-    required this.feature,
-  });
+  const DepartmentSemesterSelectionScreen({super.key, required this.feature});
 
   @override
   State<DepartmentSemesterSelectionScreen> createState() =>
@@ -51,26 +46,18 @@ class _DepartmentSemesterSelectionScreenState
       return [];
     }
 
-    final total =
-        departments[selectedDepartment] ?? 8;
+    final total = departments[selectedDepartment] ?? 8;
 
-    return List.generate(
-      total,
-      (index) => "${index + 1}",
-    );
+    return List.generate(total, (index) => "${index + 1}");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(
-        0xffF5F7FA,
-      ),
+      backgroundColor: const Color(0xffF5F7FA),
 
       appBar: AppBar(
-        title: const Text(
-          "Select Department",
-        ),
+        title: const Text("Select Department"),
         centerTitle: true,
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
@@ -80,57 +67,40 @@ class _DepartmentSemesterSelectionScreenState
         padding: const EdgeInsets.all(20),
 
         child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
               "Choose Department",
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 8),
 
             Text(
               "Select department to continue.",
-              style: TextStyle(
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(color: Colors.grey.shade600),
             ),
 
             const SizedBox(height: 25),
 
-            ...departments.entries.map(
-              (department) {
-                return Padding(
-                  padding:
-                      const EdgeInsets.only(
-                    bottom: 15,
-                  ),
-                  child: _departmentCard(
-                    title: department.key,
-                    semesters:
-                        department.value,
-                    icon: department.key
-                            .contains(
-                                "Computer")
-                        ? Icons.computer
-                        : department.key
-                                .contains(
-                                    "Civil")
-                            ? Icons
-                                .engineering
-                            : Icons
-                                .architecture,
-                  ),
-                );
-              },
-            ),
+            ...departments.entries.map((department) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 15),
+                child: _departmentCard(
+                  title: department.key,
+                  semesters: department.value,
+                  icon: department.key.contains("Computer")
+                      ? Icons.computer
+                      : department.key.contains("Civil")
+                      ? Icons.engineering
+                      : Icons.architecture,
+                ),
+              );
+            }),
 
             const SizedBox(height: 25),
-                        /// Semester Selection
+
+            /// Semester Selection
             if (selectedDepartment != null) ...[
               const Divider(),
 
@@ -138,83 +108,53 @@ class _DepartmentSemesterSelectionScreenState
 
               const Text(
                 "Choose Semester",
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
 
               const SizedBox(height: 8),
 
               Text(
                 "Select semester for $selectedDepartment",
-                style: const TextStyle(
-                  color: Colors.grey,
-                ),
+                style: const TextStyle(color: Colors.grey),
               ),
 
               const SizedBox(height: 20),
 
               GridView.builder(
                 shrinkWrap: true,
-                physics:
-                    const NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: semesters.length,
-                gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 15,
                   mainAxisSpacing: 15,
                   childAspectRatio: 2.3,
                 ),
                 itemBuilder: (context, index) {
-                  final semester =
-                      semesters[index];
+                  final semester = semesters[index];
 
-                  final selected =
-                      selectedSemester ==
-                          semester;
+                  final selected = selectedSemester == semester;
 
                   return InkWell(
-                    borderRadius:
-                        BorderRadius.circular(
-                      15,
-                    ),
+                    borderRadius: BorderRadius.circular(15),
                     onTap: () {
                       setState(() {
-                        selectedSemester =
-                            semester;
+                        selectedSemester = semester;
                       });
                     },
                     child: AnimatedContainer(
-                      duration:
-                          const Duration(
-                        milliseconds: 250,
-                      ),
+                      duration: const Duration(milliseconds: 250),
                       decoration: BoxDecoration(
-                        color: selected
-                            ? Colors.blue
-                            : Colors.white,
-                        borderRadius:
-                            BorderRadius.circular(
-                          15,
-                        ),
+                        color: selected ? Colors.blue : Colors.white,
+                        borderRadius: BorderRadius.circular(15),
                         border: Border.all(
-                          color: selected
-                              ? Colors.blue
-                              : Colors.grey
-                                  .shade300,
+                          color: selected ? Colors.blue : Colors.grey.shade300,
                         ),
                         boxShadow: const [
                           BoxShadow(
-                            color: Colors
-                                .black12,
+                            color: Colors.black12,
                             blurRadius: 5,
-                            offset:
-                                Offset(
-                              0,
-                              2,
-                            ),
+                            offset: Offset(0, 2),
                           ),
                         ],
                       ),
@@ -223,13 +163,8 @@ class _DepartmentSemesterSelectionScreenState
                           "Semester $semester",
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight:
-                                FontWeight
-                                    .bold,
-                            color: selected
-                                ? Colors.white
-                                : Colors
-                                    .black87,
+                            fontWeight: FontWeight.bold,
+                            color: selected ? Colors.white : Colors.black87,
                           ),
                         ),
                       ),
@@ -245,39 +180,21 @@ class _DepartmentSemesterSelectionScreenState
               width: double.infinity,
               height: 55,
               child: ElevatedButton.icon(
-                icon: const Icon(
-                  Icons.arrow_forward,
-                ),
+                icon: const Icon(Icons.arrow_forward),
                 label: const Text(
                   "Continue",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight:
-                        FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                style:
-                    ElevatedButton.styleFrom(
-                  backgroundColor:
-                      Colors.blue,
-                  foregroundColor:
-                      Colors.white,
-                  shape:
-                      RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(
-                      14,
-                    ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
                   ),
                 ),
                 onPressed: () {
-                  if (selectedDepartment ==
-                          null ||
-                      selectedSemester ==
-                          null) {
-                    ScaffoldMessenger.of(
-                            context)
-                        .showSnackBar(
+                  if (selectedDepartment == null || selectedSemester == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
                           "Please select both department and semester.",
@@ -304,12 +221,10 @@ class _DepartmentSemesterSelectionScreenState
     required int semesters,
     required IconData icon,
   }) {
-    final selected =
-        selectedDepartment == title;
+    final selected = selectedDepartment == title;
 
     return InkWell(
-      borderRadius:
-          BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(18),
       onTap: () {
         setState(() {
           selectedDepartment = title;
@@ -317,20 +232,13 @@ class _DepartmentSemesterSelectionScreenState
         });
       },
       child: AnimatedContainer(
-        duration:
-            const Duration(milliseconds: 250),
-        padding:
-            const EdgeInsets.all(18),
+        duration: const Duration(milliseconds: 250),
+        padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: selected
-              ? Colors.blue
-              : Colors.white,
-          borderRadius:
-              BorderRadius.circular(18),
+          color: selected ? Colors.blue : Colors.white,
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: selected
-                ? Colors.blue
-                : Colors.grey.shade300,
+            color: selected ? Colors.blue : Colors.grey.shade300,
           ),
           boxShadow: const [
             BoxShadow(
@@ -344,63 +252,45 @@ class _DepartmentSemesterSelectionScreenState
           children: [
             CircleAvatar(
               radius: 26,
-              backgroundColor: selected
-                  ? Colors.white
-                  : Colors.blue.shade50,
-              child: Icon(
-                icon,
-                color: Colors.blue,
-                size: 28,
-              ),
+              backgroundColor: selected ? Colors.white : Colors.blue.shade50,
+              child: Icon(icon, color: Colors.blue, size: 28),
             ),
 
             const SizedBox(width: 16),
 
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment
-                        .start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
                     style: TextStyle(
                       fontSize: 18,
-                      fontWeight:
-                          FontWeight.bold,
-                      color: selected
-                          ? Colors.white
-                          : Colors.black,
+                      fontWeight: FontWeight.bold,
+                      color: selected ? Colors.white : Colors.black,
                     ),
                   ),
 
-                  const SizedBox(
-                    height: 5,
-                  ),
+                  const SizedBox(height: 5),
 
                   Text(
                     "$semesters Semesters",
                     style: TextStyle(
-                      color: selected
-                          ? Colors.white70
-                          : Colors.grey,
+                      color: selected ? Colors.white70 : Colors.grey,
                     ),
                   ),
                 ],
               ),
             ),
 
-            if (selected)
-              const Icon(
-                Icons.check_circle,
-                color: Colors.white,
-              ),
+            if (selected) const Icon(Icons.check_circle, color: Colors.white),
           ],
         ),
       ),
     );
   }
-    void _navigateToFeature() {
+
+  void _navigateToFeature() {
     final department = selectedDepartment!;
     final semester = selectedSemester!;
 
@@ -408,7 +298,10 @@ class _DepartmentSemesterSelectionScreenState
 
     switch (widget.feature) {
       case FeatureType.attendance:
-        screen = AttendanceSubjectScreen(department: department, semester: semester);
+        screen = AttendanceSubjectScreen(
+          department: department,
+          semester: semester,
+        );
         break;
 
       case FeatureType.assignments:
@@ -419,17 +312,11 @@ class _DepartmentSemesterSelectionScreenState
         break;
 
       case FeatureType.courses:
-        screen = CourseListScreen(
-          department: department,
-          semester: semester,
-        );
+        screen = CourseListScreen(department: department, semester: semester);
         break;
 
       case FeatureType.classes:
-        screen = StudentListScreen(
-          department: department,
-          semester: semester,
-        );
+        screen = StudentListScreen(department: department, semester: semester);
         break;
 
       case FeatureType.schedules:
@@ -440,35 +327,24 @@ class _DepartmentSemesterSelectionScreenState
         break;
 
       case FeatureType.notices:
-        screen = const NoticeScreen(
-          
-        );
+        screen = const NoticeScreen();
         break;
 
-  //    case FeatureType.grades:
-  // screen = GradeScreen(
-  //   department: department,
-  //   semester: semester,
-  // );
-  // break;
+      //    case FeatureType.grades:
+      // screen = GradeScreen(
+      //   department: department,
+      //   semester: semester,
+      // );
+      // break;
 
       case FeatureType.students:
-        screen = StudentListScreen(
-          department: department,
-          semester: semester ,
-        );
+        screen = StudentListScreen(department: department, semester: semester);
         break;
       case FeatureType.notes:
-        // TODO: Handle this case.
+        // Handle this case.
         throw UnimplementedError();
-      
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => screen,
-      ),
-    );
-  } 
+    Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+  }
 }
