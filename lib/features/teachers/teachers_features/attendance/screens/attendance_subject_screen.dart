@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/models/subject_model.dart';
 
@@ -35,7 +36,7 @@ class AttendanceSubjectScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: const Color(0xffF5F7FA),
         appBar: AppBar(
-          backgroundColor: Colors.blue,
+          backgroundColor:AppTheme.primary,
           foregroundColor: Colors.white,
           centerTitle: true,
           title: const Text("Select Subject"),
@@ -88,7 +89,7 @@ class AttendanceSubjectScreen extends StatelessWidget {
                         backgroundColor: Colors.blue.shade100,
                         child: const Icon(
                           Icons.menu_book,
-                          color: Colors.blue,
+                          color: AppTheme.primary,
                         ),
                       ),
                       title: Text(

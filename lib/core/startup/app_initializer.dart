@@ -24,23 +24,23 @@ class AppInitializer {
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
-    FirebaseMessaging.onBackgroundMessage(
-      firebaseMessagingBackgroundHandler,
-    );
+    // FirebaseMessaging.onBackgroundMessage(
+    //   firebaseMessagingBackgroundHandler,
+    // );
 
-    await NotificationService.initialize();
+  //   await NotificationService.initialize();
 
-    final settings =
-        await FirebaseMessaging.instance.requestPermission();
+  //   final settings =
+  //       await FirebaseMessaging.instance.requestPermission();
 
-    debugPrint(
-      "Notification Permission: ${settings.authorizationStatus}",
-    );
+  //   debugPrint(
+  //     "Notification Permission: ${settings.authorizationStatus}",
+  //   );
 
-    final token =
-        await FirebaseMessaging.instance.getToken();
+  //   final token =
+  //       await FirebaseMessaging.instance.getToken();
 
-    debugPrint("FCM Token:");
-    debugPrint(token);
-  }
+  //   debugPrint("FCM Token:");
+  //   debugPrint(token);
+ }
 }

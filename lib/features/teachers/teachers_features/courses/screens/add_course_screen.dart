@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/core/data/semester_subjects.dart';
 import '../blocs/bloc/course_bloc.dart';
 import '../models/course_model.dart';
@@ -107,7 +108,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
 
   InputDecoration _inputDecoration({
     required String label,
-    required IconData icon,
+    required IconData icon, required Color color,
   }) {
     return InputDecoration(
       labelText: label,
@@ -171,7 +172,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
         appBar: AppBar(
           elevation: 0,
           centerTitle: true,
-          backgroundColor: Colors.blue,
+          backgroundColor: AppTheme.primary,
           foregroundColor: Colors.white,
           title: const Text("Add Course"),
         ),
@@ -202,7 +203,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
 
                       Text(
                         "Teacher : $teacherName",
-                        style: TextStyle(color: Colors.grey.shade700),
+                        style: const TextStyle(color: Colors.black),
                       ),
 
                       const SizedBox(height: 30),
@@ -215,6 +216,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                               decoration: _inputDecoration(
                                 label: "Course Name",
                                 icon: Icons.menu_book,
+                                 color:AppTheme.primary,
                               ),
                               items: predefinedSubjects
                                   .map(
@@ -243,6 +245,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                   decoration: _inputDecoration(
                                     label: "Course Name",
                                     icon: Icons.menu_book,
+                                     color:AppTheme.primary,
                                   ),
                                   validator: (value) {
                                     if (value == null || value.trim().isEmpty) {
@@ -274,6 +277,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                         decoration: _inputDecoration(
                           label: "Course Code",
                           icon: Icons.code,
+                           color:AppTheme.primary,
                         ),
 
                         validator: (value) {
@@ -294,6 +298,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                         decoration: _inputDecoration(
                           label: "Description",
                           icon: Icons.description,
+                           color:AppTheme.primary,
                         ),
 
                         validator: (value) {
@@ -313,7 +318,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                         ),
 
                         child: ListTile(
-                          leading: const Icon(Icons.school, color: Colors.blue),
+                          leading: const Icon(Icons.school, color:AppTheme.primary),
 
                           title: const Text("Department"),
 
@@ -332,7 +337,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                         child: ListTile(
                           leading: const Icon(
                             Icons.calendar_today,
-                            color: Colors.orange,
+                            color:AppTheme.primary,
                           ),
 
                           title: const Text("Semester"),
@@ -352,7 +357,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                             height: 55,
                             child: ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue,
+                                backgroundColor: AppTheme.primary,
                                 foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),

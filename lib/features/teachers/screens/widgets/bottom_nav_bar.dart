@@ -11,17 +11,24 @@ class DashboardBottomNav extends StatelessWidget {
     required this.onTap,
   });
 
-  static const Color primaryColor =  AppTheme.primary;
+  static const Color primaryColor = AppTheme.primary;
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
+    final iconSize = width * 0.065; // Responsive
+    final fontSize = width * 0.030;
+    final verticalPadding = width * 0.022;
+    final radius = width * 0.045;
+
     return Container(
-      decoration: const BoxDecoration(
-        color: Color.fromARGB(134, 255, 255, 255),
+      decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24),
+          top: Radius.circular(radius),
         ),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Color(0x14000000),
             blurRadius: 15,
@@ -32,36 +39,51 @@ class DashboardBottomNav extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 8,
-            vertical: 8,
+          padding: EdgeInsets.symmetric(
+            horizontal: width * 0.02,
+            vertical: width * 0.015,
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-
               _navItem(
+                context,
                 index: 0,
                 icon: Icons.home_rounded,
                 label: "Home",
+                iconSize: iconSize,
+                fontSize: fontSize,
+                radius: radius,
+                padding: verticalPadding,
               ),
-
               _navItem(
+                context,
                 index: 1,
                 icon: Icons.menu_book_rounded,
                 label: "Courses",
+                iconSize: iconSize,
+                fontSize: fontSize,
+                radius: radius,
+                padding: verticalPadding,
               ),
-
               _navItem(
+                context,
                 index: 2,
                 icon: Icons.calendar_month_rounded,
                 label: "Schedule",
+                iconSize: iconSize,
+                fontSize: fontSize,
+                radius: radius,
+                padding: verticalPadding,
               ),
-
               _navItem(
+                context,
                 index: 3,
                 icon: Icons.person_rounded,
                 label: "Profile",
+                iconSize: iconSize,
+                fontSize: fontSize,
+                radius: radius,
+                padding: verticalPadding,
               ),
             ],
           ),
@@ -70,50 +92,54 @@ class DashboardBottomNav extends StatelessWidget {
     );
   }
 
-  Widget _navItem({
+  Widget _navItem(
+    BuildContext context, {
     required int index,
     required IconData icon,
     required String label,
+    required double iconSize,
+    required double fontSize,
+    required double radius,
+    required double padding,
   }) {
     final bool selected = currentIndex == index;
 
     return Expanded(
       child: InkWell(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(radius),
         onTap: () => onTap(index),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
-          padding: const EdgeInsets.symmetric(
-            vertical: 10,
-          ),
+          padding: EdgeInsets.symmetric(vertical: padding),
           decoration: BoxDecoration(
             color: selected
-                ? AppTheme.primary.withValues(alpha:.10)
+                ? AppTheme.primary.withValues(alpha: .10)
                 : Colors.transparent,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(radius),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-
-              Icon(
-                icon,
-                size: 26,
-                color: selected
-                    ?  AppTheme.primary
-                    : const Color.fromARGB(33, 158, 158, 158),
+              FittedBox(
+                child: Icon(
+                  icon,
+                  size: iconSize.clamp(22.0, 30.0),
+                  color: selected ? AppTheme.primary : Colors.black,
+                ),
               ),
-
-              const SizedBox(height: 4),
-
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: selected
-                      ?  AppTheme.primary
-                      : const Color.fromARGB(218, 158, 158, 158),
+              SizedBox(height: padding * 0.4),
+              FittedBox(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: fontSize.clamp(10.0, 14.0),
+                    fontWeight: FontWeight.w600,
+                    color: selected
+                        ? AppTheme.primary
+                        : Colors.black,
+                  ),
                 ),
               ),
             ],
