@@ -4,46 +4,53 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'package:nexcampus_app/core/constants/app_theme.dart';
+
 import 'package:nexcampus_app/features/teachers/teachers_features/attendance/models/attendance_model.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/attendance/models/attendancestudent_model.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/attendance/repositories/attendance_repository.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/attendance/screens/attendance_history_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/attendance/services/attendance_service.dart';
-import 'package:nexcampus_app/features/teachers/teachers_features/attendance/widgets/attendance_search_bar.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/attendance/widgets/attendance_student_tile.dart';
-import 'package:nexcampus_app/features/teachers/teachers_features/attendance/widgets/attendance_summary_card.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/classes/models/student_model.dart';
 
 class MarkAttendanceScreen extends StatefulWidget {
-final String department;
-final int semester;
-final String subjectId;
-final String subjectName;
+  final String department;
+  final int semester;
+  final String subjectId;
+  final String subjectName;
 
- const MarkAttendanceScreen({
-  super.key,
-  required this.department,
-  required this.semester,
-  required this.subjectId,
-  required this.subjectName,
-});
+  const MarkAttendanceScreen({
+    super.key,
+    required this.department,
+    required this.semester,
+    required this.subjectId,
+    required this.subjectName,
+  });
 
   @override
-  State<MarkAttendanceScreen> createState() => _MarkAttendanceScreenState();
+  State<MarkAttendanceScreen> createState() =>
+      _MarkAttendanceScreenState();
 }
 
-class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
-  final AttendanceRepository repository = AttendanceRepository(
+class _MarkAttendanceScreenState
+    extends State<MarkAttendanceScreen> {
+
+  final AttendanceRepository repository =
+      AttendanceRepository(
     AttendanceService(),
   );
 
-  final TextEditingController searchController = TextEditingController();
+  final TextEditingController searchController =
+      TextEditingController();
 
   final Map<String, bool> attendance = {};
 
   String search = "";
 
   bool isSaving = false;
+
+  bool selectAllPresent = false;
 
   @override
   void dispose() {
@@ -61,31 +68,35 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final size = MediaQuery.of(context).size;
+
+    final width = size.width;
+    final height = size.height;
+
     return Scaffold(
-      backgroundColor: const Color(0xffF5F7FA),
+
+      backgroundColor: const Color(0xffF5F7FB),
 
       appBar: AppBar(
+
         elevation: 0,
-        backgroundColor: Colors.blue,
+
+        backgroundColor:AppTheme.primary,
+
         foregroundColor: Colors.white,
+
         centerTitle: true,
 
-        title: Column(
-  children: [
-    Text(
-      widget.subjectName,
-      style: const TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 20,
-      ),
-    ),
-    Text(
-      "${widget.department} • Semester ${widget.semester}",
-      style: const TextStyle(fontSize: 14),
-    ),
-  ],
-),
+        title: const Text(
+          "Mark Attendance",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
         actions: [
+
           IconButton(
             tooltip: "Attendance History",
             icon: const Icon(Icons.history),
@@ -93,174 +104,340 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => AttendanceHistoryScreen(
-  department: widget.department,
-  semester: widget.semester.toString(),
-  subjectId: widget.subjectId,
-),
+                  builder: (_) =>
+                      AttendanceHistoryScreen(
+                    department: widget.department,
+                    semester:
+                        widget.semester.toString(),
+                    subjectId: widget.subjectId,
+                  ),
                 ),
               );
             },
           ),
+
         ],
       ),
+
       body: StreamBuilder<List<StudentModel>>(
+
         stream: repository.getStudents(
           department: widget.department,
           semester: widget.semester,
         ),
+
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+
+          if (snapshot.connectionState ==
+              ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text(snapshot.error.toString()));
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
           }
 
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text("No students found"));
+          if (!snapshot.hasData ||
+              snapshot.data!.isEmpty) {
+            return const Center(
+              child: Text("No students found"),
+            );
           }
 
           final students = snapshot.data!;
-          // Initialize attendance map for new students
+
           for (final student in students) {
-            attendance.putIfAbsent(student.uid, () => false);
+            attendance.putIfAbsent(
+              student.uid,
+              () => false,
+            );
           }
 
-          final filteredStudents = students.where((student) {
-            return student.fullName.toLowerCase().contains(
-                  search.toLowerCase(),
-                ) ||
-                student.roll.toLowerCase().contains(search.toLowerCase());
+          final filteredStudents =
+              students.where((student) {
+            return student.fullName
+                    .toLowerCase()
+                    .contains(
+                      search.toLowerCase(),
+                    ) ||
+                student.roll
+                    .toLowerCase()
+                    .contains(
+                      search.toLowerCase(),
+                    );
           }).toList();
 
-          final presentStudents = getPresentCount();
-          final absentStudents = getAbsentCount(students.length);
+          final presentStudents =
+              getPresentCount();
 
-          return Column(
-            children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.only(
-                  left: 16,
-                  right: 16,
-                  top: 12,
-                  bottom: 20,
-                ),
-                decoration: const BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(24),
-                    bottomRight: Radius.circular(24),
+          final absentStudents =
+              getAbsentCount(
+            students.length,
+          );
+
+          Widget summaryCard({
+            required String title,
+            required String value,
+            required IconData icon,
+            required Color color,
+          }) {
+            return Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: 16,
+              ),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: .08),
+                borderRadius:
+                    BorderRadius.circular(18),
+              ),
+              child: Column(
+                children: [
+
+                  Icon(
+                    icon,
+                    color: color,
+                    size: 24,
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
+
+                  const SizedBox(height: 5),
+
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade700,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return Padding(
+
+            padding: EdgeInsets.symmetric(
+              horizontal: width * .045,
+              vertical: height * .02,
+            ),
+
+            child: Column(
+              children: [
+                                /// Subject Card
+                Container(
+  width: double.infinity,
+  padding: const EdgeInsets.symmetric(
+    vertical: 22,
+    horizontal: 20,
+  ),
+  decoration: BoxDecoration(
+    color: AppTheme.primary,
+    borderRadius: BorderRadius.circular(18),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(.05),
+        blurRadius: 10,
+        offset: const Offset(0, 5),
+      ),
+    ],
+  ),
+  child: Column(
+    children: [
+
+      Text(
+        widget.subjectName,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 24,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+
+      const SizedBox(height: 8),
+
+      Text(
+        DateFormat("EEEE, dd MMM yyyy")
+            .format(DateTime.now()),
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 15,
+        ),
+      ),
+    ],
+  ),
+),
+
+                SizedBox(height: height * .025),
+
+                /// Search Student
+                TextField(
+                  controller: searchController,
+                  onChanged: (value) {
+                    setState(() {
+                      search = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText:
+                        "Search student by name or roll",
+
+                    prefixIcon:
+                        const Icon(Icons.search),
+
+                    suffixIcon: search.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () {
+                              searchController.clear();
+
+                              setState(() {
+                                search = "";
+                              });
+                            },
+                          )
+                        : null,
+
+                    filled: true,
+                    fillColor: Colors.white,
+
+                    border: OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.circular(18),
+                      borderSide: BorderSide.none,
+                    ),
+
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.circular(18),
+                      borderSide: BorderSide(
+                        color: Colors.grey.shade300,
+                      ),
+                    ),
+
+                    focusedBorder: const OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.all(
+                        Radius.circular(18),
+                      ),
+                      borderSide: BorderSide(
+                        color: AppTheme.primary,
+                        width: 1.5,
+                      ),
+                    ),
                   ),
                 ),
-                child: Column(
+
+                                /// Attendance Summary Card
+               
+                SizedBox(height: height * .025),
+
+                /// Students Header
+                Row(
                   children: [
-                    Text(
-                      DateFormat("EEEE, dd MMMM yyyy").format(DateTime.now()),
-                      style: const TextStyle(color: Colors.white70),
-                    ),
 
-                    const SizedBox(height: 15),
-
-                    AttendanceSummaryCard(
-                      totalStudents: students.length,
-                      presentStudents: presentStudents,
-                      absentStudents: absentStudents,
-                    ),
-                  ],
-                ),
-              ),
-
-              AttendanceSearchBar(
-                controller: searchController,
-                onChanged: (value) {
-                  setState(() {
-                    search = value;
-                  });
-                },
-                onClear: () {
-                  searchController.clear();
-                  setState(() {
-                    search = "";
-                  });
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                        ),
-                        icon: const Icon(Icons.done_all),
-                        label: const Text("All Present"),
-                        onPressed: () {
-                          for (final student in students) {
-                            attendance[student.uid] = true;
-                          }
-
-                          setState(() {});
-                        },
+                    const Text(
+                      "Students",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
 
-                    const SizedBox(width: 12),
+                    const Spacer(),
 
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
+                    Container(
+                      padding:
+                          const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 7,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primary
+                            .withValues(alpha: .10),
+                        borderRadius:
+                            BorderRadius.circular(30),
+                      ),
+                      child: Text(
+                        "${filteredStudents.length} Students",
+                        style: const TextStyle(
+                          color: AppTheme.primary,
+                          fontWeight: FontWeight.w600,
                         ),
-                        icon: const Icon(Icons.close),
-                        label: const Text("All Absent"),
-                        onPressed: () {
-                          for (final student in students) {
-                            attendance[student.uid] = false;
-                          }
-
-                          setState(() {});
-                        },
                       ),
                     ),
                   ],
                 ),
-              ),
 
-              const SizedBox(height: 10),
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 100),
-                  itemCount: filteredStudents.length,
-                  itemBuilder: (context, index) {
-                    final student = filteredStudents[index];
+                SizedBox(height: height * .02),
 
-                    return AttendanceStudentTile(
-                      student: student,
-                      present: attendance[student.uid] ?? false,
-                      onChanged: (value) {
-                        setState(() {
-                          attendance[student.uid] = value;
-                        });
-                      },
-                    );
-                  },
+                /// Students List
+                Expanded(
+                                    child: ListView.separated(
+                    padding: EdgeInsets.only(
+                      bottom: height * .13,
+                    ),
+                    itemCount: filteredStudents.length,
+                    separatorBuilder: (_, __) =>
+                        const SizedBox(height: 14),
+
+                    itemBuilder: (context, index) {
+
+                      final student =
+                          filteredStudents[index];
+
+                      final present =
+                          attendance[student.uid] ??
+                              false;
+
+                      return AttendanceStudentTile(
+                        student: student,
+                        present: present,
+                        onChanged: (value) {
+
+                          setState(() {
+
+                            attendance[student.uid] =
+                                value;
+
+                            /// Update switch automatically
+                            selectAllPresent =
+                                attendance.values.every(
+                              (e) => e,
+                            );
+                          });
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+
+              ],
+            ),
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.blue,
+
+      floatingActionButton:
+            FloatingActionButton.extended(
+        backgroundColor: AppTheme.primary,
         foregroundColor: Colors.white,
+
         icon: isSaving
             ? const SizedBox(
                 width: 18,
@@ -270,16 +447,24 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                   strokeWidth: 2,
                 ),
               )
-            : const Icon(Icons.save),
-        label: Text(isSaving ? "Saving..." : "Save Attendance"),
+            : const Icon(Icons.save_rounded),
+
+        label: Text(
+          isSaving
+              ? "Saving..."
+              : "Save Attendance",
+        ),
+
         onPressed: isSaving
             ? null
             : () async {
+
                 setState(() {
                   isSaving = true;
                 });
 
                 try {
+
                   final students = await repository
                       .getStudents(
                         department: widget.department,
@@ -287,77 +472,138 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                       )
                       .first;
 
-                  final attendanceStudents = students.map((student) {
+                  final attendanceStudents =
+                      students.map((student) {
                     return AttendanceStudentModel(
                       uid: student.uid,
                       fullName: student.fullName,
                       roll: student.roll,
                       photoUrl: student.photoUrl,
-                      isPresent: attendance[student.uid] ?? false,
+                      isPresent:
+                          attendance[student.uid] ??
+                              false,
                     );
                   }).toList();
 
-                final attendanceModel = AttendanceModel(
-  id: DateTime.now().millisecondsSinceEpoch.toString(),
-  department: widget.department,
-  semester: widget.semester.toString(),
-  subjectId: widget.subjectId,
-  subjectName: widget.subjectName,
-  teacherId: FirebaseAuth.instance.currentUser!.uid,
-  date: DateTime.now(),
-  students: attendanceStudents,
-);
+                  final attendanceModel =
+                      AttendanceModel(
+                    id: DateTime.now()
+                        .millisecondsSinceEpoch
+                        .toString(),
+                    department:
+                        widget.department,
+                    semester:
+                        widget.semester.toString(),
+                    subjectId:
+                        widget.subjectId,
+                    subjectName:
+                        widget.subjectName,
+                    teacherId:
+                        FirebaseAuth.instance
+                            .currentUser!
+                            .uid,
+                    date: DateTime.now(),
+                    students:
+                        attendanceStudents,
+                  );
+
                   final save =
                       await showDialog<bool>(
-                        context: context,
-                        builder: (_) => AlertDialog(
-                          title: const Text("Save Attendance"),
-                          content: const Text(
-                            "Are you sure you want to save today's attendance?",
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: const Text("Cancel"),
+                            context: context,
+                            builder: (_) =>
+                                AlertDialog(
+                              shape:
+                                  RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius
+                                        .circular(
+                                            18),
+                              ),
+                              title: const Text(
+                                "Save Attendance",
+                              ),
+                              content: const Text(
+                                "Are you sure you want to save today's attendance?",
+                              ),
+                              actions: [
+
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(
+                                          context,
+                                          false),
+                                  child: const Text(
+                                      "Cancel"),
+                                ),
+
+                                ElevatedButton(
+                                  style:
+                                      ElevatedButton
+                                          .styleFrom(
+                                    backgroundColor:
+                                        AppTheme
+                                            .primary,
+                                    foregroundColor:
+                                        Colors.white,
+                                  ),
+                                  onPressed: () =>
+                                      Navigator.pop(
+                                          context,
+                                          true),
+                                  child:
+                                      const Text(
+                                    "Save",
+                                  ),
+                                ),
+                              ],
                             ),
-                            ElevatedButton(
-                              onPressed: () => Navigator.pop(context, true),
-                              child: const Text("Save"),
-                            ),
-                          ],
-                        ),
-                      ) ??
-                      false;
+                          ) ??
+                          false;
 
                   if (!save) {
+
                     setState(() {
                       isSaving = false;
                     });
+
                     return;
                   }
 
-                  await repository.saveAttendance(attendanceModel);
+                  await repository.saveAttendance(
+                    attendanceModel,
+                  );
 
                   if (!mounted) return;
 
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(
                     const SnackBar(
-                      backgroundColor: Colors.green,
-                      content: Text("Attendance saved successfully!"),
+                      backgroundColor:
+                          Colors.green,
+                      content: Text(
+                        "Attendance saved successfully!",
+                      ),
                     ),
                   );
 
                   Navigator.pop(context);
+
                 } catch (e) {
+
                   if (!mounted) return;
 
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(
                     SnackBar(
-                      backgroundColor: Colors.red,
-                      content: Text(e.toString()),
+                      backgroundColor:
+                          Colors.red,
+                      content:
+                          Text(e.toString()),
                     ),
                   );
+
                 } finally {
+
                   if (mounted) {
                     setState(() {
                       isSaving = false;
@@ -367,7 +613,5 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
               },
       ),
     );
-  } // ← closes build()
-} // ← closes _MarkAttendanceScreenState
-
- // ← closes MarkAttendanceScreen
+  }
+}
