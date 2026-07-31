@@ -1,4 +1,3 @@
-// lib/features/student/blocs/anonymous_issue_reporting/screens/anonymous_issue_reporting_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
@@ -12,36 +11,52 @@ import '../utils/issue_colors.dart';
 import '../widgets/issue_filter_bar.dart';
 import '../widgets/issue_post_card.dart';
 import '../widgets/issue_post_empty_widget.dart';
+import '../widgets/my_reports_list_view.dart';
 import 'create_issue_post_screen.dart';
 import 'issue_post_detail_screen.dart';
+import 'submit_report_screen.dart';
 
 /// Entry point for the Anonymous Issue Reporting feature. Owns the
-/// [AnonymousIssueBloc] and hosts two tabs: Feed (everyone's posts) and
+/// [AnonymousIssueBloc] and hosts three tabs: Feed (everyone's posts),
 /// My Posts (posts the current student created, still shown anonymously
-/// to everyone else - only the owner sees a small "You" badge).
+/// to everyone else - only the owner sees a small "You" badge), and
+/// My Reports (named reports the student submitted to admins, with
+/// status + feedback - see `ReportModel`/`ReportService`).
 ///
-/// Only [studentId] is required: it is never displayed anywhere in the
-/// UI, it's used solely to attribute a post/comment for edit/delete
-/// permissions and to know which posts/comments the current student has
-/// personally upvoted.
+/// [studentId] is used to attribute a post/comment for edit/delete
+/// permissions, to know which posts/comments the current student has
+/// personally upvoted, and (together with [studentName]) to submit and
+/// look up the student's named reports on the "My Reports" tab.
 class AnonymousIssueReportingScreen extends StatelessWidget {
-  const AnonymousIssueReportingScreen({super.key, required this.studentId});
+  const AnonymousIssueReportingScreen({
+    super.key,
+    required this.studentId,
+    required this.studentName,
+  });
 
   final String studentId;
+  final String studentName;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AnonymousIssueBloc>(
       create: (_) =>
           AnonymousIssueBloc(repository: AnonymousIssueRepositoryImpl()),
-      child: _AnonymousIssueView(studentId: studentId),
+      child: _AnonymousIssueView(
+        studentId: studentId,
+        studentName: studentName,
+      ),
     );
   }
 }
 
 class _AnonymousIssueView extends StatefulWidget {
-  const _AnonymousIssueView({required this.studentId});
+  const _AnonymousIssueView({
+    required this.studentId,
+    required this.studentName,
+  });
   final String studentId;
+  final String studentName;
 
   @override
   State<_AnonymousIssueView> createState() => _AnonymousIssueViewState();
@@ -49,15 +64,24 @@ class _AnonymousIssueView extends StatefulWidget {
 
 class _AnonymousIssueViewState extends State<_AnonymousIssueView>
     with SingleTickerProviderStateMixin {
+  static const int _myReportsTabIndex = 2;
+
   late final TabController _tabController;
   String? _filterCategory;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(_onTabChanged);
     _loadFeed();
     _loadMyPosts();
+  }
+
+  void _onTabChanged() {
+    if (!_tabController.indexIsChanging) {
+      setState(() {});
+    }
   }
 
   void _loadFeed() {
@@ -72,10 +96,6 @@ class _AnonymousIssueViewState extends State<_AnonymousIssueView>
     );
   }
 
-  /// Re-fires the feed subscription and gives the RefreshIndicator a
-  /// moment to visibly spin before it snaps back - the actual data comes
-  /// from Firestore's live stream, this just forces a fresh subscription
-  /// (handy if the previous one stalled on an error, e.g. a missing index).
   Future<void> _onRefreshFeed() async {
     _loadFeed();
     await Future.delayed(const Duration(milliseconds: 600));
@@ -88,6 +108,7 @@ class _AnonymousIssueViewState extends State<_AnonymousIssueView>
 
   @override
   void dispose() {
+    _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
     super.dispose();
   }
@@ -117,6 +138,25 @@ class _AnonymousIssueViewState extends State<_AnonymousIssueView>
     );
   }
 
+  void _openSubmitReport() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => SubmitReportScreen(
+          studentId: widget.studentId,
+          studentName: widget.studentName,
+        ),
+      ),
+    );
+  }
+
+  VoidCallback get _fabAction => _tabController.index == _myReportsTabIndex
+      ? _openSubmitReport
+      : _openCreatePost;
+
+  IconData get _fabIcon => _tabController.index == _myReportsTabIndex
+      ? Icons.add_box_outlined
+      : Icons.add;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -140,13 +180,14 @@ class _AnonymousIssueViewState extends State<_AnonymousIssueView>
           tabs: const [
             Tab(text: 'Feed'),
             Tab(text: 'My Posts'),
+            Tab(text: 'My Reports'),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _openCreatePost,
+        onPressed: _fabAction,
         backgroundColor: IssueColors.skyBlue,
-        child: const Icon(Icons.add, color: Colors.white),
+        child: Icon(_fabIcon, color: Colors.white),
       ),
       body: TabBarView(
         controller: _tabController,
@@ -166,15 +207,17 @@ class _AnonymousIssueViewState extends State<_AnonymousIssueView>
             onPostTap: _openPostDetail,
             onRefresh: _onRefreshMyPosts,
           ),
+          // My Reports Tab - Using the existing MyReportsListView
+          MyReportsListView(
+            studentId: widget.studentId,
+            onSubmitNew: _openSubmitReport,
+          ),
         ],
       ),
     );
   }
 }
 
-/// Wraps non-list content (loading/error/empty states) in a scrollable
-/// container that fills the viewport, so RefreshIndicator's pull gesture
-/// still works even when there's nothing to scroll yet.
 Widget _refreshableFallback(Widget child) {
   return LayoutBuilder(
     builder: (context, constraints) {

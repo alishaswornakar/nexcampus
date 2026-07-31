@@ -215,6 +215,7 @@ class _QuickAccessGridState extends State<QuickAccessGrid> {
                 MaterialPageRoute(
                   builder: (context) => AnonymousIssueReportingScreen(
                     studentId: profile.studentId,
+                    studentName: profile.studentName,
                   ),
                 ),
               ),
