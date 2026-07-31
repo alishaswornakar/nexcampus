@@ -16,7 +16,7 @@ class EditProfileButton extends StatelessWidget {
         onPressed:
             onPressed ??
             () {
-              //Navigate to edit profile screen, passing `profile`
+              // Navigate to edit profile screen, passing `profile`
             },
         icon: const Icon(Icons.edit_outlined),
         label: const Text('Edit Profile'),

@@ -22,10 +22,7 @@ enum FeatureType {
 class DepartmentSemesterSelectionScreen extends StatefulWidget {
   final FeatureType feature;
 
-  const DepartmentSemesterSelectionScreen({
-    super.key,
-    required this.feature,
-  });
+  const DepartmentSemesterSelectionScreen({super.key, required this.feature});
 
   @override
   State<DepartmentSemesterSelectionScreen> createState() =>
@@ -50,10 +47,7 @@ class _DepartmentSemesterSelectionScreenState
 
     final total = departments[selectedDepartment] ?? 8;
 
-    return List.generate(
-      total,
-      (index) => "${index + 1}",
-    );
+    return List.generate(total, (index) => "${index + 1}");
   }
 
  @override
