@@ -108,7 +108,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
 
   InputDecoration _inputDecoration({
     required String label,
-    required IconData icon,
+    required IconData icon, required Color color,
   }) {
     return InputDecoration(
       labelText: label,
@@ -203,7 +203,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
 
                       Text(
                         "Teacher : $teacherName",
-                        style: TextStyle(color: Colors.grey.shade700),
+                        style: const TextStyle(color: Colors.black),
                       ),
 
                       const SizedBox(height: 30),
@@ -216,6 +216,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                               decoration: _inputDecoration(
                                 label: "Course Name",
                                 icon: Icons.menu_book,
+                                 color:AppTheme.primary,
                               ),
                               items: predefinedSubjects
                                   .map(
@@ -244,6 +245,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                   decoration: _inputDecoration(
                                     label: "Course Name",
                                     icon: Icons.menu_book,
+                                     color:AppTheme.primary,
                                   ),
                                   validator: (value) {
                                     if (value == null || value.trim().isEmpty) {
@@ -275,6 +277,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                         decoration: _inputDecoration(
                           label: "Course Code",
                           icon: Icons.code,
+                           color:AppTheme.primary,
                         ),
 
                         validator: (value) {
@@ -295,6 +298,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                         decoration: _inputDecoration(
                           label: "Description",
                           icon: Icons.description,
+                           color:AppTheme.primary,
                         ),
 
                         validator: (value) {
@@ -314,7 +318,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                         ),
 
                         child: ListTile(
-                          leading: const Icon(Icons.school, color: Colors.blue),
+                          leading: const Icon(Icons.school, color:AppTheme.primary),
 
                           title: const Text("Department"),
 
@@ -333,7 +337,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                         child: ListTile(
                           leading: const Icon(
                             Icons.calendar_today,
-                            color: Colors.orange,
+                            color:AppTheme.primary,
                           ),
 
                           title: const Text("Semester"),
