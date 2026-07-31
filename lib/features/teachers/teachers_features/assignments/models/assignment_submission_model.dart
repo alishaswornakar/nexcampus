@@ -13,7 +13,7 @@ class AssignmentSubmissionModel {
   final String semester;
 
   final String pdfUrl;
-  final String pdfName;
+  final String title;
 
   final String remarks;
 
@@ -34,7 +34,7 @@ class AssignmentSubmissionModel {
     required this.department,
     required this.semester,
     required this.pdfUrl,
-    required this.pdfName,
+    required this.title,
     required this.remarks,
     required this.submittedAt,
 
@@ -60,7 +60,7 @@ class AssignmentSubmissionModel {
       semester: map["semester"] ?? "",
 
       pdfUrl: map["pdfUrl"] ?? "",
-      pdfName: map["pdfName"] ?? "",
+      title: map["pdfName"] ?? "",
 
       remarks: map["remarks"] ?? "",
 
@@ -89,7 +89,7 @@ class AssignmentSubmissionModel {
       "semester": semester,
 
       "pdfUrl": pdfUrl,
-      "pdfName": pdfName,
+      "pdfName": title,
 
       "remarks": remarks,
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
+import 'package:nexcampus_app/features/student/blocs/notices/screens/pdf_viewer_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/screens/grade_submission_screen.dart';
 
 import '../models/assignment_model.dart';
@@ -430,36 +431,63 @@ class TeacherSubmissionListScreen extends StatelessWidget {
 
 
 
-                                  if(submission.grade.isNotEmpty)
+                                if(submission.grade.isNotEmpty)
+  Padding(
+    padding: const EdgeInsets.only(top:4),
+    child: Text(
+      "Marks: ${submission.grade}",
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: isTablet ? 16 : 14,
+      ),
+    ),
+  ),
 
-                                    Padding(
 
-                                      padding:
-                                          const EdgeInsets.only(
-                                            top:4,
-                                          ),
+if(submission.pdfUrl.isNotEmpty)
 
-                                      child: Text(
+  Padding(
 
-                                        "Marks: ${submission.grade}",
+    padding:
+        const EdgeInsets.only(top:12),
 
-                                        style:
-                                            TextStyle(
+    child: OutlinedButton.icon(
 
-                                          fontWeight:
-                                              FontWeight.w600,
+      icon:
+          const Icon(
+            Icons.picture_as_pdf,
+            color: Colors.red,
+          ),
 
-                                          fontSize:
-                                              isTablet
-                                                  ? 16
-                                                  : 14,
+      label:
+          const Text(
+            "View PDF",
+          ),
 
-                                        ),
 
-                                      ),
+      onPressed: (){
 
-                                    ),
+        Navigator.push(
 
+          context,
+
+          MaterialPageRoute(
+
+            builder: (_) =>
+                PdfViewerScreen(
+                  pdfUrl:
+                      submission.pdfUrl, title: submission.title,
+                ),
+
+          ),
+
+        );
+
+      },
+
+    ),
+
+  ),
 
 
                                 ],

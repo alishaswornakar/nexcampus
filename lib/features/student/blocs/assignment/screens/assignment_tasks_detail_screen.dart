@@ -187,7 +187,7 @@ class _AssignmentTasksDetailScreenState
         department: widget.assignment.department,
         semester: widget.assignment.semester,
         pdfUrl: _pickedFile!['url'] as String,
-        pdfName: _pickedFile!['name'] as String,
+        title: _pickedFile!['name'] as String,
         remarks: _remarksController.text.trim(),
         submittedAt: DateTime.now(),
       );

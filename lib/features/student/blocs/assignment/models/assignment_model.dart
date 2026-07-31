@@ -113,7 +113,7 @@ class StudentAssignmentModel {
 
   String? get submissionPdfUrl => submission?.pdfUrl;
 
-  String? get submissionPdfName => submission?.pdfName;
+  String? get submissionPdfName => submission?.title;
 
   // ---------------------------------------------------------------------------
   // Submission Details

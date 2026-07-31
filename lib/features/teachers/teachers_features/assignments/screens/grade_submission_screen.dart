@@ -3,6 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:open_filex/open_filex.dart';
 
 import '../models/assignment_submission_model.dart';
 import '../repository/assignment_submission_repository.dart';
@@ -95,7 +99,88 @@ class _GradeSubmissionScreenState
     super.dispose();
 
   }
+Future<void> downloadPdf() async {
 
+  try {
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Downloading PDF...",
+        ),
+      ),
+    );
+
+
+    final directory =
+        await getApplicationDocumentsDirectory();
+
+
+    final filePath =
+        "${directory.path}/${widget.submission.studentName}_assignment.pdf";
+
+
+    await Dio().download(
+
+      widget.submission.pdfUrl,
+
+      filePath,
+
+    );
+
+
+    if(!mounted) return;
+
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+
+      const SnackBar(
+
+        backgroundColor:
+            Colors.green,
+
+        content:
+            Text(
+          "PDF downloaded successfully",
+        ),
+
+      ),
+
+    );
+
+
+    await OpenFilex.open(filePath);
+
+
+  }
+
+  catch(e){
+
+    if(!mounted) return;
+
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+
+      SnackBar(
+
+        backgroundColor:
+            Colors.red,
+
+        content:
+            Text(
+          "Download failed: $e",
+        ),
+
+      ),
+
+    );
+
+  }
+
+}
 
 
 
@@ -401,6 +486,212 @@ class _GradeSubmissionScreenState
                     const SizedBox(
                       height: 8,
                     ),
+//                     _sectionTitle(
+//   "Submitted Assignment PDF",
+//   isTablet,
+// ),
+
+
+const SizedBox(
+  height: 8,
+),
+
+
+
+if(widget.submission.pdfUrl.isNotEmpty)
+
+Container(
+
+  width:
+      double.infinity,
+
+
+  padding:
+      EdgeInsets.all(
+        isTablet ? 18 : 14,
+      ),
+
+
+
+  decoration:
+      BoxDecoration(
+
+    color:
+        Colors.white,
+
+
+    borderRadius:
+        BorderRadius.circular(
+          isTablet ? 18 : 12,
+        ),
+
+  ),
+
+
+
+  child:
+
+  Column(
+
+    children: [
+
+
+      const Icon(
+        Icons.picture_as_pdf,
+        size: 50,
+        color: Colors.red,
+      ),
+
+
+
+      const SizedBox(
+        height: 10,
+      ),
+
+
+
+      Text(
+        "Student uploaded PDF",
+        style:
+            TextStyle(
+          fontSize:
+              isTablet ? 16 : 14,
+          fontWeight:
+              FontWeight.w600,
+        ),
+      ),
+
+
+
+      const SizedBox(
+        height: 15,
+      ),
+
+
+
+      SizedBox(
+
+        width:
+            double.infinity,
+
+
+        child:
+
+        ElevatedButton.icon(
+
+          icon:
+              const Icon(
+                Icons.visibility,
+              ),
+
+
+          label:
+              const Text(
+                "View PDF",
+              ),
+
+
+
+          style:
+              ElevatedButton.styleFrom(
+
+            backgroundColor:
+                AppTheme.primary,
+
+
+            foregroundColor:
+                Colors.white,
+
+          ),
+
+
+
+          onPressed: (){
+
+
+            Navigator.push(
+
+              context,
+
+              MaterialPageRoute(
+
+                builder: (_) =>
+                    Scaffold(
+
+                      appBar:
+                          AppBar(
+
+                        title:
+                            const Text(
+                          "Assignment PDF",
+                        ),
+
+                        backgroundColor:
+                            AppTheme.primary,
+
+                      ),
+
+
+
+                      body:
+
+                      SfPdfViewer.network(
+
+                        widget.submission.pdfUrl,
+
+                      ),
+
+                    ),
+
+              ),
+
+            );
+
+
+          },
+
+
+        ),
+
+      ),
+
+    ],
+
+  ),
+
+)
+
+else
+
+Container(
+
+  width:
+      double.infinity,
+
+  padding:
+      const EdgeInsets.all(16),
+
+
+  decoration:
+      BoxDecoration(
+
+    color:
+        Colors.white,
+
+
+    borderRadius:
+        BorderRadius.circular(12),
+
+  ),
+
+
+  child:
+
+  const Text(
+    "No PDF submitted.",
+  ),
+
+),
 
 
 
@@ -622,10 +913,7 @@ class _GradeSubmissionScreenState
                           isTablet ? 35 : 30,
                     ),
 
-
-
-
-                    SizedBox(
+                     SizedBox(
 
                       width:
                           double.infinity,

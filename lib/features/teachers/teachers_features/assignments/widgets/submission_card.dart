@@ -223,7 +223,7 @@ class SubmissionCard extends StatelessWidget {
 
                           child: Text(
 
-                            submission.pdfName,
+                            submission.title,
 
 
                             maxLines:
