@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 class PdfAttachmentCard extends StatelessWidget {
+
   final String fileName;
   final VoidCallback onView;
   final VoidCallback onDownload;
+
 
   const PdfAttachmentCard({
     super.key,
@@ -12,51 +14,146 @@ class PdfAttachmentCard extends StatelessWidget {
     required this.onDownload,
   });
 
+
   @override
   Widget build(BuildContext context) {
+
+    final width =
+        MediaQuery.of(context).size.width;
+
+    final isTablet =
+        width >= 600;
+
+
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+
+      elevation: 3,
+
+      shape:
+          RoundedRectangleBorder(
+
+            borderRadius:
+                BorderRadius.circular(
+                  isTablet ? 20 : 16,
+                ),
+          ),
+
+
       child: Padding(
-        padding: const EdgeInsets.all(16),
+
+        padding:
+            EdgeInsets.all(
+              isTablet ? 20 : width * 0.04,
+            ),
+
+
         child: Column(
+
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
+
+
           children: [
 
+
+            /// PDF HEADER
             Row(
+
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
+
+
               children: [
 
-                const CircleAvatar(
-                  radius: 24,
-                  backgroundColor: Color(0xffFDECEC),
+
+                CircleAvatar(
+
+                  radius:
+                      isTablet ? 28 : 24,
+
+
+                  backgroundColor:
+                      const Color(0xffFDECEC),
+
+
                   child: Icon(
+
                     Icons.picture_as_pdf,
-                    color: Colors.red,
-                    size: 28,
+
+                    color:
+                        Colors.red,
+
+                    size:
+                        isTablet ? 32 : 28,
                   ),
                 ),
 
-                const SizedBox(width: 16),
+
+
+                SizedBox(
+
+                  width:
+                      width * 0.035,
+                ),
+
+
 
                 Expanded(
+
                   child: Column(
+
                     crossAxisAlignment:
                         CrossAxisAlignment.start,
+
+
                     children: [
 
-                      const Text(
-                        "Attached PDF",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-
-                      const SizedBox(height: 4),
 
                       Text(
+
+                        "Attached PDF",
+
+
+                        style:
+                            TextStyle(
+
+                              fontWeight:
+                                  FontWeight.bold,
+
+                              fontSize:
+                                  isTablet ? 18 : 16,
+                            ),
+                      ),
+
+
+
+                      const SizedBox(
+                        height: 5,
+                      ),
+
+
+
+                      Text(
+
                         fileName,
-                        overflow: TextOverflow.ellipsis,
+
+
+                        maxLines: 2,
+
+
+                        overflow:
+                            TextOverflow.ellipsis,
+
+
+                        style:
+                            TextStyle(
+
+                              fontSize:
+                                  isTablet ? 16 : 14,
+
+                              color:
+                                  Colors.grey.shade700,
+                            ),
                       ),
                     ],
                   ),
@@ -64,33 +161,149 @@ class PdfAttachmentCard extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 20),
 
-            Row(
-              children: [
 
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: onView,
-                    icon: const Icon(Icons.visibility),
-                    label: const Text("View"),
-                  ),
-                ),
+            SizedBox(
 
-                const SizedBox(width: 12),
+              height:
+                  isTablet ? 24 : width * 0.05,
+            ),
 
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: onDownload,
-                    icon: const Icon(Icons.download),
-                    label: const Text("Download"),
-                  ),
-                ),
-              ],
+
+
+
+            /// ACTION BUTTONS
+            LayoutBuilder(
+
+              builder: (context, constraints) {
+
+
+                final smallWidth =
+                    constraints.maxWidth < 350;
+
+
+
+                if (smallWidth) {
+
+                  return Column(
+
+                    children: [
+
+
+                      SizedBox(
+
+                        width:
+                            double.infinity,
+
+
+                        child:
+                            _viewButton(),
+                      ),
+
+
+
+                      const SizedBox(
+                        height: 12,
+                      ),
+
+
+
+                      SizedBox(
+
+                        width:
+                            double.infinity,
+
+
+                        child:
+                            _downloadButton(),
+                      ),
+                    ],
+                  );
+                }
+
+
+
+                return Row(
+
+                  children: [
+
+
+                    Expanded(
+
+                      child:
+                          _viewButton(),
+                    ),
+
+
+
+                    const SizedBox(
+                      width: 12,
+                    ),
+
+
+
+                    Expanded(
+
+                      child:
+                          _downloadButton(),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),
       ),
+    );
+  }
+
+
+
+
+
+  Widget _viewButton() {
+
+    return OutlinedButton.icon(
+
+      onPressed:
+          onView,
+
+
+      icon:
+          const Icon(
+            Icons.visibility,
+          ),
+
+
+      label:
+          const Text(
+            "View",
+          ),
+    );
+  }
+
+
+
+
+
+  Widget _downloadButton() {
+
+    return ElevatedButton.icon(
+
+      onPressed:
+          onDownload,
+
+
+      icon:
+          const Icon(
+            Icons.download,
+          ),
+
+
+      label:
+          const Text(
+            "Download",
+          ),
     );
   }
 }

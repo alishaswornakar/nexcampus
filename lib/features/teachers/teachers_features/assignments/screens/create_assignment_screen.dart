@@ -1,11 +1,13 @@
-// ignore_for_file: unused_local_variable, use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously
 
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import '../models/assignment_model.dart';
 import '../repository/assignment_repository.dart';
@@ -16,350 +18,1003 @@ import '../widgets/assignment_form.dart';
 import '../widgets/create_assignment_button.dart';
 import '../widgets/pdf_upload_card.dart';
 
+
+
 class CreateAssignmentScreen extends StatefulWidget {
+
+
   final String department;
+
   final String? semester;
+
   final String selectedSubject;
 
-  /// null = Create
-  /// not null = Edit
+
+  /// null = create
+  /// not null = edit
+
   final AssignmentModel? assignment;
 
+
+
   const CreateAssignmentScreen({
+
     super.key,
+
     required this.department,
+
     required this.semester,
+
     required this.selectedSubject,
+
     this.assignment,
+
   });
+
+
 
   @override
   State<CreateAssignmentScreen> createState() =>
       _CreateAssignmentScreenState();
 }
 
+
+
+
+
 class _CreateAssignmentScreenState
     extends State<CreateAssignmentScreen> {
+
+
+
   final AssignmentRepository repository =
       AssignmentRepository(
-    AssignmentService(),
-  );
+        AssignmentService(),
+      );
+
+
 
   final CloudinaryService cloudinaryService =
       CloudinaryService();
 
-  final titleController =
+
+
+
+  final TextEditingController titleController =
       TextEditingController();
 
-  final descriptionController =
+
+
+  final TextEditingController descriptionController =
       TextEditingController();
+
+
+
 
   DateTime? dueDate;
 
+
+
   bool isSaving = false;
+
+
 
   bool isUploadingPdf = false;
 
+
+
+
   String? pdfUrl;
+
   String? pdfName;
+
+
+
+
 
   @override
   void initState() {
+
     super.initState();
 
-    if (widget.assignment != null) {
+
+    final assignment =
+        widget.assignment;
+
+
+
+    if (assignment != null) {
+
+
       titleController.text =
-          widget.assignment!.title;
+          assignment.title;
+
+
 
       descriptionController.text =
-          widget.assignment!.description;
+          assignment.description;
+
+
 
       dueDate =
-          widget.assignment!.dueDate;
+          assignment.dueDate;
+
+
 
       pdfUrl =
-          widget.assignment!.pdfUrl;
+          assignment.pdfUrl;
+
+
 
       pdfName =
-          widget.assignment!.pdfName;
+          assignment.pdfName;
     }
   }
+
+
+
+
 
   @override
   void dispose() {
+
+
     titleController.dispose();
+
+
     descriptionController.dispose();
+
+
     super.dispose();
   }
 
+
+
+
+
   Future<void> pickDueDate() async {
-    final picked = await showDatePicker(
+
+
+    final picked =
+        await showDatePicker(
+
       context: context,
+
+
       initialDate:
+
           dueDate ??
+
               DateTime.now().add(
-                const Duration(days: 7),
+                const Duration(
+                  days: 7,
+                ),
               ),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2035),
+
+
+      firstDate:
+          DateTime.now(),
+
+
+      lastDate:
+          DateTime(2035),
+
     );
 
+
+
     if (picked != null) {
+
+
       setState(() {
-        dueDate = picked;
+
+        dueDate =
+            picked;
+
       });
     }
   }
 
+
+
+
+
   Future<void> uploadPdf() async {
+
+
     setState(() {
+
       isUploadingPdf = true;
+
     });
 
+
+
     try {
-      // Let user pick a PDF file first
-      final picked = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['pdf'],
+
+
+      final picked =
+          await FilePicker.platform.pickFiles(
+
+
+        type:
+            FileType.custom,
+
+
+        allowedExtensions:
+            ['pdf'],
+
       );
 
-      if (picked == null || picked.files.isEmpty) {
-        // user cancelled
+
+
+
+      if (picked == null ||
+          picked.files.isEmpty) {
+
+
         setState(() {
+
           isUploadingPdf = false;
+
         });
+
+
         return;
       }
 
-      final path = picked.files.single.path;
+
+
+
+
+      final path =
+          picked.files.single.path;
+
+
+
       if (path == null) {
+
+
         setState(() {
+
           isUploadingPdf = false;
+
         });
+
+
         return;
       }
 
-      final selectedFile = File(path);
 
-      final cloudinary = CloudinaryService();
 
-      final result = await cloudinary.uploadFile(selectedFile);
 
-      final fileUrl = result["url"];
-    
-      final uploadedFileName = result["name"];
+
+      final file =
+          File(path);
+
+
+
+
+      final result =
+          await cloudinaryService.uploadFile(file);
+
+
+
 
       setState(() {
-        pdfUrl = result["url"];
-        pdfName = result["name"];
+
+
+        pdfUrl =
+            result["url"];
+
+
+        pdfName =
+            result["name"];
+
       });
+
+
+
+
+
+      if (!mounted) return;
+
+
 
       ScaffoldMessenger.of(context)
           .showSnackBar(
+
+
         const SnackBar(
-          backgroundColor: Colors.green,
-          content: Text(
+
+          backgroundColor:
+              Colors.green,
+
+
+          content:
+              Text(
             "PDF uploaded successfully",
           ),
         ),
       );
+
+
+
     } catch (e) {
+
+
+
+      if (!mounted) return;
+
+
+
       ScaffoldMessenger.of(context)
           .showSnackBar(
+
+
         SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(e.toString()),
-        ),
-      );
-    }
 
-    setState(() {
-      isUploadingPdf = false;
-    });
-  }
+          backgroundColor:
+              Colors.red,
 
-  Future<void> saveAssignment() async {
-    if (titleController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+
           content:
-              Text("Please enter assignment title."),
-        ),
-      );
-      return;
-    }
-
-    if (descriptionController.text
-        .trim()
-        .isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text("Please enter description."),
-        ),
-      );
-      return;
-    }
-
-    if (dueDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text("Please select due date."),
-        ),
-      );
-      return;
-    }
-
-    final user =
-        FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      return;
-    }
-
-    setState(() {
-      isSaving = true;
-    });
-
-    try {
-      final assignmentId =
-          widget.assignment?.id ??
-              FirebaseFirestore.instance
-                  .collection("assignments")
-                  .doc()
-                  .id;
-
-      final assignment =
-          AssignmentModel(
-        id: assignmentId,
-        title: titleController.text.trim(),
-        description:
-            descriptionController.text.trim(),
-        department: widget.department,
-        semester: widget.semester.toString(),
-        courseId: widget.selectedSubject,
-        courseName: widget.selectedSubject,
-        subject: widget.selectedSubject,
-        teacherId: user.uid,
-        teacherName:
-            user.displayName ?? "Teacher",
-        dueDate: dueDate!,
-        createdAt:
-            widget.assignment?.createdAt ??
-                DateTime.now(),
-        pdfUrl: pdfUrl,
-        pdfName: pdfName,
-        submissionCount:
-            widget.assignment?.submissionCount ??
-                0,
-      );
-            if (widget.assignment == null) {
-        await repository.createAssignment(
-          assignment,
-        );
-      } else {
-        await repository.updateAssignment(
-          assignment,
-        );
-      }
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.green,
-          content: Text(
-            widget.assignment == null
-                ? "Assignment Created Successfully"
-                : "Assignment Updated Successfully",
-          ),
-        ),
-      );
-
-      Navigator.pop(context, true);
-    } catch (e) {
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(
+              Text(
             e.toString(),
           ),
         ),
       );
+
     } finally {
+
+
       if (mounted) {
+
+
         setState(() {
+
+          isUploadingPdf = false;
+
+        });
+      }
+    }
+  }
+    Future<void> saveAssignment() async {
+
+
+    if (titleController.text.trim().isEmpty) {
+
+
+      ScaffoldMessenger.of(context).showSnackBar(
+
+        const SnackBar(
+
+          content:
+              Text(
+            "Please enter assignment title.",
+          ),
+        ),
+      );
+
+      return;
+    }
+
+
+
+
+    if (descriptionController.text.trim().isEmpty) {
+
+
+      ScaffoldMessenger.of(context).showSnackBar(
+
+        const SnackBar(
+
+          content:
+              Text(
+            "Please enter description.",
+          ),
+        ),
+      );
+
+      return;
+    }
+
+
+
+
+    if (dueDate == null) {
+
+
+      ScaffoldMessenger.of(context).showSnackBar(
+
+        const SnackBar(
+
+          content:
+              Text(
+            "Please select due date.",
+          ),
+        ),
+      );
+
+      return;
+    }
+
+
+
+
+
+    final user =
+        FirebaseAuth.instance.currentUser;
+
+
+
+
+    if (user == null) return;
+
+
+
+
+    setState(() {
+
+      isSaving = true;
+
+    });
+
+
+
+
+    try {
+
+
+
+      final assignmentId =
+
+          widget.assignment?.id ??
+
+              FirebaseFirestore.instance
+                  .collection(
+                    "assignments",
+                  )
+                  .doc()
+                  .id;
+
+
+
+
+      final assignment =
+          AssignmentModel(
+
+
+        id:
+            assignmentId,
+
+
+        title:
+            titleController.text.trim(),
+
+
+
+        description:
+            descriptionController.text.trim(),
+
+
+
+        department:
+            widget.department,
+
+
+
+        semester:
+            widget.semester.toString(),
+
+
+
+        courseId:
+            widget.selectedSubject,
+
+
+
+        courseName:
+            widget.selectedSubject,
+
+
+
+        subject:
+            widget.selectedSubject,
+
+
+
+        teacherId:
+            user.uid,
+
+
+
+        teacherName:
+            user.displayName ??
+                "Teacher",
+
+
+
+        dueDate:
+            dueDate!,
+
+
+
+        createdAt:
+
+            widget.assignment?.createdAt ??
+
+                DateTime.now(),
+
+
+
+        pdfUrl:
+            pdfUrl,
+
+
+
+        pdfName:
+            pdfName,
+
+
+
+        submissionCount:
+
+            widget.assignment?.submissionCount ??
+
+                0,
+
+      );
+
+
+
+
+
+
+      if (widget.assignment == null) {
+
+
+        await repository.createAssignment(
+          assignment,
+        );
+
+
+      } else {
+
+
+        await repository.updateAssignment(
+          assignment,
+        );
+
+      }
+
+
+
+
+
+
+      if (!mounted) return;
+
+
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+
+
+        SnackBar(
+
+          backgroundColor:
+              Colors.green,
+
+
+          content:
+
+              Text(
+
+            widget.assignment == null
+
+                ? "Assignment Created Successfully"
+
+                : "Assignment Updated Successfully",
+
+          ),
+        ),
+      );
+
+
+
+
+      Navigator.pop(
+        context,
+        true,
+      );
+
+
+
+
+    } catch (e) {
+
+
+
+      if (!mounted) return;
+
+
+
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+
+
+        SnackBar(
+
+          backgroundColor:
+              Colors.red,
+
+
+          content:
+              Text(
+            e.toString(),
+          ),
+        ),
+      );
+
+
+
+    } finally {
+
+
+      if (mounted) {
+
+
+        setState(() {
+
           isSaving = false;
+
         });
       }
     }
   }
 
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xffF5F7FA),
 
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        centerTitle: true,
-        title: Text(
+
+    final width =
+        MediaQuery.of(context).size.width;
+
+
+
+    final isTablet =
+        width >= 600;
+
+
+
+
+    final horizontalPadding =
+
+        isTablet
+
+            ? 50.0
+
+            : width * 0.045;
+
+
+
+
+
+
+    return Scaffold(
+
+
+
+      backgroundColor:
+
+          const Color(
+            0xffF5F7FA,
+          ),
+
+
+
+
+      appBar:
+
+          AppBar(
+
+
+        backgroundColor:
+
+            AppTheme.primary,
+
+
+
+        foregroundColor:
+
+            Colors.white,
+
+
+
+        centerTitle:
+
+            true,
+
+
+
+        title:
+
+            Text(
+
+
           widget.assignment == null
+
               ? "Create Assignment"
+
               : "Edit Assignment",
+
+
+
+          style:
+
+              TextStyle(
+
+                fontSize:
+
+                    isTablet
+                        ? 22
+                        : 18,
+
+
+                fontWeight:
+
+                    FontWeight.w600,
+
+              ),
         ),
       ),
 
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-          children: [
 
-            AssignmentForm(
-              titleController:
-                  titleController,
-              descriptionController:
-                  descriptionController,
-              department:
-                  widget.department,
-              semester:
-                  widget.semester,
-              subject:
-                  widget.selectedSubject,
-              dueDate:
-                  dueDate,
-              onSelectDate:
-                  pickDueDate,
+
+
+
+
+      body:
+
+
+          SafeArea(
+
+
+        child:
+
+
+            Center(
+
+
+
+          child:
+
+
+              ConstrainedBox(
+
+
+
+            constraints:
+
+
+                BoxConstraints(
+
+
+              maxWidth:
+
+                  isTablet
+
+                      ? 750
+
+                      : double.infinity,
+
             ),
 
-            const SizedBox(height: 20),
 
-            PdfUploadCard(
-              isUploading:
-                  isUploadingPdf,
-              pdfName:
-                  pdfName,
-              onTap:
-                  uploadPdf,
+
+            child:
+
+
+                SingleChildScrollView(
+
+
+
+              padding:
+
+
+                  EdgeInsets.symmetric(
+
+
+
+                horizontal:
+
+                    horizontalPadding,
+
+
+
+                vertical:
+
+                    isTablet
+
+                        ? 28
+
+                        : 20,
+
+              ),
+
+
+
+
+              child:
+
+
+                  Column(
+
+
+
+                crossAxisAlignment:
+
+                    CrossAxisAlignment.start,
+
+
+
+                children: [
+
+
+
+
+
+                  AssignmentForm(
+
+
+
+                    titleController:
+
+                        titleController,
+
+
+
+                    descriptionController:
+
+                        descriptionController,
+
+
+
+                    department:
+
+                        widget.department,
+
+
+
+                    semester:
+
+                        widget.semester,
+
+
+
+                    subject:
+
+                        widget.selectedSubject,
+
+
+
+                    dueDate:
+
+                        dueDate,
+
+
+
+                    onSelectDate:
+
+                        pickDueDate,
+
+                  ),
+
+
+
+
+
+
+                  SizedBox(
+
+                    height:
+
+                        isTablet
+
+                            ? 30
+
+                            : 20,
+
+                  ),
+
+
+
+
+
+                  PdfUploadCard(
+
+
+
+                    isUploading:
+
+                        isUploadingPdf,
+
+
+
+                    pdfName:
+
+                        pdfName,
+
+
+
+                    onTap:
+
+                        uploadPdf,
+
+                  ),
+
+
+
+
+
+                  SizedBox(
+
+                    height:
+
+                        isTablet
+
+                            ? 40
+
+                            : 30,
+
+                  ),
+
+
+
+
+
+
+                  CreateAssignmentButton(
+
+
+
+                    isSaving:
+
+                        isSaving,
+
+
+
+                    onPressed:
+
+                        saveAssignment,
+
+                  ),
+
+
+
+
+
+
+                  const SizedBox(
+
+                    height:
+
+                        20,
+
+                  ),
+
+                ],
+              ),
             ),
-
-            const SizedBox(height: 30),
-
-            CreateAssignmentButton(
-              isSaving:
-                  isSaving,
-              onPressed:
-                  saveAssignment,
-            ),
-
-            const SizedBox(height: 20),
-          ],
+          ),
         ),
       ),
     );

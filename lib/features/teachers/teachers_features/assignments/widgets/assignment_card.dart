@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import '../models/assignment_model.dart';
 
@@ -15,49 +16,98 @@ class AssignmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    final isTablet = screenWidth >= 600;
+
+    final horizontalPadding = isTablet
+        ? 24.0
+        : screenWidth * 0.04;
+
+    final titleSize = isTablet
+        ? 20.0
+        : screenWidth * 0.045;
+
+    final descriptionSize = isTablet
+        ? 16.0
+        : screenWidth * 0.035;
+
+    final avatarRadius = isTablet
+        ? 26.0
+        : screenWidth * 0.055;
+
+
     final bool isOverdue =
         assignment.dueDate.isBefore(DateTime.now());
 
+
     return Card(
-      elevation: 2,
+      elevation: 3,
       color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+      margin: EdgeInsets.symmetric(
+        horizontal: horizontalPadding,
+        vertical: 8,
       ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(
+          isTablet ? 20 : 16,
+        ),
+      ),
+
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(
+          isTablet ? 20 : 16,
+        ),
         onTap: onTap,
+
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(
+            isTablet ? 20 : screenWidth * 0.04,
+          ),
+
           child: Column(
             crossAxisAlignment:
                 CrossAxisAlignment.start,
+
             children: [
 
-              /// Title
+              /// HEADER
               Row(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+
                 children: [
 
-                  const CircleAvatar(
-                    radius: 22,
+                  CircleAvatar(
+                    radius: avatarRadius,
+
                     backgroundColor:
-                        Color(0xffE8F0FE),
+                        const Color(0xffE8F0FE),
+
                     child: Icon(
                       Icons.assignment,
-                      color: Colors.blue,
+                      size: avatarRadius,
+                      color: AppTheme.primary,
                     ),
                   ),
 
-                  const SizedBox(width: 14),
+
+                  SizedBox(
+                    width: screenWidth * 0.035,
+                  ),
+
 
                   Expanded(
                     child: Text(
                       assignment.title,
-                      style: const TextStyle(
-                        fontSize: 18,
+
+                      style: TextStyle(
+                        fontSize: titleSize,
                         fontWeight:
-                            FontWeight.bold,
+                            FontWeight.w700,
                       ),
+
                       maxLines: 2,
                       overflow:
                           TextOverflow.ellipsis,
@@ -66,71 +116,168 @@ class AssignmentCard extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 16),
 
-              /// Description
+              SizedBox(
+                height: screenWidth * 0.035,
+              ),
+
+
+              /// DESCRIPTION
               Text(
                 assignment.description,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+
+                maxLines: isTablet ? 3 : 2,
+
+                overflow:
+                    TextOverflow.ellipsis,
+
                 style: TextStyle(
-                  color: Colors.grey.shade700,
+                  fontSize: descriptionSize,
+                  color:
+                      Colors.grey.shade700,
+                  height: 1.4,
                 ),
               ),
 
-              const SizedBox(height: 18),
 
-              Row(
-                children: [
+              SizedBox(
+                height: screenWidth * 0.04,
+              ),
 
-                  Icon(
-                    Icons.calendar_today,
-                    size: 18,
-                    color: Colors.grey.shade700,
-                  ),
 
-                  const SizedBox(width: 6),
+              /// FOOTER
+              LayoutBuilder(
+                builder: (context, constraints) {
 
-                  Text(
-                    DateFormat(
-                      "dd MMM yyyy",
-                    ).format(
-                      assignment.dueDate,
-                    ),
-                  ),
+                  final smallWidth =
+                      constraints.maxWidth < 350;
 
-                  const Spacer(),
 
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isOverdue
-                          ? Colors.red.shade100
-                          : Colors.green.shade100,
-                      borderRadius:
-                          BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      isOverdue
-                          ? "Overdue"
-                          : "Active",
-                      style: TextStyle(
-                        color: isOverdue
-                            ? Colors.red
-                            : Colors.green,
-                        fontWeight:
-                            FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
+                  return smallWidth
+                      ? Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+
+                          children: [
+
+                            _dateWidget(),
+
+
+                            const SizedBox(
+                              height: 10,
+                            ),
+
+
+                            _statusWidget(
+                              isOverdue,
+                            ),
+                          ],
+                        )
+
+
+                      : Row(
+                          children: [
+
+                            _dateWidget(),
+
+
+                            const Spacer(),
+
+
+                            _statusWidget(
+                              isOverdue,
+                            ),
+                          ],
+                        );
+                },
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+
+
+  Widget _dateWidget() {
+
+    return Row(
+      mainAxisSize:
+          MainAxisSize.min,
+
+      children: [
+
+        Icon(
+          Icons.calendar_today,
+          size: 18,
+          color:
+              Colors.grey.shade700,
+        ),
+
+        const SizedBox(
+          width: 6,
+        ),
+
+
+        Flexible(
+          child: Text(
+            DateFormat(
+              "dd MMM yyyy",
+            ).format(
+              assignment.dueDate,
+            ),
+
+            overflow:
+                TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+
+
+  Widget _statusWidget(bool isOverdue) {
+
+    return Container(
+
+      padding:
+          const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 6,
+          ),
+
+      decoration: BoxDecoration(
+
+        color: isOverdue
+            ? Colors.red.shade100
+            : Colors.green.shade100,
+
+
+        borderRadius:
+            BorderRadius.circular(20),
+      ),
+
+
+      child: Text(
+
+        isOverdue
+            ? "Overdue"
+            : "Active",
+
+
+        style: TextStyle(
+
+          color: isOverdue
+              ? Colors.red
+              : Colors.green,
+
+
+          fontWeight:
+              FontWeight.bold,
+
+          fontSize: 13,
         ),
       ),
     );
