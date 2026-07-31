@@ -57,7 +57,7 @@ Widget build(BuildContext context) {
       if (state is CoursesLoaded && state.courses.isNotEmpty) {
         return FloatingActionButton.extended(
           backgroundColor: AppTheme.primary,
-          foregroundColor: Colors.grey,
+          foregroundColor: Colors.white,
           icon: const Icon(Icons.add),
           label: const Text("Add Course"),
           onPressed: openAddCourse,
@@ -129,8 +129,8 @@ return Center(child: SingleChildScrollView(padding: const EdgeInsets.symmetric(h
         height: 52,
         child: ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.grey.shade300,
-            foregroundColor:  Colors.grey.shade300,
+            backgroundColor: Colors.white,
+            foregroundColor:  Colors.white,
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
