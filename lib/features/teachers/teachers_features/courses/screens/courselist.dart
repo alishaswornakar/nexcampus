@@ -97,7 +97,7 @@ Widget build(BuildContext context) {
       if (state is CoursesLoaded) {
         if (state.courses.isEmpty) {
 
-return Center(child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 28),child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [Container(width: 170,height: 170,decoration: BoxDecoration(color: AppTheme.primary?.withValues(alpha: .08),shape: BoxShape.circle,),child: Icon(Icons.menu_book_rounded,size: 70,color: AppTheme.primary?.withValues(alpha: .45),),),
+return Center(child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 28),child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [Container(width: 170,height: 170,decoration: BoxDecoration(color: AppTheme.primary.withValues(alpha: .08),shape: BoxShape.circle,),child: Icon(Icons.menu_book_rounded,size: 70,color: AppTheme.primary.withValues(alpha: .45),),),
 
       const SizedBox(height: 36),
 

@@ -30,7 +30,7 @@ class LogoutTile extends StatelessWidget {
 
     if (confirmed == true) {
       onLogout?.call();
-      // TODO: Hook into your AuthBloc, e.g.:
+      // Hook into your AuthBloc, e.g.:
       // context.read<AuthBloc>().add(AuthLogoutRequested());
     }
   }

@@ -5,11 +5,7 @@ class EditProfileButton extends StatelessWidget {
   final UserProfileModel profile;
   final VoidCallback? onPressed;
 
-  const EditProfileButton({
-    super.key,
-    required this.profile,
-    this.onPressed,
-  });
+  const EditProfileButton({super.key, required this.profile, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +13,10 @@ class EditProfileButton extends StatelessWidget {
       width: double.infinity,
       height: 48,
       child: ElevatedButton.icon(
-        onPressed: onPressed ??
+        onPressed:
+            onPressed ??
             () {
-              // TODO: Navigate to edit profile screen, passing `profile`
+              //Navigate to edit profile screen, passing `profile`
             },
         icon: const Icon(Icons.edit_outlined),
         label: const Text('Edit Profile'),
