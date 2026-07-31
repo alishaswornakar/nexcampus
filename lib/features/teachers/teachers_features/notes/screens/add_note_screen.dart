@@ -7,7 +7,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/services/cloudinary_service.dart';
+
 import 'package:nexcampus_app/features/teachers/teachers_features/notes/blocs/bloc/notes_bloc.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/notes/blocs/bloc/notes_event.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/notes/blocs/bloc/notes_state.dart';
@@ -30,7 +33,9 @@ class AddNoteScreen extends StatefulWidget {
 
 class _AddNoteScreenState
     extends State<AddNoteScreen> {
-  final _formKey = GlobalKey<FormState>();
+
+  final _formKey =
+      GlobalKey<FormState>();
 
   final _titleController =
       TextEditingController();
@@ -59,11 +64,10 @@ class _AddNoteScreenState
   }
 
   Future<void> _loadTeacher() async {
+
     final user = _auth.currentUser;
 
-    if (user == null) {
-      return;
-    }
+    if (user == null) return;
 
     final doc = await _firestore
         .collection("users")
@@ -79,11 +83,14 @@ class _AddNoteScreenState
   }
 
   Future<void> pickFile() async {
+
     final result =
         await FilePicker.platform.pickFiles(
 
       type: FileType.custom,
-      allowedExtensions: [
+
+      allowedExtensions: const [
+
         "pdf",
         "doc",
         "docx",
@@ -92,48 +99,50 @@ class _AddNoteScreenState
         "jpg",
         "jpeg",
         "png",
+
       ],
+
     );
 
     if (result == null) return;
 
-    selectedFile = File(
-      result.files.single.path!,
-    );
+    selectedFile =
+        File(result.files.single.path!);
 
     fileName =
         result.files.single.name;
 
     setState(() {});
   }
-Future<String> uploadFileToCloudinary(
-  File file,
-) async {
-  // Replace this with your existing
-  // Cloudinary upload function.
 
-  // Example:
-  //
-  // return await CloudinaryService.uploadFile(file);
-
-  throw UnimplementedError(
-    "Connect your Cloudinary upload method here.",
-  );
-}
   InputDecoration decoration(
     String label,
     IconData icon,
   ) {
+
     return InputDecoration(
+
       labelText: label,
-      prefixIcon: Icon(icon),
+
+      prefixIcon: Icon(
+        icon,
+        color: AppTheme.primary,
+      ),
 
       filled: true,
+
       fillColor: Colors.white,
+
+      contentPadding:
+          const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 18,
+      ),
 
       border: OutlineInputBorder(
         borderRadius:
             BorderRadius.circular(14),
+        borderSide: BorderSide.none,
       ),
 
       enabledBorder:
@@ -146,9 +155,11 @@ Future<String> uploadFileToCloudinary(
       ),
 
       focusedBorder:
-          const OutlineInputBorder(
-        borderSide: BorderSide(
-          color: Colors.blue,
+          OutlineInputBorder(
+        borderRadius:
+            BorderRadius.circular(14),
+        borderSide: const BorderSide(
+          color: AppTheme.primary,
           width: 2,
         ),
       ),
@@ -161,14 +172,23 @@ Future<String> uploadFileToCloudinary(
     _descriptionController.dispose();
     super.dispose();
   }
-    @override
+
+  //==========================
+  // PART 2 STARTS HERE
+  //==========================
+
+  @override
   Widget build(BuildContext context) {
-    return BlocListener<NoteBloc, NoteState>(
+        return BlocListener<NoteBloc, NoteState>(
       listener: (context, state) {
+
         if (state is NoteAdded) {
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text("Note uploaded successfully"),
+              content: Text(
+                "Note uploaded successfully",
+              ),
               backgroundColor: Colors.green,
             ),
           );
@@ -177,6 +197,7 @@ Future<String> uploadFileToCloudinary(
         }
 
         if (state is NoteError) {
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
@@ -187,293 +208,769 @@ Future<String> uploadFileToCloudinary(
       },
 
       child: Scaffold(
+
         backgroundColor: const Color(0xffF5F7FA),
 
         appBar: AppBar(
-          title: const Text("Upload Note"),
+          elevation: 0,
           centerTitle: true,
-          backgroundColor: Colors.blue,
+          backgroundColor: AppTheme.primary,
           foregroundColor: Colors.white,
+          title: const Text(
+            "Upload Note",
+          ),
         ),
 
         body: loadingTeacher
             ? const Center(
                 child: CircularProgressIndicator(),
               )
-            : SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
+            : LayoutBuilder(
 
-                child: Form(
-                  key: _formKey,
+                builder: (context, constraints) {
 
-                  child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                  final width = constraints.maxWidth;
 
-                    children: [
-                      const Text(
-                        "Upload Course Material",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  final bool isTablet =
+                      width >= 600;
+
+                  final bool isDesktop =
+                      width >= 1000;
+
+                  final horizontalPadding =
+                      isDesktop
+                          ? 42.0
+                          : isTablet
+                              ? 30.0
+                              : 18.0;
+
+                  return Center(
+
+                    child: ConstrainedBox(
+
+                      constraints: BoxConstraints(
+                        maxWidth:
+                            isDesktop
+                                ? 900
+                                : 700,
                       ),
 
-                      const SizedBox(height: 6),
+                      child: SingleChildScrollView(
 
-                      Text(
-                        widget.course.courseName,
-                        style: TextStyle(
-                          color: Colors.grey.shade700,
-                        ),
-                      ),
+                        physics:
+                            const BouncingScrollPhysics(),
 
-                      const SizedBox(height: 25),
+                        padding:
+                            EdgeInsets.symmetric(
 
-                      TextFormField(
-                        controller: _titleController,
-                        decoration: decoration(
-                          "Title",
-                          Icons.title,
-                        ),
-                        validator: (value) {
-                          if (value == null ||
-                              value.trim().isEmpty) {
-                            return "Enter title";
-                          }
-                          return null;
-                        },
-                      ),
+                          horizontal:
+                              horizontalPadding,
 
-                      const SizedBox(height: 18),
+                          vertical:
+                              isTablet
+                                  ? 28
+                                  : 20,
 
-                      TextFormField(
-                        controller:
-                            _descriptionController,
-                        maxLines: 4,
-                        decoration: decoration(
-                          "Description",
-                          Icons.description,
-                        ),
-                        validator: (value) {
-                          if (value == null ||
-                              value.trim().isEmpty) {
-                            return "Enter description";
-                          }
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      Card(
-                        shape:
-                            RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(
-                                  14),
-                        ),
-                        child: ListTile(
-                          leading: const Icon(
-                            Icons.book,
-                            color: Colors.blue,
-                          ),
-                          title:
-                              const Text("Course"),
-                          subtitle: Text(
-                            widget.course.courseName,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      Card(
-                        shape:
-                            RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(
-                                  14),
-                        ),
-                        child: ListTile(
-                          leading: const Icon(
-                            Icons.school,
-                            color: Colors.orange,
-                          ),
-                          title: const Text(
-                              "Department"),
-                          subtitle: Text(
-                            widget.course.department,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      Card(
-                        shape:
-                            RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(
-                                  14),
-                        ),
-                        child: ListTile(
-                          leading: const Icon(
-                            Icons.calendar_today,
-                            color: Colors.green,
-                          ),
-                          title:
-                              const Text("Semester"),
-                          subtitle: Text(
-                            widget.course.semester,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 25),
-
-                      OutlinedButton.icon(
-                        style:
-                            OutlinedButton.styleFrom(
-                          minimumSize:
-                              const Size.fromHeight(
-                                  55),
-                          shape:
-                              RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(
-                                    14),
-                          ),
                         ),
 
-                        onPressed: pickFile,
+                        child: Form(
 
-                        icon: const Icon(
-                          Icons.attach_file,
-                        ),
+                          key: _formKey,
 
-                        label: Text(
-                          fileName.isEmpty
-                              ? "Choose PDF / DOC / PPT / Image"
-                              : fileName,
-                          overflow:
-                              TextOverflow.ellipsis,
-                        ),
-                      ),
+                          child: Column(
 
-                      const SizedBox(height: 35),
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
 
-                      BlocBuilder<NoteBloc,
-                          NoteState>(
-                        builder: (context, state) {
-                          final loading =
-                              state is NoteLoading;
+                            children: [
 
-                          return SizedBox(
-                            width: double.infinity,
-                            height: 55,
-                            child:
-                                ElevatedButton.icon(
-                              style:
-                                  ElevatedButton
-                                      .styleFrom(
-                                backgroundColor:
-                                    Colors.blue,
-                                foregroundColor:
-                                    Colors.white,
+                              Text(
+
+                                "Upload Course Material",
+
+                                style: TextStyle(
+
+                                  fontSize:
+
+                                      isDesktop
+                                          ? 30
+                                          : isTablet
+                                              ? 28
+                                              : 24,
+
+                                  fontWeight:
+                                      FontWeight.bold,
+
+                                ),
+
                               ),
 
-                              onPressed: loading
-                                  ? null
-                                  : () async {
-                                     if (!_formKey.currentState!.validate()) {
-  return;
-}
+                              const SizedBox(height: 8),
 
-if (selectedFile == null) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(
-      content: Text("Please select a file"),
-      backgroundColor: Colors.red,
-    ),
-  );
-  return;
-}
+                              Text(
 
-try {
- final cloudinary = CloudinaryService();
+                                "Upload PDFs, PPTs, DOC files and Images for students.",
 
-final result = await cloudinary.uploadFile(
-  selectedFile!,
-);
+                                style: TextStyle(
 
-final fileUrl = result["url"];
-// ignore: unused_local_variable
-final uploadedFileName = result["name"];
+                                  color:
+                                      Colors.grey.shade600,
 
-  final note = NoteModel(
-    id: FirebaseFirestore.instance
-        .collection("notes")
-        .doc()
-        .id,
+                                  fontSize:
+                                      isTablet
+                                          ? 16
+                                          : 14,
 
-    courseId: widget.course.id,
-    courseName: widget.course.courseName,
+                                ),
 
-    title: _titleController.text.trim(),
-    description: _descriptionController.text.trim(),
+                              ),
 
-    fileName: fileName,
-    fileUrl: fileUrl,
+                              SizedBox(
+                                height:
+                                    isTablet
+                                        ? 30
+                                        : 22,
+                              ),
 
-    uploadedBy: teacherName,
+                              Card(
 
-    createdAt: DateTime.now(),
-  );
+                                elevation: 2,
 
-  context.read<NoteBloc>().add(
-        AddNoteEvent(note),
-      );
-} catch (e) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(e.toString()),
-      backgroundColor: Colors.red,
-    ),
-  );
-} // Part 3
-                                    },
+                                shape:
+                                    RoundedRectangleBorder(
 
-                              icon: loading
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child:
-                                          CircularProgressIndicator(
-                                        color: Colors
-                                            .white,
-                                        strokeWidth:
-                                            2,
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                          18),
+
+                                ),
+
+                                child: Padding(
+
+                                  padding:
+                                      EdgeInsets.all(
+
+                                    isTablet
+                                        ? 20
+                                        : 16,
+
+                                  ),
+
+                                  child: Column(
+
+                                    children: [
+
+                                      ListTile(
+
+                                        leading:
+                                            CircleAvatar(
+
+                                          backgroundColor:
+                                              Colors.blue.shade100,
+
+                                          child: const Icon(
+
+                                            Icons.book,
+
+                                            color:
+                                                AppTheme.primary,
+
+                                          ),
+
+                                        ),
+
+                                        title:
+                                            const Text(
+                                          "Course",
+                                        ),
+
+                                        subtitle:
+                                            Text(
+                                          widget.course.courseName,
+                                        ),
+
                                       ),
-                                    )
-                                  : const Icon(
-                                      Icons.cloud_upload,
+
+                                      const Divider(),
+
+                                      ListTile(
+
+                                        leading:
+                                            CircleAvatar(
+
+                                          backgroundColor:
+                                              
+                                                  Colors.blue.shade100,
+
+                                          child: const Icon(
+
+                                            Icons.school,
+
+                                            color:
+                                                 AppTheme.primary,
+
+                                          ),
+
+                                        ),
+
+                                        title:
+                                            const Text(
+                                          "Department",
+                                        ),
+
+                                        subtitle:
+                                            Text(
+                                          widget.course.department,
+                                        ),
+
+                                      ),
+
+                                      const Divider(),
+
+                                      ListTile(
+
+                                        leading:
+                                            CircleAvatar(
+
+                                          backgroundColor:
+                                              Colors.blue.shade100,
+
+                                          child: const Icon(
+
+                                            Icons.calendar_month,
+
+                                            color:
+                                                AppTheme.primary,
+
+                                          ),
+
+                                        ),
+
+                                        title:
+                                            const Text(
+                                          "Semester",
+                                        ),
+
+                                        subtitle:
+                                            Text(
+                                          widget.course.semester,
+                                        ),
+
+                                      ),
+
+                                    ],
+
+                                  ),
+
+                                ),
+
+                              ),
+
+                              SizedBox(
+
+                                height:
+                                    isTablet
+                                        ? 30
+                                        : 24,
+
+                              ),
+                                                            TextFormField(
+
+                                controller:
+                                    _titleController,
+
+                                decoration:
+                                    decoration(
+
+                                  "Title",
+
+                                  Icons.title,
+
+                                ),
+
+                                validator: (value) {
+
+                                  if (value == null ||
+                                      value.trim().isEmpty) {
+
+                                    return "Enter title";
+
+                                  }
+
+                                  return null;
+
+                                },
+
+                              ),
+
+                              SizedBox(
+                                height:
+                                    isTablet
+                                        ? 20
+                                        : 18,
+                              ),
+
+                              TextFormField(
+
+                                controller:
+                                    _descriptionController,
+
+                                maxLines:
+                                    isTablet
+                                        ? 5
+                                        : 4,
+
+                                decoration:
+                                    decoration(
+
+                                  "Description",
+
+                                  Icons.description,
+
+                                ),
+
+                                validator: (value) {
+
+                                  if (value == null ||
+                                      value.trim().isEmpty) {
+
+                                    return "Enter description";
+
+                                  }
+
+                                  return null;
+
+                                },
+
+                              ),
+
+                              SizedBox(
+                                height:
+                                    isTablet
+                                        ? 28
+                                        : 22,
+                              ),
+
+                              Text(
+
+                                "Attachment",
+
+                                style: TextStyle(
+
+                                  fontSize:
+                                      isTablet
+                                          ? 18
+                                          : 16,
+
+                                  fontWeight:
+                                      FontWeight.bold,
+
+                                ),
+
+                              ),
+
+                              const SizedBox(height: 10),
+
+                              OutlinedButton.icon(
+
+                                style:
+                                    OutlinedButton.styleFrom(
+
+                                  minimumSize:
+                                      Size.fromHeight(
+
+                                    isTablet
+                                        ? 60
+                                        : 55,
+
+                                  ),
+
+                                  side:
+                                      BorderSide(
+
+                                    color:
+                                        AppTheme.primary
+                                            .withOpacity(.4),
+
+                                  ),
+
+                                  shape:
+                                      RoundedRectangleBorder(
+
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                            14),
+
+                                  ),
+
+                                ),
+
+                                onPressed:
+                                    pickFile,
+
+                                icon:
+                                    const Icon(
+
+                                  Icons.attach_file,
+
+                                  color:
+                                      AppTheme.primary,
+
+                                ),
+
+                                label:
+                                    Text(
+
+                                  fileName.isEmpty
+
+                                      ? "Choose PDF / DOC / PPT / Image"
+
+                                      : fileName,
+
+                                  overflow:
+                                      TextOverflow.ellipsis,
+
+                                  maxLines: 1,
+
+                                  style: TextStyle(
+
+                                    fontSize:
+                                        isTablet
+                                            ? 16
+                                            : 14,
+
+                                    color:
+                                        Colors.black87,
+
+                                  ),
+
+                                ),
+
+                              ),
+
+                              if (selectedFile != null) ...[
+
+                                SizedBox(
+
+                                  height:
+                                      isTablet
+                                          ? 18
+                                          : 14,
+
+                                ),
+
+                                Container(
+
+                                  width: double.infinity,
+
+                                  padding:
+                                      EdgeInsets.all(
+
+                                    isTablet
+                                        ? 18
+                                        : 14,
+
+                                  ),
+
+                                  decoration:
+                                      BoxDecoration(
+
+                                    color:
+                                        Colors.green
+                                            .withOpacity(.08),
+
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                            14),
+
+                                    border:
+                                        Border.all(
+
+                                      color:
+                                          Colors.green
+                                              .withOpacity(.25),
+
                                     ),
 
-                              label: Text(
-                                loading
-                                    ? "Uploading..."
-                                    : "Upload Note",
+                                  ),
+
+                                  child: Row(
+
+                                    children: [
+
+                                      const Icon(
+
+                                        Icons.check_circle,
+
+                                        color: Colors.green,
+
+                                      ),
+
+                                      const SizedBox(width: 10),
+
+                                      Expanded(
+
+                                        child: Text(
+
+                                          fileName,
+
+                                          maxLines: 2,
+
+                                          overflow:
+                                              TextOverflow.ellipsis,
+
+                                          style:
+                                              TextStyle(
+
+                                            fontSize:
+                                                isTablet
+                                                    ? 15
+                                                    : 14,
+
+                                            fontWeight:
+                                                FontWeight.w500,
+
+                                          ),
+
+                                        ),
+
+                                      ),
+
+                                    ],
+
+                                  ),
+
+                                ),
+
+                              ],
+
+                              SizedBox(
+
+                                height:
+                                    isTablet
+                                        ? 36
+                                        : 30,
+
                               ),
-                            ),
-                          );
-                        },
+                                                            BlocBuilder<NoteBloc, NoteState>(
+                                builder: (context, state) {
+
+                                  final bool loading =
+                                      state is NoteLoading;
+
+                                  return SizedBox(
+
+                                    width: double.infinity,
+
+                                    height:
+                                        isTablet
+                                            ? 60
+                                            : 55,
+
+                                    child: ElevatedButton.icon(
+
+                                      onPressed:
+                                          loading
+                                              ? null
+                                              : uploadNote,
+
+                                      style:
+                                          ElevatedButton.styleFrom(
+
+                                        backgroundColor:
+                                            AppTheme.primary,
+
+                                        foregroundColor:
+                                            Colors.white,
+
+                                        elevation: 2,
+
+                                        shape:
+                                            RoundedRectangleBorder(
+
+                                          borderRadius:
+                                              BorderRadius.circular(
+                                                  14),
+
+                                        ),
+
+                                      ),
+
+                                      icon: loading
+
+                                          ? const SizedBox(
+
+                                              width: 22,
+
+                                              height: 22,
+
+                                              child:
+                                                  CircularProgressIndicator(
+
+                                                color: Colors.white,
+
+                                                strokeWidth: 2,
+
+                                              ),
+
+                                            )
+
+                                          : const Icon(
+
+                                              Icons.cloud_upload,
+
+                                            ),
+
+                                      label: Text(
+
+                                        loading
+
+                                            ? "Uploading..."
+
+                                            : "Upload Note",
+
+                                        style: TextStyle(
+
+                                          fontSize:
+                                              isTablet
+                                                  ? 17
+                                                  : 15,
+
+                                          fontWeight:
+                                              FontWeight.w600,
+
+                                        ),
+
+                                      ),
+
+                                    ),
+
+                                  );
+
+                                },
+
+                              ),
+
+                            ],
+
+                          ),
+
+                        ),
+
                       ),
-                    ],
-                  ),
-                ),
+
+                    ),
+
+                  );
+
+                },
+
               ),
+
       ),
+
     );
+
   }
+
+  Future<void> uploadNote() async {
+
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    if (selectedFile == null) {
+
+      ScaffoldMessenger.of(context).showSnackBar(
+
+        const SnackBar(
+
+          content: Text(
+            "Please select a file.",
+          ),
+
+        ),
+
+      );
+
+      return;
+
+    }
+
+    try {
+
+      final cloudinary =
+          CloudinaryService();
+
+      final result =
+          await cloudinary.uploadFile(
+        selectedFile!,
+      );
+
+      final fileUrl =
+          result["url"];
+
+      final note = NoteModel(
+
+        id: "",
+
+        title:
+            _titleController.text.trim(),
+
+        description:
+            _descriptionController.text.trim(),
+
+        // department:
+        //     widget.course.department,
+
+        // semester:
+        //     widget.course.semester,
+
+        courseId:
+            widget.course.id,
+
+        courseName:
+            widget.course.courseName,
+
+        uploadedBy:
+            teacherName,
+
+        fileUrl:
+            fileUrl,
+
+        fileName:
+            fileName,
+
+        createdAt:
+            DateTime.now(),
+
+      );
+
+      context.read<NoteBloc>().add(
+
+            AddNoteEvent(
+              note,
+            ),
+
+          );
+
+    } catch (e) {
+
+      ScaffoldMessenger.of(context).showSnackBar(
+
+        SnackBar(
+
+          backgroundColor: Colors.red,
+
+          content: Text(
+            e.toString(),
+          ),
+
+        ),
+
+      );
+
+    }
+      }
+
 }

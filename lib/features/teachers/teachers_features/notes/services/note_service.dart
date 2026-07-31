@@ -10,11 +10,13 @@ class NoteService {
       firestore.collection("notes");
 
   /// Add Note
-  Future<void> addNote(NoteModel note) async {
-    await notesCollection
-        .doc(note.id)
-        .set(note.toMap());
-  }
+ Future<void> addNote(NoteModel note) async {
+  final docRef = notesCollection.doc();
+
+  await docRef.set(
+    note.toMap(),
+  );
+}
 
   /// Get Notes by Course
   Stream<List<NoteModel>> getNotes({
