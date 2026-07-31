@@ -196,7 +196,7 @@ class _NotesSubjectScreenState extends State<NotesSubjectScreen> {
       backgroundColor: AppTheme.background,
       appBar: AppBar(
         title: Text('Semester ${widget.semester} Notes'),
-        backgroundColor: AppTheme.secondary,
+        backgroundColor: AppTheme.primary,
         foregroundColor: Colors.white,
       ),
       body: _loadingDepartment

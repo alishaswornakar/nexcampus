@@ -227,7 +227,7 @@ class _AssignmentTasksDetailScreenState
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        backgroundColor: AppTheme.secondary,
+        backgroundColor: AppTheme.primary,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

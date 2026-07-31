@@ -44,7 +44,7 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
       appBar: AppBar(
         title: const Text("Notice"),
         centerTitle: true,
-        backgroundColor: AppTheme.secondary,
+        backgroundColor: AppTheme.primary,
         foregroundColor: Colors.white,
       ),
 
@@ -62,7 +62,7 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
                   vertical: 7,
                 ),
                 decoration: BoxDecoration(
-                  color: AppTheme.secondary.withValues(alpha: 0.1),
+                  color: AppTheme.primary /*.withValues(alpha: 0.1)*/,
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: const Row(
@@ -73,7 +73,7 @@ class _NoticeDetailScreenState extends State<NoticeDetailScreen> {
                     Text(
                       "Pinned Notice",
                       style: TextStyle(
-                        color: AppTheme.secondary,
+                        color: AppTheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

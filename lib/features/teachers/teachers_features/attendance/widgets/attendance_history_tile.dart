@@ -113,7 +113,7 @@ class AttendanceHistoryTile extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: Colors.green
-                              .withOpacity(.15),
+                              .withValues(alpha:0.15),
                           borderRadius:
                               BorderRadius.circular(
                                   s(25)),

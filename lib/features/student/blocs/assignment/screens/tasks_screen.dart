@@ -126,7 +126,7 @@ class _TasksScreenBodyState extends State<_TasksScreenBody>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Assignments', style: TextStyle(color: Colors.white)),
-        backgroundColor: AppTheme.secondary,
+        backgroundColor: AppTheme.primary,
         foregroundColor: Colors.white,
         bottom: TabBar(
           controller: _tabController,

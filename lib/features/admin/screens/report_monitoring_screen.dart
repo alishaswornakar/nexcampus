@@ -1,13 +1,861 @@
 import 'package:flutter/material.dart';
-import '../models/report_model.dart';
-import '../services/report_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:nexcampus_app/features/admin/models/report_model.dart';
+import 'package:nexcampus_app/features/admin/services/report_service.dart';
+import 'package:nexcampus_app/features/student/blocs/anonymous_issue_reporting/models/issue_post_model.dart';
 
-class ReportMonitoringScreen extends StatelessWidget {
+class ReportMonitoringScreen extends StatefulWidget {
+  const ReportMonitoringScreen({super.key});
+
+  @override
+  State<ReportMonitoringScreen> createState() => _ReportMonitoringScreenState();
+}
+
+class _ReportMonitoringScreenState extends State<ReportMonitoringScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   final ReportService _reportService = ReportService();
 
-  ReportMonitoringScreen({super.key});
+  // Report Filters
+  String _selectedStatus = 'All';
+  String _selectedCategory = 'All';
 
-  void _showFeedbackDialog(BuildContext context, ReportModel report) {
+  // Feed Filter
+  String _selectedFeedCategory = 'All';
+
+  final List<String> _statuses = ['All', 'Pending', 'Reviewed', 'Resolved'];
+  final List<String> _categories = [
+    'All',
+    'Question',
+    'Academic',
+    'Facility',
+    'Faculty/Staff',
+    'Harassment/Bullying',
+    'Mental Health',
+    'Other',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Report Monitoring'),
+        backgroundColor: Colors.blue.shade700,
+        bottom: TabBar(
+          controller: _tabController,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          indicatorColor: Colors.white,
+          indicatorWeight: 3,
+          tabs: const [
+            Tab(icon: Icon(Icons.forum), text: 'Feed'),
+            Tab(icon: Icon(Icons.report), text: 'Reports'),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => setState(() {}),
+          ),
+        ],
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          // Tab 1: Feed - All anonymous student posts
+          _buildFeedTab(),
+
+          // Tab 2: Reports - Student submitted reports
+          _buildReportsTab(),
+        ],
+      ),
+    );
+  }
+
+  // ===================== FEED TAB =====================
+
+  Widget _buildFeedTab() {
+    return Column(
+      children: [
+        // Category Filter Chips for Feed
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Category',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 8),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: _categories.map((category) {
+                    final isSelected = _selectedFeedCategory == category;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: FilterChip(
+                        label: Text(category),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() => _selectedFeedCategory = category);
+                        },
+                        backgroundColor: Colors.grey[200],
+                        selectedColor: Colors.purple[100],
+                        checkmarkColor: Colors.purple,
+                        labelStyle: TextStyle(
+                          color: isSelected
+                              ? Colors.purple[700]
+                              : Colors.grey[700],
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Divider(height: 1),
+        // Feed List
+        Expanded(
+          child: StreamBuilder<QuerySnapshot>(
+            stream: _getFeedStream(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 60,
+                        color: Colors.red[300],
+                      ),
+                      const SizedBox(height: 16),
+                      const Text('Error loading feed'),
+                      const SizedBox(height: 8),
+                      Text(
+                        snapshot.error.toString(),
+                        style: Theme.of(context).textTheme.bodySmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final posts = snapshot.data?.docs ?? [];
+
+              if (posts.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.forum_outlined,
+                        size: 60,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No posts from students yet',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: posts.length,
+                itemBuilder: (context, index) {
+                  final doc = posts[index];
+                  final data = doc.data() as Map<String, dynamic>;
+                  final post = IssuePostModel.fromMap({...data, 'id': doc.id});
+                  return _buildFeedCard(post);
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Stream<QuerySnapshot> _getFeedStream() {
+    Query query = FirebaseFirestore.instance
+        .collection('anonymous_issue_posts')
+        .orderBy('createdAt', descending: true);
+
+    if (_selectedFeedCategory != 'All') {
+      query = query.where('category', isEqualTo: _selectedFeedCategory);
+    }
+
+    return query.snapshots();
+  }
+
+  String _getAnonymousName(String seed) {
+    final animals = [
+      'Panther',
+      'Tiger',
+      'Eagle',
+      'Wolf',
+      'Falcon',
+      'Hawk',
+      'Lion',
+      'Bear',
+      'Fox',
+      'Owl',
+    ];
+    final hash = seed.hashCode.abs();
+    final index = hash % animals.length;
+    return 'Anonymous ${animals[index]}';
+  }
+
+  Widget _buildFeedCard(IssuePostModel post) {
+    final anonymousName = _getAnonymousName(post.id);
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header: Anonymous Name
+            Row(
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.visibility_off,
+                      size: 14,
+                      color: Colors.grey[600],
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      anonymousName,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                // Resolved Badge
+                if (post.isResolved)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.green.shade200),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.check_circle,
+                          size: 14,
+                          color: Colors.green[600],
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Resolved',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.green[600],
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Category Badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: _getCategoryColor(post.category).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: _getCategoryColor(
+                    post.category,
+                  ).withValues(alpha: 0.3),
+                ),
+              ),
+              child: Text(
+                post.category,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: _getCategoryColor(post.category),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Title
+            Text(
+              post.title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 8),
+
+            // Body
+            Text(
+              post.body,
+              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 12),
+
+            // Stats
+            Row(
+              children: [
+                Icon(Icons.thumb_up, size: 14, color: Colors.grey[500]),
+                const SizedBox(width: 4),
+                Text(
+                  '${post.upvoteCount}',
+                  style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                ),
+                const SizedBox(width: 16),
+                Icon(Icons.comment, size: 14, color: Colors.grey[500]),
+                const SizedBox(width: 4),
+                Text(
+                  '${post.commentsCount}',
+                  style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                ),
+                const Spacer(),
+                Text(
+                  _formatDate(post.createdAt),
+                  style: TextStyle(fontSize: 11, color: Colors.grey[400]),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getCategoryColor(String category) {
+    switch (category) {
+      case 'Question':
+        return Colors.blue;
+      case 'Academic':
+        return Colors.green;
+      case 'Facility':
+        return Colors.orange;
+      case 'Faculty/Staff':
+        return Colors.purple;
+      case 'Harassment/Bullying':
+        return Colors.red;
+      case 'Mental Health':
+        return Colors.teal;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  // ===================== REPORTS TAB =====================
+
+  Widget _buildReportsTab() {
+    return Column(
+      children: [
+        // Status Filter Chips
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Status',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 8),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: _statuses.map((status) {
+                    final isSelected = _selectedStatus == status;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: FilterChip(
+                        label: Text(status),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() => _selectedStatus = status);
+                        },
+                        backgroundColor: Colors.grey[200],
+                        selectedColor: _getStatusColor(
+                          status,
+                        ).withValues(alpha: 0.2),
+                        checkmarkColor: _getStatusColor(status),
+                        labelStyle: TextStyle(
+                          color: isSelected
+                              ? _getStatusColor(status)
+                              : Colors.grey[700],
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Category Filter Chips
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Category',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 8),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: _categories.map((category) {
+                    final isSelected = _selectedCategory == category;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: FilterChip(
+                        label: Text(category),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() => _selectedCategory = category);
+                        },
+                        backgroundColor: Colors.grey[200],
+                        selectedColor: Colors.blue[100],
+                        checkmarkColor: Colors.blue,
+                        labelStyle: TextStyle(
+                          color: isSelected
+                              ? Colors.blue[700]
+                              : Colors.grey[700],
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Divider(height: 1),
+        // Report List
+        Expanded(
+          child: StreamBuilder<List<ReportModel>>(
+            stream: _reportService.getAllReports(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 60,
+                        color: Colors.red[300],
+                      ),
+                      const SizedBox(height: 16),
+                      const Text('Error loading reports'),
+                      const SizedBox(height: 8),
+                      Text(
+                        snapshot.error.toString(),
+                        style: Theme.of(context).textTheme.bodySmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final reports = snapshot.data ?? [];
+              final filteredReports = _filterReports(reports);
+
+              if (filteredReports.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.report_off, size: 60, color: Colors.grey[400]),
+                      const SizedBox(height: 16),
+                      Text(
+                        _selectedStatus == 'All' && _selectedCategory == 'All'
+                            ? 'No reports submitted yet'
+                            : 'No $_selectedStatus $_selectedCategory reports',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: filteredReports.length,
+                itemBuilder: (context, index) {
+                  return _buildAdminReportCard(filteredReports[index]);
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<ReportModel> _filterReports(List<ReportModel> reports) {
+    var filtered = reports;
+
+    if (_selectedStatus != 'All') {
+      filtered = filtered.where((r) => r.status == _selectedStatus).toList();
+    }
+
+    if (_selectedCategory != 'All') {
+      filtered = filtered
+          .where((r) => r.category == _selectedCategory)
+          .toList();
+    }
+
+    return filtered;
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Resolved':
+        return Colors.green;
+      case 'Reviewed':
+        return Colors.orange;
+      case 'Pending':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Color _getStatusBackgroundColor(String status) {
+    switch (status) {
+      case 'Resolved':
+        return Colors.green.shade50;
+      case 'Reviewed':
+        return Colors.orange.shade50;
+      case 'Pending':
+        return Colors.red.shade50;
+      default:
+        return Colors.grey.shade50;
+    }
+  }
+
+  IconData _getStatusIcon(String status) {
+    switch (status) {
+      case 'Resolved':
+        return Icons.check_circle;
+      case 'Reviewed':
+        return Icons.visibility;
+      case 'Pending':
+        return Icons.pending;
+      default:
+        return Icons.info;
+    }
+  }
+
+  String _getAnonymousNameForReport(String studentId) {
+    final animals = [
+      'Panther',
+      'Tiger',
+      'Eagle',
+      'Wolf',
+      'Falcon',
+      'Hawk',
+      'Lion',
+      'Bear',
+      'Fox',
+      'Owl',
+    ];
+    final hash = studentId.hashCode.abs();
+    final index = hash % animals.length;
+    return 'Anonymous ${animals[index]}';
+  }
+
+  Widget _buildAdminReportCard(ReportModel report) {
+    final statusColor = _getStatusColor(report.status);
+    final statusBgColor = _getStatusBackgroundColor(report.status);
+    final hasFeedback = report.adminFeedback.isNotEmpty;
+    final anonymousName = _getAnonymousNameForReport(report.studentId);
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header: Anonymous Name + Status
+            Row(
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.visibility_off,
+                      size: 14,
+                      color: Colors.grey[600],
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      anonymousName,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                // Status Chip
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: statusBgColor,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: statusColor.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _getStatusIcon(report.status),
+                        size: 14,
+                        color: statusColor,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        report.status,
+                        style: TextStyle(
+                          color: statusColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Category Badge
+            if (report.category != null && report.category!.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.purple[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.purple[200]!),
+                ),
+                child: Text(
+                  report.category!,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.purple[700],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            const SizedBox(height: 8),
+
+            // Title
+            Text(
+              report.title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 8),
+
+            // Description
+            Text(
+              report.description,
+              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 12),
+
+            // Admin Feedback (if exists)
+            if (hasFeedback)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blueGrey[100]!),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.feedback,
+                          size: 14,
+                          color: Colors.blueGrey[600],
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Admin Feedback',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: Colors.blueGrey[700],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      report.adminFeedback,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.blueGrey[800],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+            // Admin Actions (for Pending reports)
+            if (report.status == 'Pending') ...[
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      decoration: const InputDecoration(
+                        hintText: 'Add feedback...',
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.all(10),
+                        isDense: true,
+                      ),
+                      onSubmitted: (feedback) {
+                        _updateReportStatus(report.id, 'Reviewed', feedback);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton.icon(
+                    onPressed: () => _showFeedbackDialog(report),
+                    icon: const Icon(Icons.edit, size: 16),
+                    label: const Text('Review'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
+            // Date
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(Icons.calendar_today, size: 12, color: Colors.grey[500]),
+                const SizedBox(width: 4),
+                Text(
+                  _formatDate(report.createdAt),
+                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                ),
+                if (report.updatedAt != null) ...[
+                  const SizedBox(width: 12),
+                  Icon(Icons.update, size: 12, color: Colors.grey[500]),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Updated: ${_formatDate(report.updatedAt!)}',
+                    style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showFeedbackDialog(ReportModel report) {
     final feedbackController = TextEditingController(
       text: report.adminFeedback,
     );
@@ -15,120 +863,127 @@ class ReportMonitoringScreen extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            title: Text("Update Status: ${report.studentName}"),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DropdownButtonFormField<String>(
-                    initialValue: selectedStatus,
-                    items: ['Pending', 'In Progress', 'Resolved', 'Rejected']
-                        .map(
-                          (status) => DropdownMenuItem(
-                            value: status,
-                            child: Text(status),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Update Report'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Status'),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<String>(
+                      initialValue: selectedStatus,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                      ),
+                      items: ['Pending', 'Reviewed', 'Resolved'].map((status) {
+                        return DropdownMenuItem(
+                          value: status,
+                          child: Row(
+                            children: [
+                              Icon(
+                                _getStatusIcon(status),
+                                size: 16,
+                                color: _getStatusColor(status),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(status),
+                            ],
                           ),
-                        )
-                        .toList(),
-                    onChanged: (val) {
-                      if (val != null) setState(() => selectedStatus = val);
-                    },
-                    decoration: const InputDecoration(labelText: "Status"),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: feedbackController,
-                    maxLines: 3,
-                    decoration: const InputDecoration(
-                      labelText: "Admin Feedback/Remarks",
-                      border: OutlineInputBorder(),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() => selectedStatus = value);
+                        }
+                      },
                     ),
+                    const SizedBox(height: 16),
+                    const Text('Feedback'),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: feedbackController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.all(12),
+                        hintText: 'Enter your feedback...',
+                      ),
+                      maxLines: 3,
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    _updateReportStatus(
+                      report.id,
+                      selectedStatus,
+                      feedbackController.text.trim(),
+                    );
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.save),
+                  label: const Text('Update'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
                   ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Cancel"),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  await _reportService.updateReportFeedback(
-                    report.id,
-                    selectedStatus,
-                    feedbackController.text,
-                  );
-                  if (context.mounted) Navigator.pop(context);
-                },
-                child: const Text("Save Updates"),
-              ),
-            ],
-          );
-        },
-      ),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Report Monitoring")),
-      body: StreamBuilder<List<ReportModel>>(
-        stream: _reportService.getAllReports(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final reports = snapshot.data ?? [];
-          if (reports.isEmpty) {
-            return const Center(child: Text("No reports submitted yet."));
-          }
+  Future<void> _updateReportStatus(
+    String id,
+    String status,
+    String feedback,
+  ) async {
+    try {
+      await _reportService.updateReportFeedback(id, status, feedback);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Report marked as $status'),
+          backgroundColor: _getStatusColor(status),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+      );
+    }
+  }
 
-          return ListView.builder(
-            itemCount: reports.length,
-            itemBuilder: (context, index) {
-              final report = reports[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                child: ListTile(
-                  title: Text(
-                    report.title,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("From: ${report.studentName}"),
-                      Text("Desc: ${report.description}"),
-                      const SizedBox(height: 4),
-                      Text(
-                        "Feedback: ${report.adminFeedback.isEmpty ? 'No feedback yet' : report.adminFeedback}",
-                        style: const TextStyle(
-                          color: Colors.blueGrey,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
-                  ),
-                  trailing: Chip(
-                    label: Text(report.status),
-                    backgroundColor: report.status == 'Resolved'
-                        ? Colors.green.shade100
-                        : report.status == 'In Progress'
-                        ? Colors.orange.shade100
-                        : Colors.grey.shade200,
-                  ),
-                  onTap: () => _showFeedbackDialog(context, report),
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inDays == 0) {
+      return 'Today';
+    } else if (difference.inDays == 1) {
+      return 'Yesterday';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays} days ago';
+    } else {
+      return '${date.day}/${date.month}/${date.year}';
+    }
   }
 }

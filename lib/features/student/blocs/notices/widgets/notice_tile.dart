@@ -72,12 +72,12 @@ class NoticeTile extends StatelessWidget {
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.push_pin, color: AppTheme.secondary, size: 16),
+                      Icon(Icons.push_pin, color: AppTheme.primary, size: 16),
                       SizedBox(width: 5),
                       Text(
                         "Pinned",
                         style: TextStyle(
-                          color: AppTheme.secondary,
+                          color: AppTheme.primary,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),

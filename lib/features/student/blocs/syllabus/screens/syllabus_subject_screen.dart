@@ -181,7 +181,7 @@ class _SyllabusSubjectScreenState extends State<SyllabusSubjectScreen> {
       backgroundColor: AppTheme.background,
       appBar: AppBar(
         title: Text('Semester ${widget.semester} Syllabus'),
-        backgroundColor: AppTheme.secondary,
+        backgroundColor: AppTheme.primary,
         foregroundColor: Colors.white,
       ),
       bottomNavigationBar: const AppBottomNavBar(currentIndex: 0),

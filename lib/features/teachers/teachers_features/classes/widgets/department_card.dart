@@ -70,7 +70,7 @@ class DepartmentCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: avatarRadius,
-                backgroundColor: color.withOpacity(.15),
+                backgroundColor: color.withValues(alpha:.15),
                 child: Icon(
                   icon,
                   color: color,
@@ -104,7 +104,7 @@ class DepartmentCard extends StatelessWidget {
                       ),
                     ),
 
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
 
                     Text(
                       "8 Semesters",

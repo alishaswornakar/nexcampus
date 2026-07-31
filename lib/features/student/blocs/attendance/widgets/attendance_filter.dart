@@ -115,7 +115,7 @@ class _AttendanceFilterScreenState extends State<AttendanceFilterScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        backgroundColor: AppTheme.secondary,
+        backgroundColor: AppTheme.primary,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

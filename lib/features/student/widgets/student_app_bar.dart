@@ -87,7 +87,7 @@ class StudentAppBar extends StatelessWidget implements PreferredSizeWidget {
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.secondary,
+              backgroundColor: AppTheme.primary,
               foregroundColor: Colors.white,
             ),
             child: const Text("Cancel"),

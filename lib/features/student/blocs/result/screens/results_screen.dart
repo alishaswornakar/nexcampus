@@ -68,7 +68,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
 
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: AppTheme.secondary,
+          backgroundColor: AppTheme.primary,
           title: const Text("Results", style: TextStyle(color: Colors.white)),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),

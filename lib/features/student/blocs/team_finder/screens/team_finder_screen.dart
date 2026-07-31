@@ -171,7 +171,7 @@ class _TeamFinderViewState extends State<_TeamFinderView>
     return Scaffold(
       backgroundColor: const Color(0xFFF6F8FB),
       appBar: AppBar(
-        backgroundColor: AppTheme.secondary,
+        backgroundColor: AppTheme.primary,
         title: const Text(
           'Team Finder',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),

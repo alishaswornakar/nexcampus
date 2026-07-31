@@ -277,13 +277,13 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    if (email == "admin@nexcampus.com" && password == "admin123") {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const AdminDashboardScreen()),
-      );
-      return;
-    }
+    // if (email == "admin@nexcampus.com" && password == "admin123") {
+    //   Navigator.pushReplacement(
+    //     context,
+    //     MaterialPageRoute(builder: (context) => const AdminDashboardScreen()),
+    //   );
+    //   return;
+    // }
 
     context.read<AuthBloc>().add(LoginRequested(email, password));
   }
@@ -301,7 +301,7 @@ class _LoginScreenState extends State<LoginScreen> {
             context,
           ).showSnackBar(const SnackBar(content: Text("Please wait...")));
         }
-        
+
         if (state is AuthAuthenticated) {
           await NotificationService.saveToken();
           if (state.role == 'admin') {

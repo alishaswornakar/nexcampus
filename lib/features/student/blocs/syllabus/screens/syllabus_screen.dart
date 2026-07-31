@@ -56,7 +56,7 @@ class _SyllabusScreenState extends State<SyllabusScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => StudentDashboardScreen(user: currentUser),
+              builder: (_) => StudentDashboardScreen(user: currentUser),
             ),
           );
         }
@@ -70,7 +70,7 @@ class _SyllabusScreenState extends State<SyllabusScreen> {
             onPressed: () => Navigator.pop(context),
             icon: const Icon(Icons.arrow_back),
           ),
-          backgroundColor: AppTheme.secondary,
+          backgroundColor: AppTheme.primary,
           foregroundColor: Colors.white,
         ),
         body: SingleChildScrollView(
@@ -180,7 +180,7 @@ class _SyllabusScreenState extends State<SyllabusScreen> {
                   : AppTheme.secondary.withValues(alpha: 0.08),
               child: Icon(
                 icon,
-                color: selected ? Colors.white : AppTheme.secondary,
+                color: selected ? Colors.white : AppTheme.primary,
                 size: 24,
               ),
             ),

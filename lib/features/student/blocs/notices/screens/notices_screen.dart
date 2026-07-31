@@ -24,20 +24,16 @@ class NoticesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => NoticeBloc(
-        TeacherNoticeRepository(
-          TeacherNoticeService(),
-        ),
-      )..add(
-          LoadNoticesEvent(),
-        ),
+      create: (_) =>
+          NoticeBloc(TeacherNoticeRepository(TeacherNoticeService()))
+            ..add(LoadNoticesEvent()),
       child: Scaffold(
         backgroundColor: AppTheme.background,
 
         appBar: AppBar(
           title: const Text("Notices"),
           centerTitle: true,
-          backgroundColor: AppTheme.secondary,
+          backgroundColor: AppTheme.primary,
           foregroundColor: Colors.white,
         ),
 

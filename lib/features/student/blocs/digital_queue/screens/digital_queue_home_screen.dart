@@ -79,7 +79,7 @@ class _DigitalQueueView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppTheme.secondary,
+        backgroundColor: AppTheme.primary,
         title: const Text(
           'Digital Queue',
           style: TextStyle(fontSize: 18, color: Colors.white),
