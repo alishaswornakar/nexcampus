@@ -18,24 +18,67 @@ class DepartmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
+    final bool isTablet = width >= 600;
+    final bool isDesktop = width >= 1000;
+
+    final double cardPadding = isDesktop
+        ? 24
+        : isTablet
+            ? 20
+            : 16;
+
+    final double avatarRadius = isDesktop
+        ? 36
+        : isTablet
+            ? 32
+            : 28;
+
+    final double iconSize = isDesktop
+        ? 34
+        : isTablet
+            ? 30
+            : 26;
+
+    final double titleSize = isDesktop
+        ? 22
+        : isTablet
+            ? 20
+            : 17;
+
+    final double subtitleSize = isDesktop
+        ? 16
+        : isTablet
+            ? 15
+            : 13;
+
     return Card(
-      elevation: 4,
-      margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      elevation: 3,
+      margin: EdgeInsets.only(
+        bottom: isTablet ? 18 : 14,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(18),
+          padding: EdgeInsets.all(cardPadding),
           child: Row(
             children: [
               CircleAvatar(
-                radius: 30,
-                backgroundColor: color.withValues(alpha: 0.15),
-                child: Icon(icon, color: color, size: 30),
+                radius: avatarRadius,
+                backgroundColor: color.withOpacity(.15),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: iconSize,
+                ),
               ),
 
-              const SizedBox(width: 18),
+              SizedBox(width: isTablet ? 20 : 16),
 
               Expanded(
                 child: Column(
@@ -43,27 +86,42 @@ class DepartmentCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                        fontSize: titleSize,
                       ),
                     ),
 
-                    const SizedBox(height: 8),
+                    SizedBox(height: isTablet ? 8 : 6),
 
                     Text(
                       "$totalStudents Students",
-                      style: TextStyle(color: Colors.grey.shade700),
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontSize: subtitleSize,
+                      ),
                     ),
 
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
 
-                    const Text("8 Semesters"),
+                    Text(
+                      "8 Semesters",
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: subtitleSize,
+                      ),
+                    ),
                   ],
                 ),
               ),
 
-              const Icon(Icons.arrow_forward_ios, size: 18),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: isTablet ? 20 : 18,
+                color: Colors.grey.shade600,
+              ),
             ],
           ),
         ),

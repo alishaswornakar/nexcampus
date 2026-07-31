@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/courses/repository/course_repository.dart';
 
 import '../blocs/bloc/course_bloc.dart';
@@ -40,7 +41,7 @@ class CourseScreen extends StatelessWidget {
             "Semester $semester Courses",
           ),
           centerTitle: true,
-          backgroundColor: Colors.blue,
+          backgroundColor: AppTheme.primary,
           foregroundColor: Colors.white,
         ),
 
