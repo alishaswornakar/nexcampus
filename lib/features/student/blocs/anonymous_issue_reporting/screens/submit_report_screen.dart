@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nexcampus_app/features/admin/models/report_model.dart';
 import 'package:nexcampus_app/features/admin/services/report_service.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 /// Lets a logged-in student create a new report that will show up
 /// instantly for admins in ReportMonitoringScreen (both read/write the
@@ -71,7 +72,10 @@ class _SubmitReportScreenState extends State<SubmitReportScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Submit a Report')),
+      appBar: AppBar(
+        backgroundColor: AppTheme.primary,
+        title: const Text('Submit a Report'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(

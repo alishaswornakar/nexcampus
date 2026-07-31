@@ -136,7 +136,7 @@ class _IssuePostDetailScreenState extends State<IssuePostDetailScreen> {
           if (snapshot.hasData && snapshot.data == null) {
             return Scaffold(
               appBar: AppBar(
-                backgroundColor: IssueColors.skyBlue,
+                backgroundColor: IssueColors.skyBlueDark,
                 title: const Text(
                   'Anonymous Issues',
                   style: TextStyle(color: Colors.white),
@@ -151,7 +151,7 @@ class _IssuePostDetailScreenState extends State<IssuePostDetailScreen> {
           return Scaffold(
             backgroundColor: IssueColors.background,
             appBar: AppBar(
-              backgroundColor: IssueColors.skyBlue,
+              backgroundColor: IssueColors.skyBlueDark,
               title: const Text(
                 'Post',
                 style: TextStyle(
@@ -347,7 +347,7 @@ class _PostHeader extends StatelessWidget {
                         hasUpvoted ? Icons.thumb_up : Icons.thumb_up_outlined,
                         size: 18,
                         color: hasUpvoted
-                            ? IssueColors.skyBlue
+                            ? IssueColors.skyBlueDark
                             : Colors.grey.shade600,
                       ),
                       const SizedBox(width: 6),
@@ -357,7 +357,7 @@ class _PostHeader extends StatelessWidget {
                           fontSize: 12.5,
                           fontWeight: FontWeight.w600,
                           color: hasUpvoted
-                              ? IssueColors.skyBlue
+                              ? IssueColors.skyBlueDark
                               : Colors.grey.shade600,
                         ),
                       ),
@@ -506,7 +506,7 @@ class _CommentComposer extends StatelessWidget {
             const SizedBox(width: 6),
             IconButton(
               onPressed: onSubmit,
-              icon: const Icon(Icons.send, color: IssueColors.skyBlue),
+              icon: const Icon(Icons.send, color: IssueColors.skyBlueDark),
             ),
           ],
         ),

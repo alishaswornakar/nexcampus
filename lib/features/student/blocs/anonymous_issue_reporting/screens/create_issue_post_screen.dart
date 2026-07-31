@@ -1,6 +1,7 @@
 // lib/features/student/blocs/anonymous_issue_reporting/screens/create_issue_post_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import '../bloc/anonymous_issue_bloc.dart';
 import '../bloc/anonymous_issue_event.dart';
@@ -76,7 +77,7 @@ class _CreateIssuePostScreenState extends State<CreateIssuePostScreen> {
       child: Scaffold(
         backgroundColor: IssueColors.background,
         appBar: AppBar(
-          backgroundColor: IssueColors.skyBlue,
+          backgroundColor: AppTheme.primary,
           title: const Text(
             'New Anonymous Post',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -97,7 +98,7 @@ class _CreateIssuePostScreenState extends State<CreateIssuePostScreen> {
                   color: IssueColors.skyBlueLight,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: IssueColors.skyBlue.withValues(alpha: 0.3),
+                    color: AppTheme.primary.withValues(alpha: 0.3),
                   ),
                 ),
                 child: const Row(
@@ -187,7 +188,7 @@ class _CreateIssuePostScreenState extends State<CreateIssuePostScreen> {
                     child: ElevatedButton(
                       onPressed: isSubmitting ? null : _submit,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: IssueColors.skyBlue,
+                        backgroundColor: IssueColors.skyBlueDark,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),

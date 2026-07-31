@@ -7,7 +7,6 @@ import '../bloc/anonymous_issue_event.dart';
 import '../bloc/anonymous_issue_state.dart';
 import '../models/issue_post_model.dart';
 import '../repository/anonymous_issue_repository.dart';
-import '../utils/issue_colors.dart';
 import '../widgets/issue_filter_bar.dart';
 import '../widgets/issue_post_card.dart';
 import '../widgets/issue_post_empty_widget.dart';
@@ -162,7 +161,7 @@ class _AnonymousIssueViewState extends State<_AnonymousIssueView>
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
-        backgroundColor: IssueColors.skyBlue,
+        backgroundColor: AppTheme.primary,
         title: const Text(
           'Anonymous Issues',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -186,7 +185,7 @@ class _AnonymousIssueViewState extends State<_AnonymousIssueView>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _fabAction,
-        backgroundColor: IssueColors.skyBlue,
+        backgroundColor: AppTheme.primary,
         child: Icon(_fabIcon, color: Colors.white),
       ),
       body: TabBarView(
@@ -267,7 +266,7 @@ class _FeedTab extends StatelessWidget {
                   previous.feedPosts != current.feedPosts,
               builder: (context, state) {
                 return RefreshIndicator(
-                  color: IssueColors.skyBlue,
+                  color: AppTheme.primary,
                   onRefresh: onRefresh,
                   child: _buildBody(state),
                 );
@@ -346,7 +345,7 @@ class _MyPostsTab extends StatelessWidget {
             previous.myPosts != current.myPosts,
         builder: (context, state) {
           return RefreshIndicator(
-            color: IssueColors.skyBlue,
+            color: AppTheme.primary,
             onRefresh: onRefresh,
             child: _buildBody(context, state),
           );
