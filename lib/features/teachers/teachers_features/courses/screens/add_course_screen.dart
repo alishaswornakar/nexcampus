@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/core/data/semester_subjects.dart';
 import '../blocs/bloc/course_bloc.dart';
 import '../models/course_model.dart';
@@ -171,7 +172,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
         appBar: AppBar(
           elevation: 0,
           centerTitle: true,
-          backgroundColor: Colors.blue,
+          backgroundColor: AppTheme.primary,
           foregroundColor: Colors.white,
           title: const Text("Add Course"),
         ),
@@ -352,7 +353,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                             height: 55,
                             child: ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue,
+                                backgroundColor: AppTheme.primary,
                                 foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),

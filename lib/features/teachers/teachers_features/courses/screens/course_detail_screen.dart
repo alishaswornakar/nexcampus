@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/screens/assignment_subject_screen.dart';
 
@@ -26,7 +27,7 @@ class CourseDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(course.courseName),
         centerTitle: true,
-        backgroundColor: Colors.blue,
+        backgroundColor: AppTheme.primary,
         foregroundColor: Colors.white,
       ),
 
@@ -54,12 +55,12 @@ class CourseDetailScreen extends StatelessWidget {
                 child: Column(
                   children: [
 
-                    CircleAvatar(
+                    const CircleAvatar(
                       radius: 38,
                       backgroundColor:
-                          Colors.blue.shade100,
+                          AppTheme.primary,
 
-                      child: const Icon(
+                      child: Icon(
                         Icons.menu_book,
                         size: 40,
                         color: Colors.blue,

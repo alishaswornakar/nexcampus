@@ -3,17 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import 'package:nexcampus_app/features/authentication/presentation/pages/login_screen.dart';
-import 'package:nexcampus_app/features/teachers/screens/widgets/quick_access_grid.dart';
 import 'package:nexcampus_app/features/teachers/screens/widgets/bottom_nav_bar.dart';
 import 'package:nexcampus_app/features/teachers/screens/widgets/dashboard_header.dart';
+import 'package:nexcampus_app/features/teachers/screens/widgets/quick_access_grid.dart';
 import 'package:nexcampus_app/features/teachers/screens/widgets/recent_activity_card.dart';
 
 import 'package:nexcampus_app/features/teachers/shared_screens/department_semester_selection_screen.dart';
-
-//import 'package:nexcampus_app/features/teachers/teachers_features/notices/screens/notice_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/teacher_profile/screens/teacher_profile_screen.dart';
-
-
 
 class TeacherDashboard extends StatefulWidget {
   const TeacherDashboard({super.key});
@@ -23,13 +19,10 @@ class TeacherDashboard extends StatefulWidget {
       _TeacherDashboardState();
 }
 
-class _TeacherDashboardState
-    extends State<TeacherDashboard> {
-
+class _TeacherDashboardState extends State<TeacherDashboard> {
   int _currentIndex = 0;
 
   Future<void> _logout() async {
-
     final shouldLogout =
         await showDialog<bool>(
               context: context,
@@ -39,13 +32,11 @@ class _TeacherDashboardState
                   "Are you sure you want to logout?",
                 ),
                 actions: [
-
                   TextButton(
                     onPressed: () =>
                         Navigator.pop(context, false),
                     child: const Text("Cancel"),
                   ),
-
                   ElevatedButton(
                     onPressed: () =>
                         Navigator.pop(context, true),
@@ -65,8 +56,7 @@ class _TeacherDashboardState
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (_) =>
-            const LoginScreen(),
+        builder: (_) => const LoginScreen(),
       ),
       (_) => false,
     );
@@ -93,13 +83,11 @@ class _TeacherDashboardState
   }
 
   void _onBottomTap(int index) {
-
     setState(() {
       _currentIndex = index;
     });
 
     switch (index) {
-
       case 0:
         break;
 
@@ -141,19 +129,32 @@ class _TeacherDashboardState
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    final width = size.width;
+
+    final horizontalPadding =
+        (width * 0.05).clamp(16.0, 28.0);
+
+    final sectionSpacing =
+        (width * 0.06).clamp(22.0, 34.0);
+
+    final titleSpacing =
+        (width * 0.04).clamp(14.0, 20.0);
+
+    final titleSize =
+        (width * 0.055).clamp(18.0, 24.0);
 
     return Scaffold(
-
       backgroundColor: const Color(0xFFF5F7FB),
 
       body: SafeArea(
-
         child: SingleChildScrollView(
+          physics:
+              const BouncingScrollPhysics(),
 
           child: Column(
-
             children: [
-
               DashboardHeader(
                 onNotificationTap:
                     _openNotification,
@@ -162,46 +163,51 @@ class _TeacherDashboardState
               ),
 
               Padding(
-
-                padding:
-                    const EdgeInsets.symmetric(
-                  horizontal: 20,
+                padding: EdgeInsets.symmetric(
+                  horizontal: horizontalPadding,
                 ),
 
                 child: Column(
-
                   crossAxisAlignment:
                       CrossAxisAlignment.start,
+                                        children: [
+                    SizedBox(
+                      height: sectionSpacing,
+                    ),
 
-                  children: [
-
-                    const SizedBox(height: 25),
-
-                    const Text(
+                    Text(
                       "Quick Access",
                       style: TextStyle(
-                        fontSize: 22,
-                        fontWeight:
-                            FontWeight.bold,
+                        fontSize: titleSize,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    SizedBox(
+                      height: titleSpacing,
+                    ),
 
                     QuickAccessGrid(
                       onLogout: _logout,
                     ),
 
-                    const SizedBox(height: 30),
-                                        const Text(
+                    SizedBox(
+                      height: sectionSpacing,
+                    ),
+
+                    Text(
                       "Recent Activity",
                       style: TextStyle(
-                        fontSize: 22,
+                        fontSize: titleSize,
                         fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: titleSpacing,
+                    ),
 
                     const RecentActivityCard(
                       icon: Icons.assignment_outlined,
@@ -214,7 +220,7 @@ class _TeacherDashboardState
 
                     const RecentActivityCard(
                       icon: Icons.fact_check_outlined,
-                      color:  AppTheme.primary,
+                      color: AppTheme.primary,
                       title: "Attendance Updated",
                       subtitle:
                           "Civil Engineering • Semester 2",
@@ -223,13 +229,15 @@ class _TeacherDashboardState
 
                     const RecentActivityCard(
                       icon: Icons.campaign_outlined,
-                      color:  AppTheme.primary,
+                      color: AppTheme.primary,
                       title: "Holiday Notice Published",
                       subtitle: "All Departments",
                       time: "Yesterday",
                     ),
 
-                    const SizedBox(height: 25),
+                    SizedBox(
+                      height: sectionSpacing,
+                    ),
                   ],
                 ),
               ),

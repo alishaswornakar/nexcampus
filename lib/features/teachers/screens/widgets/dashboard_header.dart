@@ -13,11 +13,22 @@ class DashboardHeader extends StatelessWidget {
     required this.onProfileTap,
   });
 
-  static const Color primaryColor =  AppTheme.primary;
+  static const Color primaryColor = AppTheme.primary;
 
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+
+    final headerHeight = height * 0.34;
+    final horizontalPadding = width * 0.05;
+    final avatarRadius = width * 0.06;
+    final greetingSize = width * 0.045;
+    final nameSize = width * 0.07;
+    final statsHeight = height * 0.12;
 
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
@@ -37,45 +48,48 @@ class DashboardHeader extends StatelessWidget {
 
         return Container(
           width: double.infinity,
-          height: 300,
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
-          decoration: const BoxDecoration(
-            color:  AppTheme.primary,
+          height: headerHeight.clamp(240.0, 340.0),
+          padding: EdgeInsets.fromLTRB(
+            horizontalPadding,
+            horizontalPadding,
+            horizontalPadding,
+            horizontalPadding + 10,
+          ),
+          decoration: BoxDecoration(
+            color: AppTheme.primary,
             borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(35),
-              bottomRight: Radius.circular(35),
+              bottomLeft: Radius.circular(width * 0.08),
+              bottomRight: Radius.circular(width * 0.08),
             ),
           ),
           child: Column(
             children: [
+              SizedBox(height: height * 0.015),
 
               /// Top Row
               Row(
                 children: [
-
                   Expanded(
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
-                        const SizedBox(height: 15),
-
-                        const Text(
+                        Text(
                           "Namaste,",
                           style: TextStyle(
                             color: Colors.white70,
-                            fontSize: 18,
+                            fontSize: greetingSize.clamp(14.0, 18.0),
                           ),
                         ),
 
-                        const SizedBox(height: 6),
+                        SizedBox(height: height * 0.008),
 
                         Text(
                           "Er. $teacherName",
-                          style: const TextStyle(
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             color: Colors.white,
-                            fontSize: 28,
+                            fontSize: nameSize.clamp(22.0, 30.0),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -85,76 +99,70 @@ class DashboardHeader extends StatelessWidget {
 
                   InkWell(
                     onTap: onNotificationTap,
-                    borderRadius:
-                        BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(50),
                     child: Container(
-                      padding:
-                          const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
+                      padding: EdgeInsets.all(width * 0.025),
+                      decoration: const BoxDecoration(
                         color: Colors.white24,
-                        borderRadius:
-                            BorderRadius.circular(30),
+                        shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.notifications_none,
                         color: Colors.white,
+                        size: width * 0.065,
                       ),
                     ),
                   ),
 
-                  const SizedBox(width: 12),
+                  SizedBox(width: width * 0.03),
 
                   GestureDetector(
                     onTap: onProfileTap,
                     child: CircleAvatar(
-                      radius: 24,
+                      radius: avatarRadius.clamp(22.0, 28.0),
                       backgroundColor: Colors.white,
-                      backgroundImage:
-                          photoUrl != null &&
-                                  photoUrl.isNotEmpty
-                              ? NetworkImage(photoUrl)
-                              : null,
-                      child:
-                          photoUrl == null ||
-                                  photoUrl.isEmpty
-                              ? const Icon(
-                                  Icons.person,
-                                  color:  AppTheme.primary,
-                                )
-                              : null,
+                      backgroundImage: photoUrl != null &&
+                              photoUrl.isNotEmpty
+                          ? NetworkImage(photoUrl)
+                          : null,
+                      child: photoUrl == null || photoUrl.isEmpty
+                          ? Icon(
+                              Icons.person,
+                              color: AppTheme.primary,
+                              size: width * 0.06,
+                            )
+                          : null,
                     ),
                   ),
                 ],
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: height * 0.04),
 
               /// Statistics Card
               Container(
-                height: 95,
+                height: statsHeight.clamp(90.0, 120.0),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius:
-                      BorderRadius.circular(20),
+                      BorderRadius.circular(width * 0.05),
                 ),
                 child: Row(
                   children: [
-
                     _statItem(
+                      context,
                       "03",
                       "Today's\nClasses",
                     ),
-
                     _divider(),
-
                     _statItem(
+                      context,
                       "15",
                       "Pending\nReviews",
                     ),
-
                     _divider(),
-
                     _statItem(
+                      context,
                       "180",
                       "Students",
                     ),
@@ -177,32 +185,41 @@ class DashboardHeader extends StatelessWidget {
   }
 
   Widget _statItem(
+    BuildContext context,
     String number,
     String title,
   ) {
+    final width = MediaQuery.of(context).size.width;
+
     return Expanded(
       child: Column(
-        mainAxisAlignment:
-            MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-
-          Text(
-            number,
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
+          FittedBox(
+            child: Text(
+              number,
+              style: TextStyle(
+                fontSize: (width * 0.07).clamp(22.0, 30.0),
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
 
-          const SizedBox(height: 6),
+          SizedBox(height: width * 0.01),
 
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 13,
-              color: Colors.black54,
-              fontWeight: FontWeight.w500,
+          Padding(
+            padding:
+                EdgeInsets.symmetric(horizontal: width * 0.015),
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: (width * 0.032).clamp(11.0, 14.0),
+                color: Colors.black54,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],

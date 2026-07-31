@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import '../models/course_model.dart';
 
@@ -38,12 +39,12 @@ class CourseTile extends StatelessWidget {
                 height: 58,
                 width: 58,
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade100,
+                  color: AppTheme.primary,
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: const Icon(
                   Icons.menu_book_rounded,
-                  color: Colors.blue,
+                  color: AppTheme.primary,
                   size: 30,
                 ),
               ),
@@ -67,8 +68,8 @@ class CourseTile extends StatelessWidget {
 
                     Text(
                       course.courseCode,
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
+                      style: const TextStyle(
+                        color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -79,8 +80,8 @@ class CourseTile extends StatelessWidget {
                       course.description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
+                      style: const TextStyle(
+                        color: Colors.white,
                       ),
                     ),
 
@@ -90,7 +91,7 @@ class CourseTile extends StatelessWidget {
                       children: [
                         Chip(
                           backgroundColor:
-                              Colors.blue.shade50,
+                              Colors.white,
                           label: Text(
                             "Sem ${course.semester}",
                           ),
@@ -98,7 +99,7 @@ class CourseTile extends StatelessWidget {
                         const SizedBox(width: 8),
                         Chip(
                           backgroundColor:
-                              Colors.green.shade50,
+                              Colors.white,
                           label: Text(
                             course.department,
                           ),

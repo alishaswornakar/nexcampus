@@ -170,7 +170,7 @@ DropdownButtonFormField<String>(
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(width * 0.035),
-      borderSide: BorderSide(
+      borderSide: const BorderSide(
         color: AppTheme.primary,
         width: 1.5,
       ),

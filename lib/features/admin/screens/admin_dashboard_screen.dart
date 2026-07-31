@@ -146,13 +146,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   Widget _buildServiceCard(Map<String, dynamic> item) {
     return Container(
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8, offset: const Offset(0, 2))]),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2))]),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         onTap: item['onTap'],
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // ignore: deprecated_member_use
             CircleAvatar(backgroundColor: (item['color'] as Color).withOpacity(0.1), child: Icon(item['icon'], color: item['color'])),
             const SizedBox(height: 10),
             Text(item['title'], style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
