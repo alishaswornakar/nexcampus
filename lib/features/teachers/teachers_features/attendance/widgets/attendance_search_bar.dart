@@ -1,50 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 class AttendanceSearchBar extends StatelessWidget {
   final TextEditingController controller;
-  final ValueChanged<String> onChanged;
+  final ValueChanged<String>? onChanged;
   final VoidCallback? onClear;
 
   const AttendanceSearchBar({
     super.key,
     required this.controller,
-    required this.onChanged,
+    this.onChanged,
     this.onClear,
   });
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
+    double scale(double value) => width * (value / 390);
+
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(
+        horizontal: scale(16),
+        vertical: scale(12),
+      ),
       child: TextField(
         controller: controller,
         onChanged: onChanged,
+        style: TextStyle(
+          fontSize: scale(15),
+          fontWeight: FontWeight.w500,
+        ),
         decoration: InputDecoration(
-          hintText: "Search by name or roll number",
-          prefixIcon: const Icon(Icons.search),
+          hintText: "Search by date or session...",
+          hintStyle: TextStyle(
+            color: Colors.grey.shade500,
+            fontSize: scale(14),
+          ),
+          prefixIcon: Icon(
+            Icons.search,
+            color: Colors.grey.shade600,
+            size: scale(22),
+          ),
           suffixIcon: controller.text.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.close),
+                  icon: Icon(
+                    Icons.close,
+                    size: scale(20),
+                  ),
                   onPressed: onClear,
                 )
               : null,
           filled: true,
           fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 14,
+          contentPadding: EdgeInsets.symmetric(
+            vertical: scale(16),
           ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(scale(14)),
+            borderSide: BorderSide(
+              color: Colors.grey.shade300,
+            ),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(scale(14)),
+            borderSide: BorderSide(
+              color: Colors.grey.shade300,
+            ),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(scale(14)),
             borderSide: const BorderSide(
-              color: Colors.blue,
+              color: AppTheme.primary,
               width: 1.5,
             ),
           ),

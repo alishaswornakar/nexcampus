@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import '../models/attendance_model.dart';
 
@@ -15,156 +16,267 @@ class AttendanceHistoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
+    double s(double value) => width * (value / 390);
+
     final totalStudents = attendance.students.length;
 
-    final presentStudents = attendance.students
-        .where((student) => student.isPresent)
-        .length;
+    final presentStudents =
+        attendance.students.where((e) => e.isPresent).length;
 
     final absentStudents =
         totalStudents - presentStudents;
 
-    final percentage = totalStudents == 0
-        ? 0
-        : ((presentStudents / totalStudents) * 100)
-            .round();
-
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 8,
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: s(16),
+        vertical: s(8),
       ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
-            children: [
-
-              Row(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(s(22)),
+          onTap: onTap,
+          child: Ink(
+            decoration: BoxDecoration(
+              color: const Color(0xffEEF2FF),
+              borderRadius:
+                  BorderRadius.circular(s(22)),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(s(18)),
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
                 children: [
 
-                  const CircleAvatar(
-                    backgroundColor:
-                        Colors.blue,
-                    child: Icon(
-                      Icons.calendar_today,
-                      color: Colors.white,
-                    ),
+                  /// Top Row
+                  Row(
+                    children: [
+
+                      Container(
+                        padding: EdgeInsets.all(s(10)),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                              BorderRadius.circular(
+                                  s(14)),
+                        ),
+                        child: Icon(
+                          Icons.calendar_today,
+                          color: AppTheme.primary,
+                          size: s(22),
+                        ),
+                      ),
+
+                      SizedBox(width: s(14)),
+
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment
+                                  .start,
+                          children: [
+
+                            Text(
+                              DateFormat(
+                                      "dd MMM yyyy")
+                                  .format(
+                                      attendance.date),
+                              style: TextStyle(
+                                fontSize: s(18),
+                                fontWeight:
+                                    FontWeight.bold,
+                              ),
+                            ),
+
+                            SizedBox(height: s(4)),
+
+                            Text(
+                              "${attendance.department} • Semester ${attendance.semester}",
+                              style: TextStyle(
+                                fontSize: s(13),
+                                color: Colors
+                                    .grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(
+                          horizontal: s(12),
+                          vertical: s(6),
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.green
+                              .withOpacity(.15),
+                          borderRadius:
+                              BorderRadius.circular(
+                                  s(25)),
+                        ),
+                        child: Row(
+                          mainAxisSize:
+                              MainAxisSize.min,
+                          children: [
+
+                            Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: s(15),
+                            ),
+
+                            SizedBox(width: s(5)),
+
+                            Text(
+                              "Completed",
+                              style: TextStyle(
+                                color:
+                                    Colors.green,
+                                fontSize: s(11),
+                                fontWeight:
+                                    FontWeight.bold,
+                              ),
+                            ),
+
+                          ],
+                        ),
+                      ),
+
+                    ],
                   ),
 
-                  const SizedBox(width: 12),
+                  SizedBox(height: s(18)),
 
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                  /// Statistics Card
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(
+                      vertical: s(18),
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius:
+                          BorderRadius.circular(
+                              s(18)),
+                    ),
+                    child: Row(
                       children: [
 
-                        Text(
-                          DateFormat(
-                            "dd MMM yyyy",
-                          ).format(attendance.date),
-                          style:
-                              const TextStyle(
-                            fontWeight:
-                                FontWeight.bold,
-                            fontSize: 16,
+                        Expanded(
+                          child: _statItem(
+                            presentStudents
+                                .toString(),
+                            "PRESENT",
+                           AppTheme.primary,
+                            s,
                           ),
                         ),
 
-                        const SizedBox(height: 4),
+                        Container(
+                          width: 1,
+                          height: s(45),
+                          color: Colors
+                              .grey.shade300,
+                        ),
 
-                        Text(
-                          "${attendance.department} • Semester ${attendance.semester}",
-                          style:
-                              TextStyle(
-                            color:
-                                Colors.grey[600],
+                        Expanded(
+                          child: _statItem(
+                            absentStudents
+                                .toString(),
+                            "ABSENT",
+                            Colors.red,
+                            s,
                           ),
                         ),
+
+                        Container(
+                          width: 1,
+                          height: s(45),
+                          color: Colors
+                              .grey.shade300,
+                        ),
+
+                        Expanded(
+                          child: _statItem(
+                            totalStudents
+                                .toString(),
+                            "TOTAL",
+                            Colors.black87,
+                            s,
+                          ),
+                        ),
+
                       ],
                     ),
                   ),
 
-                  const Icon(
-                    Icons.arrow_forward_ios,
-                    size: 18,
+                  SizedBox(height: s(14)),
+
+                  Align(
+                    alignment:
+                        Alignment.centerRight,
+                    child: TextButton.icon(
+                      onPressed: onTap,
+                      style: TextButton.styleFrom(
+                        foregroundColor:
+                           AppTheme.primary,
+                      ),
+                      iconAlignment:
+                          IconAlignment.end,
+                      icon: Icon(
+                        Icons.arrow_forward,
+                        size: s(18),
+                      ),
+                      label: Text(
+                        "VIEW SESSION DETAILS",
+                        style: TextStyle(
+                          fontWeight:
+                              FontWeight.bold,
+                          fontSize: s(12),
+                        ),
+                      ),
+                    ),
                   ),
 
                 ],
               ),
-
-              const SizedBox(height: 18),
-
-              Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceAround,
-                children: [
-
-                  _buildStat(
-                    "Total",
-                    totalStudents.toString(),
-                    Colors.blue,
-                  ),
-
-                  _buildStat(
-                    "Present",
-                    presentStudents.toString(),
-                    Colors.green,
-                  ),
-
-                  _buildStat(
-                    "Absent",
-                    absentStudents.toString(),
-                    Colors.red,
-                  ),
-
-                  _buildStat(
-                    "%",
-                    "$percentage%",
-                    Colors.orange,
-                  ),
-
-                ],
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildStat(
-    String title,
+  Widget _statItem(
     String value,
+    String title,
     Color color,
+    double Function(double) s,
   ) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
 
         Text(
           value,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: s(24),
             fontWeight: FontWeight.bold,
             color: color,
           ),
         ),
 
-        const SizedBox(height: 4),
+        SizedBox(height: s(4)),
 
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 12,
+          style: TextStyle(
+            fontSize: s(11),
+            fontWeight: FontWeight.w600,
             color: Colors.grey,
           ),
         ),
