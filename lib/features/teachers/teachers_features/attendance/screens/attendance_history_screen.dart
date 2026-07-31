@@ -113,7 +113,7 @@ class _AttendanceHistoryScreenState
         appBar: AppBar(
           backgroundColor:AppTheme.primary,
           elevation: 0,
-          surfaceTintColor: Colors.white,
+          
           foregroundColor: Colors.white,
           centerTitle: false,
           title: const Text(

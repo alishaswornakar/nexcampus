@@ -449,18 +449,153 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                     return;
                   }
 
-                  await repository.saveAttendance(attendanceModel);
+                 await repository.saveAttendance(attendanceModel);
 
-                  if (!mounted) return;
+if (!mounted) return;
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      backgroundColor: Colors.green,
-                      content: Text("Attendance saved successfully!"),
+/// Calculate actual attendance summary
+final totalCount = attendanceStudents.length;
+
+final presentCount = attendanceStudents
+    .where((student) => student.isPresent)
+    .length;
+
+final absentCount = totalCount - presentCount;
+
+/// Success Dialog
+await showDialog(
+  context: context,
+  barrierDismissible: false,
+  builder: (dialogContext) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+
+            /// Success Icon
+            Container(
+              height: 80,
+              width: 80,
+              decoration: const BoxDecoration(
+                color: AppTheme.primary,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.check,
+                color: Colors.white,
+                size: 42,
+              ),
+            ),
+
+            const SizedBox(height: 22),
+
+            const Text(
+              "Attendance Submitted",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            Text(
+              "Present: $presentCount/$totalCount",
+              style: const TextStyle(
+                fontSize: 20,
+                color: AppTheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 4),
+
+            Text(
+              "Absent: $absentCount",
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 15,
+              ),
+            ),
+
+            const SizedBox(height: 28),
+
+            /// View Details
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AttendanceHistoryScreen(
+                        department: widget.department,
+                        semester: widget.semester.toString(),
+                        subjectId: widget.subjectId,
+                      ),
                     ),
                   );
+                },
+                child: const Text(
+                  "View Details",
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
 
+            const SizedBox(height: 14),
+
+            /// Return to Dashboard
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppTheme.primary,
+                  side: BorderSide(
+                    color: Colors.grey.shade300,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(dialogContext);
                   Navigator.pop(context);
+                },
+                child: const Text(
+                  "Return to Dashboard",
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  },
+);
                 } catch (e) {
                   if (!mounted) return;
 
