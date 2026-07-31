@@ -1,6 +1,6 @@
 // lib/features/student/blocs/schedule/services/schedule_service.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
-//import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:nexcampus_app/features/student/blocs/schedule/model/schedule_model.dart';
 
 /// Read-only counterpart of the teacher's ScheduleService
@@ -23,22 +23,27 @@ class ScheduleService {
     required String department,
     required String semester,
   }) {
+    debugPrint("Department: $department");
+    debugPrint("Semester: $semester");
+
     return scheduleCollection
         .where("department", isEqualTo: department)
         .where("semester", isEqualTo: semester)
         .orderBy("day")
         .orderBy("startTime")
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
+        .map((snapshot) {
+          debugPrint("Documents found: ${snapshot.docs.length}");
+
+          return snapshot.docs
               .map(
                 (doc) => ScheduleModel.fromMap(
                   doc.data() as Map<String, dynamic>,
                   doc.id,
                 ),
               )
-              .toList(),
-        );
+              .toList();
+        });
   }
 
   /// Single schedule entry — used by a detail/expanded view if needed.

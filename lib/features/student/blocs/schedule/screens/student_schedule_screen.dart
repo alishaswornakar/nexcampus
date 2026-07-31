@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 //import 'package:intl/intl.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
-
+//import 'package:flutter/foundation.dart';
 import 'package:nexcampus_app/features/student/blocs/schedule/bloc/schedule_bloc.dart';
 import 'package:nexcampus_app/features/student/blocs/schedule/model/schedule_model.dart';
 import 'package:nexcampus_app/features/student/blocs/schedule/repository/schedule_repository.dart';
@@ -37,6 +37,7 @@ class StudentScheduleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("===== StudentScheduleScreen BUILD =====");
     return BlocProvider(
       create: (_) => ScheduleBloc(ScheduleRepository(ScheduleService()))
         ..add(

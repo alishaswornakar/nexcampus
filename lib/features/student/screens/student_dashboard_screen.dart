@@ -5,7 +5,7 @@ import '../widgets/quick_access_grid.dart';
 import '../widgets/recent_notices_section.dart';
 import 'package:nexcampus_app/features/student/widgets/bottom_nav_bar.dart';
 import '../widgets/greeting_card.dart';
-import '../widgets/weekly_schedule_section.dart';
+import 'package:nexcampus_app/features/student/widgets/weekly_schedule_section.dart';
 
 class StudentDashboardScreen extends StatelessWidget {
   final User user;
