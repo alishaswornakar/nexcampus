@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'profile_menu_tile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:nexcampus_app/features/authentication/presentation/pages/login_screen.dart';
 
 class LogoutTile extends StatelessWidget {
   final VoidCallback? onLogout;
@@ -25,10 +27,27 @@ class LogoutTile extends StatelessWidget {
       ),
     );
 
+    debugPrint('Logout confirmed: $confirmed'); // Debug print
+
     if (confirmed == true) {
-      onLogout?.call();
-      // Hook into your AuthBloc, e.g.:
-      // context.read<AuthBloc>().add(AuthLogoutRequested());
+      debugPrint('Calling onLogout callback...'); // Debug print
+      if (onLogout != null) {
+        onLogout!.call();
+      } else {
+        debugPrint('onLogout is null!'); // Debug print
+        // Fallback: Try to sign out directly
+        try {
+          await FirebaseAuth.instance.signOut();
+          if (context.mounted) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const LoginScreen()),
+              (route) => false,
+            );
+          }
+        } catch (e) {
+          debugPrint('Fallback logout error: $e');
+        }
+      }
     }
   }
 

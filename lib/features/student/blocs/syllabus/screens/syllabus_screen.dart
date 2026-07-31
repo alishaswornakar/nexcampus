@@ -56,7 +56,7 @@ class _SyllabusScreenState extends State<SyllabusScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => StudentDashboardScreen(user: currentUser),
+              builder: (_) => StudentDashboardScreen(user: currentUser),
             ),
           );
         }

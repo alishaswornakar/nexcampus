@@ -15,6 +15,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/student/widgets/bottom_nav_bar.dart';
 import 'package:nexcampus_app/features/student/blocs/user_profile/screens/edit_profile_screen.dart';
+import 'package:nexcampus_app/features/authentication/presentation/pages/login_screen.dart'; // Add this import
 
 class UserProfileScreen extends StatelessWidget {
   const UserProfileScreen({super.key});
@@ -103,5 +104,48 @@ class UserProfileScreen extends StatelessWidget {
         bottomNavigationBar: const AppBottomNavBar(currentIndex: 3),
       ),
     );
+  }
+}
+
+// Logout function to pass to LogoutTile
+Future<void> performLogout(BuildContext context) async {
+  try {
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    // Sign out from Firebase
+    await FirebaseAuth.instance.signOut();
+
+    // Close loading dialog
+    if (context.mounted) {
+      Navigator.pop(context);
+    }
+
+    // Navigate to Login Screen
+    if (context.mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (route) => false,
+      );
+    }
+  } catch (e) {
+    // Close loading dialog if showing
+    if (context.mounted) {
+      Navigator.pop(context);
+    }
+
+    // Show error message
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Logout failed: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }
