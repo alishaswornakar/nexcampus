@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/teachers/shared_screens/department_semester_selection_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/notices/screens/notice_screen.dart';
-import 'package:nexcampus_app/features/teachers/teachers_features/teacher_profile/screens/teacher_profile_screen.dart';
 import 'package:nexcampus_app/features/teachers/screens/widgets/qiuck_access_card.dart';
 
 class QuickAccessGrid extends StatelessWidget {

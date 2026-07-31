@@ -97,7 +97,7 @@ Widget build(BuildContext context) {
       if (state is CoursesLoaded) {
         if (state.courses.isEmpty) {
 
-return Center(child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 28),child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [Container(width: 170,height: 170,decoration: BoxDecoration(color: AppTheme.primary?.withValues(alpha: .08),shape: BoxShape.circle,),child: Icon(Icons.menu_book_rounded,size: 70,color: AppTheme.primary?.withValues(alpha: .45),),),
+return Center(child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 28),child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [Container(width: 170,height: 170,decoration: BoxDecoration(color: AppTheme.primary.withValues(alpha: .08),shape: BoxShape.circle,),child: Icon(Icons.menu_book_rounded,size: 70,color: AppTheme.primary.withValues(alpha: .45),),),
 
       const SizedBox(height: 36),
 
@@ -177,7 +177,7 @@ Expanded(
       return Container(
 
 margin: const EdgeInsets.only(bottom: 16),
-decoration: BoxDecoration(color: const Color.fromARGB(80, 158, 158, 158),borderRadius: BorderRadius.circular(18),boxShadow: [BoxShadow(color:AppTheme.primary.withValues(alpha: 0.05),blurRadius: 12,offset: const Offset(0, 4),),],),child: InkWell(borderRadius: BorderRadius.circular(18),onTap: () {Navigator.push(context,MaterialPageRoute(builder: (_) => CourseDetailScreen(course: course,),),);},child: Padding(padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 14,),child: Row(children: [Container(width: 52,height: 52,decoration: BoxDecoration(color: AppTheme.primary?.withValues(alpha: .08),borderRadius: BorderRadius.circular(14),),child: const Icon(Icons.menu_book_rounded,color: AppTheme.primary,size: 26,),),
+decoration: BoxDecoration(color: const Color.fromARGB(80, 158, 158, 158),borderRadius: BorderRadius.circular(18),boxShadow: [BoxShadow(color:AppTheme.primary.withValues(alpha: 0.05),blurRadius: 12,offset: const Offset(0, 4),),],),child: InkWell(borderRadius: BorderRadius.circular(18),onTap: () {Navigator.push(context,MaterialPageRoute(builder: (_) => CourseDetailScreen(course: course,),),);},child: Padding(padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 14,),child: Row(children: [Container(width: 52,height: 52,decoration: BoxDecoration(color: AppTheme.primary.withValues(alpha: .08),borderRadius: BorderRadius.circular(14),),child: const Icon(Icons.menu_book_rounded,color: AppTheme.primary,size: 26,),),
 
       const SizedBox(width: 16),
 
