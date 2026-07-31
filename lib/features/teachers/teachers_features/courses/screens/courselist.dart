@@ -178,7 +178,7 @@ Expanded(
 
 margin: const EdgeInsets.only(bottom: 16),
 decoration: BoxDecoration(
-  color:  Colors.white,borderRadius: BorderRadius.circular(18),boxShadow: [BoxShadow(color:AppTheme.primary.withValues(alpha: 0.05),blurRadius: 12,offset: const Offset(0, 4),),],),child: InkWell(borderRadius: BorderRadius.circular(18),onTap: () {Navigator.push(context,MaterialPageRoute(builder: (_) => CourseDetailScreen(course: course,),),);},child: Padding(padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 14,),child: Row(children: [Container(width: 52,height: 52,decoration: BoxDecoration(color: AppTheme.primary?.withValues(alpha: .08),borderRadius: BorderRadius.circular(14),),child: const Icon(Icons.menu_book_rounded,color: AppTheme.primary,size: 26,),),
+  color:  Colors.white,borderRadius: BorderRadius.circular(18),boxShadow: [BoxShadow(color:AppTheme.primary.withValues(alpha: 0.05),blurRadius: 12,offset: const Offset(0, 4),),],),child: InkWell(borderRadius: BorderRadius.circular(18),onTap: () {Navigator.push(context,MaterialPageRoute(builder: (_) => CourseDetailScreen(course: course,),),);},child: Padding(padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 14,),child: Row(children: [Container(width: 52,height: 52,decoration: BoxDecoration(color: AppTheme.primary.withValues(alpha: .08),borderRadius: BorderRadius.circular(14),),child: const Icon(Icons.menu_book_rounded,color: AppTheme.primary,size: 26,),),
 
       const SizedBox(width: 16),
 
