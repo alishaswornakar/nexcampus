@@ -31,8 +31,8 @@ class CourseDetailScreen extends StatelessWidget {
 
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.black87,
+        backgroundColor:AppTheme.primary,
+        foregroundColor: Colors.white,
         centerTitle: true,
         title: const Text(
           "Course Details",

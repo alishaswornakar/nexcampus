@@ -89,8 +89,8 @@ Widget build(BuildContext context) {
     appBar: AppBar(
       elevation: 0,
       centerTitle: false,
-      backgroundColor: Colors.white,
-      foregroundColor: Colors.black,
+      backgroundColor: AppTheme.primary,
+      foregroundColor: Colors.white,
       title: Text(
         getTitle(),
         style: TextStyle(

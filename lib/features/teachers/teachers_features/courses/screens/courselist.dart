@@ -43,7 +43,7 @@ Widget build(BuildContext context) {
     elevation: 0,
     surfaceTintColor: Colors.white,
     scrolledUnderElevation: 0,
-    title: const Text(
+    title: const  Text(
       "My Courses",
       style: TextStyle(
         fontSize: 24,
@@ -57,7 +57,7 @@ Widget build(BuildContext context) {
       if (state is CoursesLoaded && state.courses.isNotEmpty) {
         return FloatingActionButton.extended(
           backgroundColor: AppTheme.primary,
-          foregroundColor: Colors.white,
+          foregroundColor: Colors.grey,
           icon: const Icon(Icons.add),
           label: const Text("Add Course"),
           onPressed: openAddCourse,
@@ -129,8 +129,8 @@ return Center(child: SingleChildScrollView(padding: const EdgeInsets.symmetric(h
         height: 52,
         child: ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.grey,
-            foregroundColor: const Color.fromARGB(76, 255, 255, 255),
+            backgroundColor: Colors.grey.shade300,
+            foregroundColor:  Colors.grey.shade300,
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
@@ -177,7 +177,8 @@ Expanded(
       return Container(
 
 margin: const EdgeInsets.only(bottom: 16),
-decoration: BoxDecoration(color: const Color.fromARGB(80, 158, 158, 158),borderRadius: BorderRadius.circular(18),boxShadow: [BoxShadow(color:AppTheme.primary.withValues(alpha: 0.05),blurRadius: 12,offset: const Offset(0, 4),),],),child: InkWell(borderRadius: BorderRadius.circular(18),onTap: () {Navigator.push(context,MaterialPageRoute(builder: (_) => CourseDetailScreen(course: course,),),);},child: Padding(padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 14,),child: Row(children: [Container(width: 52,height: 52,decoration: BoxDecoration(color: AppTheme.primary?.withValues(alpha: .08),borderRadius: BorderRadius.circular(14),),child: const Icon(Icons.menu_book_rounded,color: AppTheme.primary,size: 26,),),
+decoration: BoxDecoration(
+  color:  Colors.white,borderRadius: BorderRadius.circular(18),boxShadow: [BoxShadow(color:AppTheme.primary.withValues(alpha: 0.05),blurRadius: 12,offset: const Offset(0, 4),),],),child: InkWell(borderRadius: BorderRadius.circular(18),onTap: () {Navigator.push(context,MaterialPageRoute(builder: (_) => CourseDetailScreen(course: course,),),);},child: Padding(padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 14,),child: Row(children: [Container(width: 52,height: 52,decoration: BoxDecoration(color: AppTheme.primary?.withValues(alpha: .08),borderRadius: BorderRadius.circular(14),),child: const Icon(Icons.menu_book_rounded,color: AppTheme.primary,size: 26,),),
 
       const SizedBox(width: 16),
 
