@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/student/blocs/schedule/bloc/schedule_bloc.dart';
 import 'package:nexcampus_app/features/student/blocs/schedule/model/schedule_model.dart';
 import 'package:nexcampus_app/features/student/blocs/schedule/repository/schedule_repository.dart';
 import 'package:nexcampus_app/features/student/blocs/schedule/services/schedule_service.dart';
+import 'package:nexcampus_app/features/student/blocs/schedule/screens/student_schedule_screen.dart';
 import 'package:nexcampus_app/features/student/blocs/schedule/widgets/student_schedule_entry_card.dart';
 
-/// Embeddable dashboard preview of the student's weekly schedule.
+/// Embeddable dashboard "Today's Schedule" preview — shows only today's
+/// classes. VIEW ALL pushes the full weekly view (StudentScheduleScreen),
+/// which already owns its own Scaffold/AppBar (AppTheme.primary, white
+/// back button) so no styling is duplicated here.
 ///
-/// Unlike [StudentScheduleScreen] (which owns a Scaffold + AppBar and is
-/// meant to be pushed as a full route), this widget has NO Scaffold and
-/// NO independently-scrolling list — it renders as a plain Column so it
-/// can live inside the dashboard's existing SingleChildScrollView without
-/// fighting it for layout/scroll ownership.
+/// No Scaffold, no independent scrolling — plain Column so it stays safe
+/// inside the dashboard's existing SingleChildScrollView.
 ///
-/// Takes only [studentId] (matches how it's called from the dashboard,
-/// which no longer provides UserProfileBloc). Resolves department/semester
-/// itself via a single Firestore read, since LoadStudentSchedulesEvent
-/// needs those two fields, not the uid.
+/// Takes only [studentId]; resolves department/semester itself via one
+/// Firestore read on users/{uid}, since LoadStudentSchedulesEvent needs
+/// those two fields.
 class WeeklyScheduleSection extends StatefulWidget {
   final String studentId;
 
@@ -30,16 +32,8 @@ class WeeklyScheduleSection extends StatefulWidget {
 }
 
 class _WeeklyScheduleSectionState extends State<WeeklyScheduleSection> {
-  static const List<String> _days = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-  ];
-
   late Future<_DeptSemester> _profileFuture;
+  final String _today = DateFormat('EEEE').format(DateTime.now());
 
   @override
   void initState() {
@@ -61,18 +55,98 @@ class _WeeklyScheduleSectionState extends State<WeeklyScheduleSection> {
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder<_DeptSemester>(
+      future: _profileFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Center(
+              child: CircularProgressIndicator(
+                color: AppTheme.primary,
+                strokeWidth: 2,
+              ),
+            ),
+          );
+        }
+
+        final info = snapshot.data;
+        if (info == null || info.department.isEmpty || info.semester.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return BlocProvider(
+          create: (_) => ScheduleBloc(ScheduleRepository(ScheduleService()))
+            ..add(
+              LoadStudentSchedulesEvent(
+                department: info.department,
+                semester: info.semester,
+              ),
+            ),
+          child: _TodayScheduleBody(
+            department: info.department,
+            semester: info.semester,
+            today: _today,
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _TodayScheduleBody extends StatelessWidget {
+  final String department;
+  final String semester;
+  final String today;
+
+  const _TodayScheduleBody({
+    required this.department,
+    required this.semester,
+    required this.today,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Today's Schedule",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "Today's Schedule",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => StudentScheduleScreen(
+                    department: department,
+                    semester: semester,
+                  ),
+                ),
+              ),
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: const Text(
+                "VIEW ALL",
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.primary,
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 10),
-        FutureBuilder<_DeptSemester>(
-          future: _profileFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState != ConnectionState.done) {
+        BlocBuilder<ScheduleBloc, ScheduleState>(
+          builder: (context, state) {
+            if (state is ScheduleLoading || state is ScheduleInitial) {
               return const Padding(
                 padding: EdgeInsets.symmetric(vertical: 16),
                 child: Center(
@@ -84,101 +158,40 @@ class _WeeklyScheduleSectionState extends State<WeeklyScheduleSection> {
               );
             }
 
-            final info = snapshot.data;
-            if (info == null ||
-                info.department.isEmpty ||
-                info.semester.isEmpty) {
-              return const SizedBox.shrink();
+            if (state is ScheduleError) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  "Couldn't load schedule: ${state.message}",
+                  style: const TextStyle(color: Colors.red, fontSize: 13),
+                ),
+              );
             }
 
-            return BlocProvider(
-              create: (_) =>
-                  ScheduleBloc(ScheduleRepository(ScheduleService()))..add(
-                    LoadStudentSchedulesEvent(
-                      department: info.department,
-                      semester: info.semester,
-                    ),
-                  ),
-              child: BlocBuilder<ScheduleBloc, ScheduleState>(
-                builder: (context, state) {
-                  if (state is ScheduleLoading || state is ScheduleInitial) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          color: AppTheme.primary,
-                          strokeWidth: 2,
-                        ),
-                      ),
-                    );
-                  }
+            final schedules = state is SchedulesLoaded
+                ? state.schedules
+                : <ScheduleModel>[];
 
-                  if (state is ScheduleError) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Text(
-                        "Couldn't load schedule: ${state.message}",
-                        style: const TextStyle(color: Colors.red, fontSize: 13),
-                      ),
-                    );
-                  }
+            final todayEntries =
+                schedules
+                    .where((s) => s.day.toLowerCase() == today.toLowerCase())
+                    .toList()
+                  ..sort((a, b) => a.startTime.compareTo(b.startTime));
 
-                  final schedules = state is SchedulesLoaded
-                      ? state.schedules
-                      : <ScheduleModel>[];
+            if (todayEntries.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  "No classes scheduled today",
+                  style: TextStyle(color: AppTheme.textSecondary),
+                ),
+              );
+            }
 
-                  if (schedules.isEmpty) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text(
-                        "No classes scheduled this week",
-                        style: TextStyle(color: AppTheme.textSecondary),
-                      ),
-                    );
-                  }
-
-                  // Plain, non-scrolling Column — the outer
-                  // SingleChildScrollView on the dashboard owns scrolling.
-                  return Column(
-                    children: _days.map((day) {
-                      final dayEntries =
-                          schedules
-                              .where(
-                                (s) => s.day.toLowerCase() == day.toLowerCase(),
-                              )
-                              .toList()
-                            ..sort(
-                              (a, b) => a.startTime.compareTo(b.startTime),
-                            );
-
-                      if (dayEntries.isEmpty) {
-                        return const SizedBox.shrink();
-                      }
-
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 14),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              day,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.primary,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            ...dayEntries.map(
-                              (s) => StudentScheduleEntryCard(schedule: s),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
+            return Column(
+              children: todayEntries
+                  .map((s) => StudentScheduleEntryCard(schedule: s))
+                  .toList(),
             );
           },
         ),
