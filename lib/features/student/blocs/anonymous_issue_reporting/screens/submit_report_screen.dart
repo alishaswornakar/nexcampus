@@ -74,7 +74,10 @@ class _SubmitReportScreenState extends State<SubmitReportScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppTheme.primary,
-        title: const Text('Submit a Report'),
+        title: const Text(
+          'Submit a Report',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
