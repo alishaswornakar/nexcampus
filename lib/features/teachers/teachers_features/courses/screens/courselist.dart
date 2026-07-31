@@ -97,7 +97,7 @@ Widget build(BuildContext context) {
       if (state is CoursesLoaded) {
         if (state.courses.isEmpty) {
 
-return Center(child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 28),child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [Container(width: 170,height: 170,decoration: BoxDecoration(color: AppTheme.primaryColor?.withValues(alpha: .08),shape: BoxShape.circle,),child: Icon(Icons.menu_book_rounded,size: 70,color: AppTheme.primaryColor?.withValues(alpha: .45),),),
+return Center(child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 28),child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [Container(width: 170,height: 170,decoration: BoxDecoration(color: AppTheme.primary?.withValues(alpha: .08),shape: BoxShape.circle,),child: Icon(Icons.menu_book_rounded,size: 70,color: AppTheme.primary?.withValues(alpha: .45),),),
 
       const SizedBox(height: 36),
 
@@ -116,7 +116,7 @@ return Center(child: SingleChildScrollView(padding: const EdgeInsets.symmetric(h
         "Add your first course to start managing\nattendance, assignments and study materials.",
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: Colors.white,
+          color:AppTheme.primary,
           fontSize: 16,
           height: 1.5,
         ),
@@ -161,7 +161,7 @@ return Column(crossAxisAlignment: CrossAxisAlignment.start,children: [Padding(pa
         "Semester ${widget.semester}",
         style: const TextStyle(
           fontSize: 15,
-          color: Colors.white,
+          color: Colors.black,
         ),
       ),
     ],
@@ -177,7 +177,7 @@ Expanded(
       return Container(
 
 margin: const EdgeInsets.only(bottom: 16),
-decoration: BoxDecoration(color: AppTheme.primary,borderRadius: BorderRadius.circular(18),boxShadow: [BoxShadow(color: Colors.white.withValues(alpha: 0.05),blurRadius: 12,offset: const Offset(0, 4),),],),child: InkWell(borderRadius: BorderRadius.circular(18),onTap: () {Navigator.push(context,MaterialPageRoute(builder: (_) => CourseDetailScreen(course: course,),),);},child: Padding(padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 14,),child: Row(children: [Container(width: 52,height: 52,decoration: BoxDecoration(color: AppTheme.primary?.withValues(alpha: .08),borderRadius: BorderRadius.circular(14),),child: const Icon(Icons.menu_book_rounded,color: Colors.white,size: 26,),),
+decoration: BoxDecoration(color: const Color.fromARGB(80, 158, 158, 158),borderRadius: BorderRadius.circular(18),boxShadow: [BoxShadow(color:AppTheme.primary.withValues(alpha: 0.05),blurRadius: 12,offset: const Offset(0, 4),),],),child: InkWell(borderRadius: BorderRadius.circular(18),onTap: () {Navigator.push(context,MaterialPageRoute(builder: (_) => CourseDetailScreen(course: course,),),);},child: Padding(padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 14,),child: Row(children: [Container(width: 52,height: 52,decoration: BoxDecoration(color: AppTheme.primary?.withValues(alpha: .08),borderRadius: BorderRadius.circular(14),),child: const Icon(Icons.menu_book_rounded,color: AppTheme.primary,size: 26,),),
 
       const SizedBox(width: 16),
 
@@ -200,14 +200,14 @@ decoration: BoxDecoration(color: AppTheme.primary,borderRadius: BorderRadius.cir
                 const Icon(
                   Icons.tag,
                   size: 15,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
                 const SizedBox(width: 6),
                 Text(
                   course.courseCode,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 13,
-                    color: Colors.grey.shade700,
+                    color:Colors.black,
                   ),
                 ),
               ],
@@ -220,15 +220,15 @@ decoration: BoxDecoration(color: AppTheme.primary,borderRadius: BorderRadius.cir
                 const Icon(
                   Icons.school_outlined,
                   size: 15,
-                  color: Colors.white,
+                  color: AppTheme.primary,
                 ),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     "${course.department} • Semester ${course.semester}",
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 13,
-                      color: Colors.grey.shade600,
+                      color:Colors.black,
                     ),
                   ),
                 ),
@@ -241,7 +241,7 @@ decoration: BoxDecoration(color: AppTheme.primary,borderRadius: BorderRadius.cir
       PopupMenuButton<String>(
         icon: const Icon(
           Icons.more_vert,
-          color: Colors.white,
+          color:Colors.black,
         ),
         onSelected: (value) {
           switch (value) {

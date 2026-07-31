@@ -160,6 +160,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                     _openNotification,
                 onProfileTap:
                     _openProfile,
+                onLogoutTap: _logout,
               ),
 
               Padding(

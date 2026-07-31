@@ -146,25 +146,25 @@ class QuickAccessGrid extends StatelessWidget {
           },
         ),
 
-    (context, _) => QuickAccessCard(
-          title: "Profile",
-          icon: Icons.person_outline,
-          iconColor: AppTheme.primary,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const TeacherProfileScreen(),
-              ),
-            );
-          },
-        ),
+    // (context, _) => QuickAccessCard(
+    //       title: "Profile",
+    //       icon: Icons.person_outline,
+    //       iconColor: AppTheme.primary,
+    //       onTap: () {
+    //         Navigator.push(
+    //           context,
+    //           MaterialPageRoute(
+    //             builder: (_) => const TeacherProfileScreen(),
+    //           ),
+    //         );
+    //       },
+    //     ),
 
-    (context, onLogout) => QuickAccessCard(
-          title: "Logout",
-          icon: Icons.logout_rounded,
-          iconColor: Colors.redAccent,
-          onTap: onLogout,
-        ),
+    // (context, onLogout) => QuickAccessCard(
+    //       title: "Logout",
+    //       icon: Icons.logout_rounded,
+    //       iconColor: Colors.redAccent,
+    //       onTap: onLogout,
+    //     ),
   ];
 }
