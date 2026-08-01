@@ -64,7 +64,7 @@ Widget build(BuildContext context) {
   final width = MediaQuery.of(context).size.width;
 
   final bool isMobile = width < 600;
-  final bool isTablet = width >= 600 && width < 1000;
+  //final bool isTablet = width >= 600 && width < 1000;
 
   final double horizontalPadding = isMobile ? 16 : 24;
   final double maxWidth = width > 900 ? 800 : double.infinity;

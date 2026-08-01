@@ -22,27 +22,19 @@ class AddScheduleScreen extends StatefulWidget {
   });
 
   @override
-  State<AddScheduleScreen> createState() =>
-      _AddScheduleScreenState();
+  State<AddScheduleScreen> createState() => _AddScheduleScreenState();
 }
 
-class _AddScheduleScreenState
-    extends State<AddScheduleScreen> {
+class _AddScheduleScreenState extends State<AddScheduleScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final repository =
-      ScheduleRepository(
-    ScheduleService(),
-  );
+  final repository = ScheduleRepository(ScheduleService());
 
-  final subjectController =
-      TextEditingController();
+  final subjectController = TextEditingController();
 
-  final teacherController =
-      TextEditingController();
+  final teacherController = TextEditingController();
 
-  final roomController =
-      TextEditingController();
+  final roomController = TextEditingController();
 
   String selectedDay = "Sunday";
 
@@ -65,23 +57,17 @@ class _AddScheduleScreenState
     super.initState();
 
     if (widget.schedule != null) {
-      subjectController.text =
-          widget.schedule!.subject;
+      subjectController.text = widget.schedule!.subject;
 
-      teacherController.text =
-          widget.schedule!.teacherName;
+      teacherController.text = widget.schedule!.teacherName;
 
-      roomController.text =
-          widget.schedule!.room;
+      roomController.text = widget.schedule!.room;
 
-      selectedDay =
-          widget.schedule!.day;
+      selectedDay = widget.schedule!.day;
 
-      startTime =
-          widget.schedule!.startTime;
+      startTime = widget.schedule!.startTime;
 
-      endTime =
-          widget.schedule!.endTime;
+      endTime = widget.schedule!.endTime;
     }
   }
 
@@ -121,20 +107,14 @@ class _AddScheduleScreenState
   }
 
   Future<void> saveSchedule() async {
-    if (!_formKey.currentState!
-        .validate()) {
+    if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    if (startTime == null ||
-        endTime == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content:
-              Text("Select class time."),
-        ),
-      );
+    if (startTime == null || endTime == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Select class time.")));
       return;
     }
 
@@ -143,28 +123,17 @@ class _AddScheduleScreenState
     });
 
     try {
-      final createdAt =
-          widget.schedule?.createdAt ??
-              DateTime.now();
+      final createdAt = widget.schedule?.createdAt ?? DateTime.now();
 
-      final schedule =
-          ScheduleModel(
-        id: widget.schedule?.id ??
-            FirebaseFirestore.instance
-                .collection(
-                    "schedules")
-                .doc()
-                .id,
-        subject:
-            subjectController.text.trim(),
-        teacherName:
-            teacherController.text.trim(),
-        room:
-            roomController.text.trim(),
-        department:
-            widget.department,
-        semester:
-            widget.semester,
+      final schedule = ScheduleModel(
+        id:
+            widget.schedule?.id ??
+            FirebaseFirestore.instance.collection("schedules").doc().id,
+        subject: subjectController.text.trim(),
+        teacherName: teacherController.text.trim(),
+        room: roomController.text.trim(),
+        department: widget.department,
+        semester: widget.semester,
         day: selectedDay,
         startTime: startTime!,
         endTime: endTime!,
@@ -173,39 +142,26 @@ class _AddScheduleScreenState
       );
 
       if (widget.schedule == null) {
-        await repository.createSchedule(
-          schedule: schedule,
-        );
+        await repository.createSchedule(schedule: schedule);
       } else {
-        await repository.updateSchedule(
-          schedule: schedule,
-        );
+        await repository.updateSchedule(schedule: schedule);
       }
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor:
-              Colors.green,
+          backgroundColor: Colors.green,
           content: Text(
-            widget.schedule == null
-                ? "Schedule Added"
-                : "Schedule Updated",
+            widget.schedule == null ? "Schedule Added" : "Schedule Updated",
           ),
         ),
       );
 
       Navigator.pop(context, true);
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red,
-          content:
-              Text(e.toString()),
-        ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(backgroundColor: Colors.red, content: Text(e.toString())),
       );
     }
 
@@ -222,104 +178,65 @@ class _AddScheduleScreenState
   }) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(
-        icon,
-        color: AppTheme.primary,
-      ),
+      prefixIcon: Icon(icon, color: AppTheme.primary),
       filled: true,
       fillColor: Colors.white,
-      border: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(14),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: Colors.grey.shade300),
       ),
-      enabledBorder:
-          OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(14),
-        borderSide: BorderSide(
-          color:
-              Colors.grey.shade300,
-        ),
-      ),
-      focusedBorder:
-          const OutlineInputBorder(
-        borderSide: BorderSide(
-          color: AppTheme.primary,
-          width: 2,
-        ),
+      focusedBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: AppTheme.primary, width: 2),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final width =
-        MediaQuery.of(context)
-            .size
-            .width;
+    final width = MediaQuery.of(context).size.width;
 
     final isMobile = width < 600;
-    final isTablet =
-        width >= 600 &&
-            width < 1024;
+    final isTablet = width >= 600 && width < 1024;
 
-    final horizontalPadding =
-        isMobile
-            ? 16.0
-            : isTablet
-                ? 28.0
-                : 40.0;
+    final horizontalPadding = isMobile
+        ? 16.0
+        : isTablet
+        ? 28.0
+        : 40.0;
 
-    final maxWidth =
-        width > 900
-            ? 700.0
-            : double.infinity;
+    final maxWidth = width > 900 ? 700.0 : double.infinity;
 
     return Scaffold(
-      backgroundColor:
-          const Color(0xffF5F7FA),
+      backgroundColor: const Color(0xffF5F7FA),
 
       appBar: AppBar(
-        backgroundColor:
-            AppTheme.primary,
-        foregroundColor:
-            Colors.white,
+        backgroundColor: AppTheme.primary,
+        foregroundColor: Colors.white,
         centerTitle: true,
         title: Text(
-          widget.schedule == null
-              ? "Add Schedule"
-              : "Edit Schedule",
+          widget.schedule == null ? "Add Schedule" : "Edit Schedule",
           style: TextStyle(
-            fontSize:
-                isMobile ? 20 : 22,
-            fontWeight:
-                FontWeight.bold,
+            fontSize: isMobile ? 20 : 22,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
 
       body: Center(
         child: ConstrainedBox(
-          constraints:
-              BoxConstraints(
-            maxWidth: maxWidth,
-          ),
-          child:
-              SingleChildScrollView(
-            padding:
-                EdgeInsets.symmetric(
-              horizontal:
-                  horizontalPadding,
+          constraints: BoxConstraints(maxWidth: maxWidth),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+              horizontal: horizontalPadding,
               vertical: 20,
             ),
             child: Form(
               key: _formKey,
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment
-                        .start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                                    Text(
+                  Text(
                     widget.schedule == null
                         ? "Create Class Schedule"
                         : "Update Class Schedule",
@@ -339,83 +256,64 @@ class _AddScheduleScreenState
                     ),
                   ),
 
-                  SizedBox(
-                    height: isMobile ? 28 : 36,
-                  ),
+                  SizedBox(height: isMobile ? 28 : 36),
 
                   /// Subject
                   TextFormField(
                     controller: subjectController,
-                    style: TextStyle(
-                      fontSize: isMobile ? 15 : 16,
-                    ),
+                    style: TextStyle(fontSize: isMobile ? 15 : 16),
                     decoration: inputDecoration(
                       label: "Subject",
                       icon: Icons.menu_book,
                     ),
-                    validator: (value) =>
-                        value == null || value.trim().isEmpty
-                            ? "Required"
-                            : null,
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? "Required"
+                        : null,
                   ),
 
-                  SizedBox(
-                    height: isMobile ? 16 : 20,
-                  ),
+                  SizedBox(height: isMobile ? 16 : 20),
 
                   /// Teacher
                   TextFormField(
                     controller: teacherController,
-                    style: TextStyle(
-                      fontSize: isMobile ? 15 : 16,
-                    ),
+                    style: TextStyle(fontSize: isMobile ? 15 : 16),
                     decoration: inputDecoration(
                       label: "Teacher Name",
                       icon: Icons.person,
                     ),
-                    validator: (value) =>
-                        value == null || value.trim().isEmpty
-                            ? "Required"
-                            : null,
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? "Required"
+                        : null,
                   ),
 
-                  SizedBox(
-                    height: isMobile ? 16 : 20,
-                  ),
+                  SizedBox(height: isMobile ? 16 : 20),
 
                   /// Room
                   TextFormField(
                     controller: roomController,
-                    style: TextStyle(
-                      fontSize: isMobile ? 15 : 16,
-                    ),
+                    style: TextStyle(fontSize: isMobile ? 15 : 16),
                     decoration: inputDecoration(
                       label: "Class Room",
                       icon: Icons.room,
                     ),
-                    validator: (value) =>
-                        value == null || value.trim().isEmpty
-                            ? "Required"
-                            : null,
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? "Required"
+                        : null,
                   ),
 
-                  SizedBox(
-                    height: isMobile ? 16 : 20,
-                  ),
+                  SizedBox(height: isMobile ? 16 : 20),
 
                   /// Day
                   DropdownButtonFormField<String>(
-                    value: selectedDay,
+                    initialValue: selectedDay,
                     decoration: inputDecoration(
                       label: "Day",
                       icon: Icons.calendar_today,
                     ),
                     items: days
                         .map(
-                          (day) => DropdownMenuItem(
-                            value: day,
-                            child: Text(day),
-                          ),
+                          (day) =>
+                              DropdownMenuItem(value: day, child: Text(day)),
                         )
                         .toList(),
                     onChanged: (value) {
@@ -425,17 +323,14 @@ class _AddScheduleScreenState
                     },
                   ),
 
-                  SizedBox(
-                    height: isMobile ? 22 : 28,
-                  ),
+                  SizedBox(height: isMobile ? 22 : 28),
 
                   /// Start Time
                   Card(
                     elevation: 0,
                     color: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                     child: ListTile(
                       leading: const Icon(
@@ -448,13 +343,9 @@ class _AddScheduleScreenState
                             : TimeOfDay.fromDateTime(
                                 startTime!,
                               ).format(context),
-                        style: TextStyle(
-                          fontSize:
-                              isMobile ? 15 : 16,
-                        ),
+                        style: TextStyle(fontSize: isMobile ? 15 : 16),
                       ),
-                      trailing:
-                          const Icon(Icons.chevron_right),
+                      trailing: const Icon(Icons.chevron_right),
                       onTap: () => pickTime(true),
                     ),
                   ),
@@ -466,8 +357,7 @@ class _AddScheduleScreenState
                     elevation: 0,
                     color: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                     child: ListTile(
                       leading: const Icon(
@@ -477,65 +367,49 @@ class _AddScheduleScreenState
                       title: Text(
                         endTime == null
                             ? "Select End Time"
-                            : TimeOfDay.fromDateTime(
-                                endTime!,
-                              ).format(context),
-                        style: TextStyle(
-                          fontSize:
-                              isMobile ? 15 : 16,
-                        ),
+                            : TimeOfDay.fromDateTime(endTime!).format(context),
+                        style: TextStyle(fontSize: isMobile ? 15 : 16),
                       ),
-                      trailing:
-                          const Icon(Icons.chevron_right),
+                      trailing: const Icon(Icons.chevron_right),
                       onTap: () => pickTime(false),
                     ),
                   ),
 
-                  SizedBox(
-                    height: isMobile ? 32 : 40,
-                  ),
+                  SizedBox(height: isMobile ? 32 : 40),
 
                   SizedBox(
                     width: double.infinity,
                     height: isMobile ? 54 : 58,
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            AppTheme.primary,
+                        backgroundColor: AppTheme.primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      onPressed:
-                          isSaving ? null : saveSchedule,
+                      onPressed: isSaving ? null : saveSchedule,
                       icon: isSaving
                           ? const SizedBox(
                               width: 20,
                               height: 20,
-                              child:
-                                  CircularProgressIndicator(
+                              child: CircularProgressIndicator(
                                 strokeWidth: 2,
                                 color: Colors.white,
                               ),
                             )
                           : Icon(
-                              widget.schedule == null
-                                  ? Icons.add
-                                  : Icons.save,
+                              widget.schedule == null ? Icons.add : Icons.save,
                             ),
                       label: Text(
                         isSaving
                             ? "Saving..."
                             : widget.schedule == null
-                                ? "Add Schedule"
-                                : "Update Schedule",
+                            ? "Add Schedule"
+                            : "Update Schedule",
                         style: TextStyle(
-                          fontSize:
-                              isMobile ? 15 : 17,
-                          fontWeight:
-                              FontWeight.bold,
+                          fontSize: isMobile ? 15 : 17,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
