@@ -98,7 +98,7 @@ class AnnouncementsSection extends StatelessWidget {
 
 
 
-            child: Column(
+            child: const Column(
 
               children: [
 
@@ -118,7 +118,7 @@ class AnnouncementsSection extends StatelessWidget {
 
 
 
-                const Divider(
+                Divider(
                   height: 1,
                 ),
 
@@ -139,7 +139,7 @@ class AnnouncementsSection extends StatelessWidget {
 
 
 
-                const Divider(
+                Divider(
                   height: 1,
                 ),
 
