@@ -38,7 +38,6 @@ import 'package:nexcampus_app/features/student/blocs/notification/widgets/notifi
 
 
 class GreetingCard extends StatelessWidget {
-
   final String studentId;
 
   const GreetingCard({
@@ -46,1042 +45,416 @@ class GreetingCard extends StatelessWidget {
     required this.studentId,
   });
 
-
   @override
   Widget build(BuildContext context) {
-
     return MultiBlocProvider(
-
       providers: [
-
         BlocProvider(
-          create: (_) =>
-              UserProfileBloc()
-                ..add(
-                  UserProfileSubscriptionRequested(
-                    studentId,
-                  ),
-                ),
-        ),
-
-
-        BlocProvider(
-          create: (_) =>
-              AttendanceBloc(
-                repository:
-                    AttendanceRepository(),
-              )
-                ..add(
-                  ListenAttendance(
-                    studentId,
-                  ),
-                ),
-        ),
-
-
-        BlocProvider(
-          create: (_) =>
-              AssignmentBloc(
-                AssignmentRepository(
-                  AssignmentService(),
-                ),
-                AssignmentSubmissionRepository(
-                  AssignmentSubmissionService(),
-                ),
+          create: (_) => UserProfileBloc()
+            ..add(
+              UserProfileSubscriptionRequested(
+                studentId,
               ),
+            ),
         ),
-
-
         BlocProvider(
-          create: (_) =>
-              DigitalQueueBloc(
-                repository:
-                    DigitalQueueRepositoryImpl(),
-              )
-                ..add(
-                  DigitalQueueActiveTokenSubscriptionRequested(
-                    studentId: studentId,
-                  ),
-                ),
+          create: (_) => AttendanceBloc(
+            repository: AttendanceRepository(),
+          )
+            ..add(
+              ListenAttendance(studentId),
+            ),
         ),
-
-
         BlocProvider(
-          create: (_) =>
-              NotificationBloc()
-                ..add(
-                  NotificationSubscribeRequested(
-                    studentId,
-                  ),
-                ),
+          create: (_) => AssignmentBloc(
+            AssignmentRepository(
+              AssignmentService(),
+            ),
+            AssignmentSubmissionRepository(
+              AssignmentSubmissionService(),
+            ),
+          ),
         ),
-
+        BlocProvider(
+          create: (_) => DigitalQueueBloc(
+            repository: DigitalQueueRepositoryImpl(),
+          )
+            ..add(
+              DigitalQueueActiveTokenSubscriptionRequested(
+                studentId: studentId,
+              ),
+            ),
+        ),
+        BlocProvider(
+          create: (_) => NotificationBloc()
+            ..add(
+              NotificationSubscribeRequested(
+                studentId,
+              ),
+            ),
+        ),
       ],
-
-
       child: _GreetingCardBody(
         studentId: studentId,
       ),
-
     );
   }
 }
 
-
-
 void showLogoutDialog(BuildContext context) {
-
   showDialog(
-
     context: context,
-
     builder: (ctx) {
-
       return AlertDialog(
-
-        title: const Text(
-          "Logout",
-        ),
-
-        content: const Text(
-          "Are you sure you want to logout?",
-        ),
-
-
+        title: const Text("Logout"),
+        content: const Text("Are you sure you want to logout?"),
         actions: [
-
           TextButton(
-
             onPressed: () {
               Navigator.pop(ctx);
             },
-
-            child: const Text(
-              "Cancel",
-            ),
-
+            child: const Text("Cancel"),
           ),
-
-
           TextButton(
-
             onPressed: () async {
-
               Navigator.pop(ctx);
+              await AuthService().signOut();
 
-              await AuthService()
-                  .signOut();
-
-
-              if(context.mounted){
-
+              if (context.mounted) {
                 Navigator.pushAndRemoveUntil(
-
                   context,
-
                   MaterialPageRoute(
-                    builder: (_) =>
-                        const AuthWrapper(),
+                    builder: (_) => const AuthWrapper(),
                   ),
-
                   (_) => false,
-
                 );
-
               }
-
             },
-
             child: const Text(
               "Logout",
               style: TextStyle(
                 color: Colors.red,
               ),
             ),
-
           ),
-
         ],
-
       );
-
     },
-
   );
-
 }
-class _GreetingCardBody extends StatelessWidget {
 
+class _GreetingCardBody extends StatelessWidget {
   final String studentId;
 
   const _GreetingCardBody({
     required this.studentId,
   });
 
-
   @override
   Widget build(BuildContext context) {
-
     final width = MediaQuery.of(context).size.width;
 
-
     final bool isMobile = width < 600;
+    final bool isTablet = width >= 600 && width < 1000;
 
-    final bool isTablet =
-        width >= 600 && width < 1000;
+    final double headerHeight = isMobile
+        ? 210
+        : isTablet
+            ? 230
+            : 250;
 
+    final double horizontalPadding = isMobile
+        ? 16
+        : isTablet
+            ? 24
+            : 40;
 
+    final double avatarRadius = isMobile
+        ? 20
+        : isTablet
+            ? 24
+            : 28;
 
-    final double headerHeight =
-        isMobile
-            ? 190
-            : isTablet
-                ? 210
-                : 230;
-
-
-    final double horizontalPadding =
-        isMobile
-            ? 16
-            : isTablet
-                ? 24
-                : 40;
-
-
-
-    final double avatarRadius =
-        isMobile
-            ? 20
-            : isTablet
-                ? 24
-                : 28;
-
-
-
-    final double nameSize =
-        isMobile
-            ? 20
-            : isTablet
-                ? 24
-                : 28;
-
-
+    final double nameSize = isMobile
+        ? 20
+        : isTablet
+            ? 24
+            : 28;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-
       value: const SystemUiOverlayStyle(
-
-        statusBarColor:
-            Colors.transparent,
-
-        statusBarIconBrightness:
-            Brightness.light,
-
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
       ),
-
-
-      child: BlocListener<
-          UserProfileBloc,
-          UserProfileState>(
-
-
-        listenWhen:
-            (previous, current) {
-
-
+      child: BlocListener<UserProfileBloc, UserProfileState>(
+        listenWhen: (previous, current) {
           return current.profile != null &&
-
               current.profile!.department != null &&
-
               current.profile!.semester != null &&
-
-              (
-                previous.profile?.department !=
-                    current.profile?.department ||
-
-                previous.profile?.semester !=
-                    current.profile?.semester
-              );
-
+              (previous.profile?.department != current.profile?.department ||
+                  previous.profile?.semester != current.profile?.semester);
         },
-
-
-        listener:
-            (context, state) {
-
-
-          final profile =
-              state.profile!;
-
-
-          context
-              .read<AssignmentBloc>()
-              .add(
-
+        listener: (context, state) {
+          final profile = state.profile!;
+          context.read<AssignmentBloc>().add(
                 LoadAssignments(
-
-                  department:
-                      profile.department!,
-
-                  semester:
-                      profile.semester!,
-
-                  studentId:
-                      studentId,
-
+                  department: profile.department!,
+                  semester: profile.semester!,
+                  studentId: studentId,
                 ),
-
               );
-
         },
-
-
-
         child: Container(
-
-          width:
-              double.infinity,
-
-          height:
-              headerHeight,
-
-
-          decoration:
-              const BoxDecoration(
-
-            color:
-                AppTheme.primary,
-
+          width: double.infinity,
+          height: headerHeight,
+          decoration: const BoxDecoration(
+            color: AppTheme.primary,
           ),
-
-
           child: SafeArea(
-
-            bottom:
-                false,
-
-
+            bottom: false,
             child: Stack(
-
-              clipBehavior:
-                  Clip.none,
-
-
+              clipBehavior: Clip.none,
               children: [
-
-
                 Padding(
-
-                  padding:
-                      EdgeInsets.fromLTRB(
-
+                  padding: EdgeInsets.fromLTRB(
                     horizontalPadding,
-
                     18,
-
                     horizontalPadding,
-
-                    60,
-
+                    0,
                   ),
-
-
                   child: Row(
-
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
-
-
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
-
-
                       Expanded(
-
-                        child:
-
-                        BlocBuilder<
-                            UserProfileBloc,
-                            UserProfileState>(
-
-
-                          builder:
-                              (context, state) {
-
-
-                            final name =
-                                state.profile?.fullName;
-
-
-
+                        child: BlocBuilder<UserProfileBloc, UserProfileState>(
+                          builder: (context, state) {
+                            final name = state.profile?.fullName;
                             return Column(
-
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-
-
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-
-
                                 const Text(
-
                                   "Namaste,",
-
-                                  style:
-                                      TextStyle(
-
-                                    color:
-                                        Colors.white70,
-
-                                    fontSize:
-                                        14,
-
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 14,
                                   ),
-
                                 ),
-
-
-
-                                const SizedBox(
-                                  height: 5,
-                                ),
-
-
-
+                                const SizedBox(height: 5),
                                 Text(
-
-                                  (name == null ||
-                                          name.isEmpty)
-
+                                  (name == null || name.isEmpty)
                                       ? "Student"
-
                                       : name,
-
-
-                                  maxLines:
-                                      1,
-
-
-                                  overflow:
-                                      TextOverflow.ellipsis,
-
-
-                                  style:
-                                      TextStyle(
-
-                                    color:
-                                        Colors.white,
-
-                                    fontSize:
-                                        nameSize,
-
-                                    fontWeight:
-                                        FontWeight.bold,
-
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: nameSize,
+                                    fontWeight: FontWeight.bold,
                                   ),
-
                                 ),
-
                               ],
-
                             );
-
                           },
-
                         ),
-
                       ),
-
-
-
                       BlocProvider.value(
-
-                        value:
-                            context.read<
-                                NotificationBloc>(),
-
-
-                        child:
-                            const NotificationBell(),
-
+                        value: context.read<NotificationBloc>(),
+                        child: const NotificationBell(),
                       ),
-
-
-
-                      SizedBox(
-                        width:
-                            isMobile ? 10 : 16,
-                      ),
-
-
-
-
-                      BlocBuilder<
-                          UserProfileBloc,
-                          UserProfileState>(
-
-
-                        builder:
-                            (context,state){
-
-
-                          final photoUrl =
-                              state.profile?.photoUrl;
-
-
-
+                      SizedBox(width: isMobile ? 10 : 16),
+                      BlocBuilder<UserProfileBloc, UserProfileState>(
+                        builder: (context, state) {
+                          final photoUrl = state.profile?.photoUrl;
                           return GestureDetector(
-
-
                             onTap: () {
-
-
                               Navigator.push(
-
                                 context,
-
                                 MaterialPageRoute(
-
-                                  builder: (_) =>
-                                      const UserProfileScreen(),
-
+                                  builder: (_) => const UserProfileScreen(),
                                 ),
-
                               );
-
                             },
-
-
                             child: CircleAvatar(
-
-                              radius:
-                                  avatarRadius,
-
-
-                              backgroundColor:
-                                  Colors.white24,
-
-
+                              radius: avatarRadius,
+                              backgroundColor: Colors.white24,
                               backgroundImage:
-
-                                  (photoUrl != null &&
-                                          photoUrl.isNotEmpty)
-
-                                      ? NetworkImage(
-                                          photoUrl,
-                                        )
-
+                                  (photoUrl != null && photoUrl.isNotEmpty)
+                                      ? NetworkImage(photoUrl)
                                       : null,
-
-
-                              child:
-
-                                  (photoUrl == null ||
-                                          photoUrl.isEmpty)
-
-                                      ? Icon(
-
-                                          Icons.person,
-
-                                          color:
-                                              Colors.white,
-
-                                          size:
-                                              avatarRadius,
-
-                                        )
-
-                                      : null,
-
-
+                              child: (photoUrl == null || photoUrl.isEmpty)
+                                  ? Icon(
+                                      Icons.person,
+                                      color: Colors.white,
+                                      size: avatarRadius,
+                                    )
+                                  : null,
                             ),
-
                           );
-
-
                         },
-
                       ),
-
-
-
-
                       IconButton(
-
-                        padding:
-                            EdgeInsets.zero,
-
-
-                        icon:
-                            const Icon(
-
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(
                           Icons.logout,
-
-                          color:
-                              Colors.white,
-
+                          color: Colors.white,
                         ),
-
-
-                        onPressed: () =>
-                            showLogoutDialog(
-                              context,
-                            ),
-
+                        onPressed: () => showLogoutDialog(context),
                       ),
-
-
                     ],
-
                   ),
-
                 ),
-
-
-
                 Positioned(
-
-                  left:
-                      horizontalPadding,
-
-                  right:
-                      horizontalPadding,
-
-                  bottom:
-                      -25,
-
-
-                  child:
-                      const _StatsRow(),
-
+                  left: horizontalPadding,
+                  right: horizontalPadding,
+                  bottom: 15,
+                  child: const _StatsRow(),
                 ),
-
-
-
               ],
-
             ),
-
           ),
-
         ),
-
       ),
-
     );
-
   }
-
 }
-class _StatsRow extends StatelessWidget {
 
+class _StatsRow extends StatelessWidget {
   const _StatsRow();
 
-
   @override
   Widget build(BuildContext context) {
-
-    final width =
-        MediaQuery.of(context).size.width;
-
-
-    final bool isMobile =
-        width < 600;
-
+    final width = MediaQuery.of(context).size.width;
+    final bool isMobile = width < 600;
 
     return Container(
-
-      padding:
-          EdgeInsets.symmetric(
-
-        vertical:
-            isMobile ? 12 : 16,
-
+      padding: EdgeInsets.symmetric(
+        vertical: isMobile ? 12 : 16,
       ),
-
-
-      decoration:
-          BoxDecoration(
-
-        color:
-            Colors.white,
-
-
-        borderRadius:
-            BorderRadius.circular(
-              18,
-            ),
-
-
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
         boxShadow: [
-
           BoxShadow(
-
-            color:
-                Colors.black.withValues(
-                  alpha: 0.08,
-                ),
-
-
-            blurRadius:
-                15,
-
-
-            offset:
-                const Offset(
-                  0,
-                  5,
-                ),
-
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
-
         ],
-
       ),
-
-
-
       child: Row(
-
         children: [
-
-
           Expanded(
+            child: BlocBuilder<AttendanceBloc, AttendanceState>(
+              builder: (context, state) {
+                String value = "--";
 
-            child:
-
-            BlocBuilder<
-                AttendanceBloc,
-                AttendanceState>(
-
-
-              builder:
-                  (context,state){
-
-
-                String value =
-                    "--";
-
-
-
-                if(state
-                    is AttendanceLoaded){
-
-
-                  final list =
-                      state.attendanceList;
-
-
-
-                  if(list.isNotEmpty){
-
-
-                    final present =
-                        list
-                            .where(
-                              (a) =>
-                                  a.status
-                                      .toLowerCase()
-                                      ==
-                                      "present",
-                            )
-                            .length;
-
-
-
-                    value =
-                        "${((present /
-                                    list.length) *
-                                100)
-                            .toStringAsFixed(1)}%";
-
-
+                if (state is AttendanceLoaded) {
+                  final list = state.attendanceList;
+                  if (list.isNotEmpty) {
+                    final presentCount = list
+                        .where(
+                          (a) => a.status.toLowerCase() == "present",
+                        )
+                        .length;
+                    // Exact percentage formula calculation as shown in Attendance screen overview card
+                    double percentage = (presentCount / list.length) * 100;
+                    value = "${percentage.toStringAsFixed(1)}%";
+                  } else {
+                    value = "0%";
                   }
-
-                  else {
-
-                    value =
-                        "0%";
-
-                  }
-
-
                 }
 
-
-                return const _StatItem(
-
-                  label:
-                      "ATTENDANCE",
-
-                  value:
-                      "--",
-
-                ).copyWithValue(
-                  value,
+                return _StatItem(
+                  label: "ATTENDANCE",
+                  value: value,
                 );
-
               },
-
-
             ),
-
           ),
-
-
-
           const _StatDivider(),
-
-
-
-
           Expanded(
-
-            child:
-
-            BlocBuilder<
-                AssignmentBloc,
-                AssignmentState>(
-
-
-              builder:
-                  (context,state){
-
-
-                final value =
-                    state is AssignmentLoaded
-
-                        ? "${state.pendingCount}"
-
-                        : "--";
-
-
+            child: BlocBuilder<AssignmentBloc, AssignmentState>(
+              builder: (context, state) {
+                final value = state is AssignmentLoaded
+                    ? "${state.pendingCount}"
+                    : "--";
 
                 return _StatItem(
-
-                  label:
-                      "ASSIGNMENTS",
-
-                  value:
-                      value,
-
+                  label: "ASSIGNMENTS",
+                  value: value,
                 );
-
               },
-
             ),
-
           ),
-
-
-
-
           const _StatDivider(),
-
-
-
-
           Expanded(
-
-            child:
-
-            BlocBuilder<
-                DigitalQueueBloc,
-                DigitalQueueState>(
-
-
-              builder:
-                  (context,state){
-
-
-                final value =
-
-                    state.hasActiveToken
-
-                        ? "#${state.activeToken!.queuePosition}"
-
-                        : "--";
-
-
+            child: BlocBuilder<DigitalQueueBloc, DigitalQueueState>(
+              builder: (context, state) {
+                final value = state.hasActiveToken
+                    ? "#${state.activeToken!.queuePosition}"
+                    : "--";
 
                 return _StatItem(
-
-                  label:
-                      "QUEUE POS.",
-
-                  value:
-                      value,
-
+                  label: "QUEUE POS.",
+                  value: value,
                 );
-
               },
-
             ),
-
           ),
-
-
         ],
-
       ),
-
     );
-
   }
-
 }
-
-
-
 
 class _StatItem extends StatelessWidget {
-
-
   final String label;
-
   final String value;
 
-
-
   const _StatItem({
-
     required this.label,
-
     required this.value,
-
   });
 
-
-
-  _StatItem copyWithValue(String newValue){
-
-    return _StatItem(
-
-      label:
-          label,
-
-      value:
-          newValue,
-
-    );
-
-  }
-
-
-
   @override
   Widget build(BuildContext context) {
-
-
-    final width =
-        MediaQuery.of(context).size.width;
-
-
-    final bool isMobile =
-        width < 600;
-
-
+    final width = MediaQuery.of(context).size.width;
+    final bool isMobile = width < 600;
 
     return Column(
-
       children: [
-
-
         Text(
-
           label,
-
-          textAlign:
-              TextAlign.center,
-
-
-          style:
-              TextStyle(
-
-            fontSize:
-                isMobile ? 9 : 11,
-
-
-            fontWeight:
-                FontWeight.w600,
-
-
-            color:
-                AppTheme.textPrimary,
-
-
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: isMobile ? 9 : 11,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.textPrimary,
           ),
-
         ),
-
-
-
-        const SizedBox(
-          height: 5,
-        ),
-
-
-
+        const SizedBox(height: 5),
         Text(
-
           value,
-
-
-          style:
-              TextStyle(
-
-            fontSize:
-                isMobile ? 15 : 18,
-
-
-            fontWeight:
-                FontWeight.bold,
-
-
-            color:
-                AppTheme.primary,
-
+          style: TextStyle(
+            fontSize: isMobile ? 15 : 18,
+            fontWeight: FontWeight.bold,
+            color: AppTheme.primary,
           ),
-
         ),
-
       ],
-
     );
-
   }
-
 }
 
-
-
-
 class _StatDivider extends StatelessWidget {
-
-
   const _StatDivider();
-
-
 
   @override
   Widget build(BuildContext context) {
-
-
     return Container(
-
-      width:
-          1,
-
-
-      height:
-          25,
-
-
-      color:
-          AppTheme.border,
-
+      width: 1,
+      height: 25,
+      color: AppTheme.border,
     );
-
   }
-
 }
