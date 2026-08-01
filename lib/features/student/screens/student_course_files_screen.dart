@@ -31,12 +31,15 @@ class StudentCourseFilesScreen extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
-              var file = snapshot.data!.docs[index].data() as Map<String, dynamic>;
-              
+              var file =
+                  snapshot.data!.docs[index].data() as Map<String, dynamic>;
+
               return Card(
                 elevation: 2,
                 margin: const EdgeInsets.only(bottom: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
                 child: ListTile(
                   leading: const CircleAvatar(
                     backgroundColor: Color(0xFFE0F2FE),
@@ -50,15 +53,22 @@ class StudentCourseFilesScreen extends StatelessWidget {
                     "Subject: ${file['subject'] ?? 'N/A'}\nDept: ${file['department']} | Sem: ${file['semester']}",
                   ),
                   isThreeLine: true,
-                  trailing: const Icon(Icons.download_for_offline, color: Colors.blue),
+                  trailing: const Icon(
+                    Icons.download_for_offline,
+                    color: Colors.blue,
+                  ),
                   onTap: () async {
                     // 🔗 File URL open garne logic
                     final url = file['fileUrl'];
                     if (url != null && await canLaunchUrl(Uri.parse(url))) {
-                      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                      await launchUrl(
+                        Uri.parse(url),
+                        mode: LaunchMode.externalApplication,
+                      );
                     } else {
+                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Could not open file"))
+                        const SnackBar(content: Text("Could not open file")),
                       );
                     }
                   },

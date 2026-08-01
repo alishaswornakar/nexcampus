@@ -8,9 +8,9 @@ class StudentMaterialView extends StatelessWidget {
   final String semester;
 
   const StudentMaterialView({
-    super.key, 
-    required this.department, 
-    required this.semester
+    super.key,
+    required this.department,
+    required this.semester,
   });
 
   @override
@@ -34,7 +34,7 @@ class StudentMaterialView extends StatelessWidget {
           children: [
             // 1. Admin le haleko materials (Filter by Dept & Sem)
             _buildMaterialList('course_files', department, semester),
-            
+
             // 2. Teacher le haleko notes (Filter by Dept & Sem)
             _buildMaterialList('notes', department, semester),
           ],
@@ -51,28 +51,38 @@ class StudentMaterialView extends StatelessWidget {
           .where('semester', isEqualTo: sem)
           .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) 
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
-        
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) 
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return Center(child: Text("No materials found for $dept - $sem"));
+        }
 
         return ListView.builder(
           padding: const EdgeInsets.all(12),
           itemCount: snapshot.data!.docs.length,
           itemBuilder: (context, index) {
-            var data = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+            var data =
+                snapshot.data!.docs[index].data() as Map<String, dynamic>;
             return Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: ListTile(
                 leading: const Icon(Icons.picture_as_pdf, color: Colors.red),
                 title: Text(data['title'] ?? "Untitled File"),
-                subtitle: Text("Subject: ${data['subject'] ?? data['courseName'] ?? 'N/A'}"),
+                subtitle: Text(
+                  "Subject: ${data['subject'] ?? data['courseName'] ?? 'N/A'}",
+                ),
                 trailing: const Icon(Icons.download, color: AppTheme.primary),
                 onTap: () async {
                   final url = data['fileUrl'];
                   if (url != null && await canLaunchUrl(Uri.parse(url))) {
-                    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                    await launchUrl(
+                      Uri.parse(url),
+                      mode: LaunchMode.externalApplication,
+                    );
                   }
                 },
               ),

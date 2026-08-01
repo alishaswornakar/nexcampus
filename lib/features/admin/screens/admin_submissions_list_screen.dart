@@ -25,21 +25,27 @@ class AdminSubmissionsListScreen extends StatelessWidget {
         elevation: 0.5,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: AdminAssignmentService.getSubmissionsForAssignment(assignmentId),
+        stream: AdminAssignmentService.getSubmissionsForAssignment(
+          assignmentId,
+        ),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(
+            return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children:  [
                   Icon(Icons.folder_open, size: 60, color: Colors.grey),
                   SizedBox(height: 12),
                   Text(
                     "No student submissions found yet.",
-                    style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
@@ -53,16 +59,19 @@ class AdminSubmissionsListScreen extends StatelessWidget {
             itemCount: docs.length,
             itemBuilder: (context, index) {
               var data = docs[index].data() as Map<String, dynamic>;
-              
+
               // Student data fields mapping
               String studentName = data['studentName'] ?? 'Unknown Student';
               String roll = data['roll'] ?? 'N/A';
               String remarks = data['remarks'] ?? '';
               String? pdfUrl = data['pdfUrl'];
               Timestamp? submittedAtTimestamp = data['submittedAt'];
-              
-              DateTime submittedAt = submittedAtTimestamp?.toDate() ?? DateTime.now();
-              String formattedDate = DateFormat('MMM dd, yyyy - hh:mm a').format(submittedAt);
+
+              DateTime submittedAt =
+                  submittedAtTimestamp?.toDate() ?? DateTime.now();
+              String formattedDate = DateFormat(
+                'MMM dd, yyyy - hh:mm a',
+              ).format(submittedAt);
 
               return Card(
                 elevation: 1.5,
@@ -85,7 +94,11 @@ class AdminSubmissionsListScreen extends StatelessWidget {
                                 const CircleAvatar(
                                   radius: 18,
                                   backgroundColor: Colors.blueAccent,
-                                  child: Icon(Icons.person, color: Colors.white, size: 20),
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
                                 ),
                                 const SizedBox(width: 10),
                                 Expanded(
@@ -101,7 +114,10 @@ class AdminSubmissionsListScreen extends StatelessWidget {
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.blue.shade50,
                               borderRadius: BorderRadius.circular(20),
@@ -119,19 +135,26 @@ class AdminSubmissionsListScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // Submitted Date Info
                       Row(
                         children: [
-                          const Icon(Icons.check_circle_outline, size: 16, color: Colors.green),
+                          const Icon(
+                            Icons.check_circle_outline,
+                            size: 16,
+                            color: Colors.green,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             "Submitted on: $formattedDate",
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
                           ),
                         ],
                       ),
-                      
+
                       // Remarks Section (if available)
                       if (remarks.isNotEmpty && remarks != 'No remarks') ...[
                         const SizedBox(height: 8),
@@ -145,13 +168,17 @@ class AdminSubmissionsListScreen extends StatelessWidget {
                           ),
                           child: Text(
                             "Remarks: $remarks",
-                            style: TextStyle(fontSize: 13, color: Colors.grey.shade800, fontStyle: FontStyle.italic),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey.shade800,
+                              fontStyle: FontStyle.italic,
+                            ),
                           ),
                         ),
                       ],
-                      
+
                       const SizedBox(height: 14),
-                      
+
                       // PDF View Button or Empty state
                       SizedBox(
                         width: double.infinity,
@@ -161,10 +188,14 @@ class AdminSubmissionsListScreen extends StatelessWidget {
                                   backgroundColor: Colors.red.shade50,
                                   foregroundColor: Colors.red.shade700,
                                   elevation: 0,
-                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
-                                    side: BorderSide(color: Colors.red.shade200),
+                                    side: BorderSide(
+                                      color: Colors.red.shade200,
+                                    ),
                                   ),
                                 ),
                                 onPressed: () {
@@ -178,7 +209,10 @@ class AdminSubmissionsListScreen extends StatelessWidget {
                                     ),
                                   );
                                 },
-                                icon: const Icon(Icons.picture_as_pdf, size: 18),
+                                icon: const Icon(
+                                  Icons.picture_as_pdf,
+                                  size: 18,
+                                ),
                                 label: const Text(
                                   "View Submitted PDF",
                                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -189,7 +223,11 @@ class AdminSubmissionsListScreen extends StatelessWidget {
                                 alignment: Alignment.center,
                                 child: const Text(
                                   "No document attached by student.",
-                                  style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey, fontSize: 13),
+                                  style: TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                    color: Colors.grey,
+                                    fontSize: 13,
+                                  ),
                                 ),
                               ),
                       ),

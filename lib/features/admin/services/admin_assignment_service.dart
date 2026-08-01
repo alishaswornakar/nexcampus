@@ -24,9 +24,13 @@ class AdminAssignmentService {
   }
 
   // 4. Get Submissions For Specific Assignment (Naya Method Added Here ✨)
-  static Stream<QuerySnapshot> getSubmissionsForAssignment(String assignmentId) {
+  static Stream<QuerySnapshot> getSubmissionsForAssignment(
+    String assignmentId,
+  ) {
     return _db
-        .collection('assignment_submissions') // AssignmentDetailScreen sanga match gareko collection name
+        .collection(
+          'assignment_submissions',
+        ) // AssignmentDetailScreen sanga match gareko collection name
         .where('assignmentId', isEqualTo: assignmentId)
         .snapshots();
   }
@@ -45,8 +49,8 @@ class AdminAssignmentService {
         "Semester: $sem\n"
         "Deadline: $deadline\n\n"
         "Please check the NexCampus app for full details.";
-    
+
     // share_plus package ko updated syntax anusar
-    Share.share(text);
+    SharePlus.instance.share(ShareParams(text: text));
   }
 }
