@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/notice_model.dart';
@@ -23,50 +24,85 @@ class NoticeTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final width = MediaQuery.of(context).size.width;
+
+    final horizontalPadding =
+        width < 600 ? 14.0 : width < 1000 ? 20.0 : 24.0;
+
+    final titleSize =
+        width < 600 ? 18.0 : width < 1000 ? 21.0 : 24.0;
+
+    final bodySize =
+        width < 600 ? 14.0 : 16.0;
+
+    final avatarSize =
+        width < 600 ? 18.0 : 22.0;
+
+
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(
+        bottom: width < 600 ? 12 : 18,
+      ),
       elevation: 3,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(
+          width < 600 ? 14 : 18,
+        ),
       ),
+
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         onTap: onTap,
+
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(horizontalPadding),
+
           child: Column(
             crossAxisAlignment:
                 CrossAxisAlignment.start,
+
             children: [
 
-              /// Top Row
-              Row(
+              /// TOP ACTION ROW
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment:
+                    WrapCrossAlignment.center,
+
                 children: [
 
                   if (notice.isPinned)
                     Container(
                       padding:
                           const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+
                       decoration: BoxDecoration(
-                        color: Colors.orange.shade100,
+                        color: Colors.blue.shade100,
                         borderRadius:
                             BorderRadius.circular(20),
                       ),
+
                       child: const Row(
+                        mainAxisSize:
+                            MainAxisSize.min,
+
                         children: [
+
                           Icon(
                             Icons.push_pin,
-                            color: Colors.orange,
+                            color: AppTheme.primary,
                             size: 16,
                           ),
-                          SizedBox(width: 5),
+
+                          SizedBox(width:5),
+
                           Text(
                             "Pinned",
                             style: TextStyle(
-                              color: Colors.orange,
                               fontWeight:
                                   FontWeight.bold,
                             ),
@@ -75,173 +111,319 @@ class NoticeTile extends StatelessWidget {
                       ),
                     ),
 
-                  const Spacer(),
 
                   PopupMenuButton<String>(
-                    onSelected: (value) {
-                      switch (value) {
-                        case "edit":
-                          onEdit();
-                          break;
 
-                        case "delete":
-                          onDelete();
-                          break;
+                    onSelected:(value){
 
-                        case "pin":
-                          onPin();
-                          break;
+                      if(value=="edit"){
+                        onEdit();
                       }
+
+                      else if(value=="delete"){
+                        onDelete();
+                      }
+
+                      else if(value=="pin"){
+                        onPin();
+                      }
+
                     },
-                    itemBuilder: (_) => [
+
+                    itemBuilder:(_)=>[
+
                       const PopupMenuItem(
-                        value: "edit",
-                        child: Text("Edit"),
+                        value:"edit",
+                        child:
+                        Text("Edit"),
                       ),
+
                       PopupMenuItem(
-                        value: "pin",
-                        child: Text(
+                        value:"pin",
+                        child:Text(
                           notice.isPinned
-                              ? "Unpin"
-                              : "Pin",
+                              ?"Unpin"
+                              :"Pin",
                         ),
                       ),
+
                       const PopupMenuItem(
-                        value: "delete",
-                        child: Text("Delete"),
+                        value:"delete",
+                        child:
+                        Text("Delete"),
                       ),
                     ],
-                  ),
+                  )
+
                 ],
               ),
 
-              const SizedBox(height: 12),
 
-              /// Title
+              SizedBox(
+                height:
+                width <600 ?12:18,
+              ),
+
+
+              /// TITLE
+
               Text(
                 notice.title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+
+                maxLines:2,
+                overflow:
+                TextOverflow.ellipsis,
+
+                style:TextStyle(
+                  fontSize:titleSize,
+                  fontWeight:
+                  FontWeight.bold,
                 ),
               ),
 
-              const SizedBox(height: 10),
 
-              /// Description
+              const SizedBox(height:10),
+
+
+              /// DESCRIPTION
+
               Text(
                 notice.description,
-                style: TextStyle(
-                  color: Colors.grey.shade700,
+
+                maxLines:4,
+
+                overflow:
+                TextOverflow.ellipsis,
+
+                style:TextStyle(
+                  fontSize:bodySize,
+                  color:
+                  Colors.grey.shade700,
                 ),
               ),
 
-              const SizedBox(height: 18),
 
-         const SizedBox(height: 16),
 
-Row(
-  children: [
-    const Icon(
-      Icons.person,
-      color: Colors.blue,
-      size: 18,
-    ),
-    const SizedBox(width: 8),
-    Expanded(
-      child: Text(
-        "Posted by ${notice.teacherName}",
-        style: const TextStyle(
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    ),
-  ],
-),
-             if (notice.attachmentName != null &&
-    notice.attachmentName!.isNotEmpty) ...[
-  const SizedBox(height: 12),
+              const SizedBox(height:18),
 
-  InkWell(
-    onTap: () => launchUrl(
-      Uri.parse(notice.attachmentUrl!),
-    ),
-    borderRadius: BorderRadius.circular(10),
-    child: Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.picture_as_pdf,
-            color: Colors.red,
-          ),
-          const SizedBox(width: 10),
 
-          Expanded(
-            child: Text(
-              notice.attachmentName!,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
 
-          const Icon(
-            Icons.open_in_new,
-            size: 18,
-          ),
-        ],
-      ),
-    ),
-  ),
-],
- const Divider(height: 28),
+              /// POSTED BY
 
-              /// Bottom Row
               Row(
-                children: [
 
-                  const CircleAvatar(
-                    radius: 18,
-                    child: Icon(
+                children:[
+
+                  Icon(
+                    Icons.person,
+                    color:
+                    AppTheme.primary,
+                    size:
+                    avatarSize,
+                  ),
+
+                  const SizedBox(width:8),
+
+
+                  Expanded(
+                    child:Text(
+                      "Posted by ${notice.teacherName}",
+
+                      overflow:
+                      TextOverflow.ellipsis,
+
+                      style:
+                      const TextStyle(
+                        fontWeight:
+                        FontWeight.w500,
+                      ),
+                    ),
+                  ),
+
+                ],
+              ),
+
+
+
+              /// ATTACHMENT
+
+              if(notice.attachmentName!=null &&
+                  notice.attachmentName!.isNotEmpty)...[
+
+
+                const SizedBox(height:12),
+
+
+                InkWell(
+
+                  onTap:(){
+
+                    if(notice.attachmentUrl!=null){
+
+                      launchUrl(
+                        Uri.parse(
+                          notice.attachmentUrl!,
+                        ),
+                      );
+
+                    }
+
+                  },
+
+
+                  child:Container(
+
+                    padding:
+                    const EdgeInsets.all(10),
+
+
+                    decoration:BoxDecoration(
+
+                      color:
+                      Colors.grey.shade100,
+
+                      borderRadius:
+                      BorderRadius.circular(10),
+                    ),
+
+
+                    child:Row(
+
+                      children:[
+
+
+                        const Icon(
+                          Icons.picture_as_pdf,
+                          color:Colors.red,
+                        ),
+
+
+                        const SizedBox(width:10),
+
+
+
+                        Expanded(
+                          child:Text(
+
+                            notice.attachmentName!,
+
+                            maxLines:1,
+
+                            overflow:
+                            TextOverflow.ellipsis,
+                          ),
+                        ),
+
+
+
+                        const Icon(
+                          Icons.open_in_new,
+                          size:18,
+                        )
+
+                      ],
+                    ),
+                  ),
+                )
+
+              ],
+
+
+
+              const Divider(
+                height:28,
+              ),
+
+
+
+              /// FOOTER
+
+              Row(
+
+                children:[
+
+
+                  CircleAvatar(
+
+                    radius:
+                    avatarSize,
+
+                    backgroundColor:
+                    AppTheme.primary,
+
+                    foregroundColor:
+                    Colors.white,
+
+                    child:
+                    const Icon(
                       Icons.person,
                     ),
                   ),
 
-                  const SizedBox(width: 10),
+
+
+                  const SizedBox(width:10),
+
+
 
                   Expanded(
-                    child: Column(
+
+                    child:Column(
+
                       crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                      children: [
+                      CrossAxisAlignment.start,
+
+
+                      children:[
+
 
                         Text(
+
                           notice.teacherName,
-                          style: const TextStyle(
+
+                          maxLines:1,
+
+                          overflow:
+                          TextOverflow.ellipsis,
+
+                          style:
+                          const TextStyle(
                             fontWeight:
-                                FontWeight.bold,
+                            FontWeight.bold,
                           ),
                         ),
 
+
+
                         Text(
+
                           DateFormat(
                             "dd MMM yyyy • hh:mm a",
                           ).format(
                             notice.createdAt,
                           ),
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 12,
+
+
+                          style:TextStyle(
+
+                            color:
+                            Colors.grey.shade600,
+
+                            fontSize:
+                            width <600
+                                ?11
+                                :13,
                           ),
-                        ),
+                        )
+
                       ],
                     ),
-                  ),
+                  )
+
                 ],
-              ),
+              )
+
+
             ],
           ),
         ),

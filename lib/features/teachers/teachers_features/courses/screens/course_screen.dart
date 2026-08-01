@@ -46,7 +46,7 @@ class CourseScreen extends StatelessWidget {
         ),
 
         floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: Colors.blue,
+          backgroundColor:AppTheme.primary,
 
           onPressed: () {
             Navigator.push(

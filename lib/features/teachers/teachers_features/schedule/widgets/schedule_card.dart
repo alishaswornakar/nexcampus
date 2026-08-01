@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:nexcampus_app/features/teachers/teachers_features/schedule/model/schedule_model.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
+import '../model/schedule_model.dart';
 
 class ScheduleCard extends StatelessWidget {
   final ScheduleModel schedule;
@@ -22,6 +23,24 @@ class ScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
+    final bool isMobile = width < 600;
+    final bool isTablet = width >= 600 && width < 1000;
+
+    final horizontalMargin = isMobile ? 12.0 : 20.0;
+    final padding = isMobile ? 16.0 : 20.0;
+
+    final titleSize = isMobile
+        ? 17.0
+        : isTablet
+            ? 19.0
+            : 21.0;
+
+    final textSize = isMobile ? 14.0 : 16.0;
+
+    final iconSize = isMobile ? 20.0 : 22.0;
+
     final start =
         DateFormat("hh:mm a").format(schedule.startTime);
 
@@ -29,8 +48,8 @@ class ScheduleCard extends StatelessWidget {
         DateFormat("hh:mm a").format(schedule.endTime);
 
     return Card(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 16,
+      margin: EdgeInsets.symmetric(
+        horizontal: horizontalMargin,
         vertical: 8,
       ),
       elevation: 2,
@@ -41,18 +60,22 @@ class ScheduleCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(18),
+          padding: EdgeInsets.all(padding),
           child: Column(
             crossAxisAlignment:
                 CrossAxisAlignment.start,
             children: [
 
-              /// Subject
+              /// SUBJECT
               Row(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
                 children: [
-                  const Icon(
+
+                  Icon(
                     Icons.menu_book,
-                    color: Colors.blue,
+                    color: AppTheme.primary,
+                    size: iconSize,
                   ),
 
                   const SizedBox(width: 10),
@@ -60,9 +83,13 @@ class ScheduleCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       schedule.subject,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      maxLines: 2,
+                      overflow:
+                          TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: titleSize,
+                        fontWeight:
+                            FontWeight.bold,
                       ),
                     ),
                   ),
@@ -72,23 +99,24 @@ class ScheduleCard extends StatelessWidget {
                       onSelected: (value) {
                         if (value == "edit") {
                           onEdit?.call();
-                        }
-
-                        if (value == "delete") {
+                        } else if (value ==
+                            "delete") {
                           onDelete?.call();
                         }
                       },
                       itemBuilder: (_) => const [
+
                         PopupMenuItem(
                           value: "edit",
                           child: Row(
                             children: [
                               Icon(Icons.edit),
-                              SizedBox(width: 10),
+                              SizedBox(width: 8),
                               Text("Edit"),
                             ],
                           ),
                         ),
+
                         PopupMenuItem(
                           value: "delete",
                           child: Row(
@@ -97,7 +125,7 @@ class ScheduleCard extends StatelessWidget {
                                 Icons.delete,
                                 color: Colors.red,
                               ),
-                              SizedBox(width: 10),
+                              SizedBox(width: 8),
                               Text("Delete"),
                             ],
                           ),
@@ -107,32 +135,48 @@ class ScheduleCard extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 18),
+              SizedBox(
+                height: isMobile ? 16 : 20,
+              ),
 
               _infoTile(
                 Icons.calendar_today,
                 schedule.day,
+                iconSize,
+                textSize,
               ),
 
-              const SizedBox(height: 10),
+              SizedBox(
+                height: isMobile ? 10 : 12,
+              ),
 
               _infoTile(
                 Icons.access_time,
                 "$start - $end",
+                iconSize,
+                textSize,
               ),
 
-              const SizedBox(height: 10),
+              SizedBox(
+                height: isMobile ? 10 : 12,
+              ),
 
               _infoTile(
                 Icons.room,
                 schedule.room,
+                iconSize,
+                textSize,
               ),
 
-              const SizedBox(height: 10),
+              SizedBox(
+                height: isMobile ? 10 : 12,
+              ),
 
               _infoTile(
                 Icons.person,
                 schedule.teacherName,
+                iconSize,
+                textSize,
               ),
             ],
           ),
@@ -144,14 +188,18 @@ class ScheduleCard extends StatelessWidget {
   Widget _infoTile(
     IconData icon,
     String value,
+    double iconSize,
+    double textSize,
   ) {
     return Row(
+      crossAxisAlignment:
+          CrossAxisAlignment.start,
       children: [
 
         Icon(
           icon,
-          color: Colors.grey.shade700,
-          size: 20,
+          color: AppTheme.primary,
+          size: iconSize,
         ),
 
         const SizedBox(width: 12),
@@ -159,8 +207,11 @@ class ScheduleCard extends StatelessWidget {
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(
-              fontSize: 15,
+            maxLines: 2,
+            overflow:
+                TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: textSize,
             ),
           ),
         ),

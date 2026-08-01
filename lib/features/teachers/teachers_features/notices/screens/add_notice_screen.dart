@@ -7,8 +7,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/services/cloudinary_service.dart';
-
 
 import '../blocs/bloc/notices_bloc.dart';
 import '../blocs/bloc/notices_event.dart';
@@ -30,17 +30,11 @@ class AddNoticeScreen extends StatefulWidget {
 class _AddNoticeScreenState extends State<AddNoticeScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final _titleController =
-      TextEditingController();
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
 
-  final _descriptionController =
-      TextEditingController();
-
-  final FirebaseAuth _auth =
-      FirebaseAuth.instance;
-
-  final FirebaseFirestore _firestore =
-      FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   String teacherId = "";
   String teacherName = "";
@@ -59,22 +53,14 @@ class _AddNoticeScreenState extends State<AddNoticeScreen> {
 
     _loadTeacher();
 
-    /// Edit Mode
     if (widget.notice != null) {
-      _titleController.text =
-          widget.notice!.title;
+      _titleController.text = widget.notice!.title;
+      _descriptionController.text = widget.notice!.description;
 
-      _descriptionController.text =
-          widget.notice!.description;
+      attachmentName = widget.notice!.attachmentName ?? "";
+      attachmentUrl = widget.notice!.attachmentUrl;
 
-      attachmentName =
-          widget.notice!.attachmentName ?? "";
-
-      attachmentUrl =
-          widget.notice!.attachmentUrl;
-
-      isPinned =
-          widget.notice!.isPinned;
+      isPinned = widget.notice!.isPinned;
     }
   }
 
@@ -85,13 +71,10 @@ class _AddNoticeScreenState extends State<AddNoticeScreen> {
 
     teacherId = user.uid;
 
-    final doc = await _firestore
-        .collection("users")
-        .doc(user.uid)
-        .get();
+    final doc =
+        await _firestore.collection("users").doc(user.uid).get();
 
-    teacherName =
-        doc.data()?["fullName"] ?? "";
+    teacherName = doc.data()?["fullName"] ?? "";
 
     setState(() {
       loadingTeacher = false;
@@ -116,12 +99,9 @@ class _AddNoticeScreenState extends State<AddNoticeScreen> {
 
     if (result == null) return;
 
-    selectedFile = File(
-      result.files.single.path!,
-    );
+    selectedFile = File(result.files.single.path!);
 
-    attachmentName =
-        result.files.single.name;
+    attachmentName = result.files.single.name;
 
     setState(() {});
   }
@@ -132,25 +112,35 @@ class _AddNoticeScreenState extends State<AddNoticeScreen> {
   }) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon),
+
+      prefixIcon: Icon(
+        icon,
+        color: AppTheme.primary,
+      ),
+
       filled: true,
       fillColor: Colors.white,
-      border: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(14),
+
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 18,
+        vertical: 18,
       ),
+
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
+
       enabledBorder: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide(
           color: Colors.grey.shade300,
         ),
       ),
+
       focusedBorder: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(
-          color: Colors.blue,
+          color: AppTheme.primary,
           width: 2,
         ),
       ),
@@ -166,15 +156,30 @@ class _AddNoticeScreenState extends State<AddNoticeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
+    final bool isMobile = width < 600;
+    final bool isTablet = width >= 600 && width < 1000;
+    final bool isDesktop = width >= 1000;
+
+    final double horizontalPadding = isMobile
+        ? 16
+        : isTablet
+            ? 28
+            : 40;
+
+    final double maxWidth =
+        isDesktop ? 720 : double.infinity;
+
     return BlocListener<NoticeBloc, NoticeState>(
       listener: (context, state) {
         if (state is NoticeAdded) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(
-                  "Notice published successfully"),
               backgroundColor: Colors.green,
+              content: Text(
+                "Notice published successfully",
+              ),
             ),
           );
 
@@ -182,12 +187,12 @@ class _AddNoticeScreenState extends State<AddNoticeScreen> {
         }
 
         if (state is NoticeUpdated) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(
-                  "Notice updated successfully"),
               backgroundColor: Colors.green,
+              content: Text(
+                "Notice updated successfully",
+              ),
             ),
           );
 
@@ -195,28 +200,30 @@ class _AddNoticeScreenState extends State<AddNoticeScreen> {
         }
 
         if (state is NoticeError) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
               backgroundColor: Colors.red,
+              content: Text(state.message),
             ),
           );
         }
       },
 
       child: Scaffold(
-        backgroundColor:
-            const Color(0xffF5F7FA),
+        backgroundColor: const Color(0xffF5F7FA),
 
         appBar: AppBar(
-          backgroundColor: Colors.blue,
+          backgroundColor: AppTheme.primary,
           foregroundColor: Colors.white,
           centerTitle: true,
           title: Text(
             widget.notice == null
                 ? "Add Notice"
                 : "Edit Notice",
+            style: TextStyle(
+              fontSize: isMobile ? 20 : 22,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
 
@@ -225,312 +232,371 @@ class _AddNoticeScreenState extends State<AddNoticeScreen> {
                 child:
                     CircularProgressIndicator(),
               )
-            : SingleChildScrollView(
-                padding:
-                    const EdgeInsets.all(20),
-
-                child: Form(
-                  key: _formKey,
-
-                  child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
-
-                    children: [
-                      Text(
-                        widget.notice == null
-                            ? "Create Notice"
-                            : "Update Notice",
-                        style: const TextStyle(
-                          fontSize: 25,
-                          fontWeight:
-                              FontWeight.bold,
-                        ),
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      Text(
-                        "Teacher : $teacherName",
-                        style: TextStyle(
-                          color:
-                              Colors.grey.shade700,
-                        ),
-                      ),
-
-                      const SizedBox(height: 30),
-
-                      /// Title
-                      TextFormField(
-                        controller:
-                            _titleController,
-                        decoration: decoration(
-                          label: "Notice Title",
-                          icon: Icons.title,
-                        ),
-                        validator: (value) {
-                          if (value == null ||
-                              value.trim().isEmpty) {
-                            return "Enter title";
-                          }
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 18),
-
-                      /// Description
-                      TextFormField(
-                        controller:
-                            _descriptionController,
-                        maxLines: 5,
-                        decoration: decoration(
-                          label: "Description",
-                          icon:
-                              Icons.description,
-                        ),
-                        validator: (value) {
-                          if (value == null ||
-                              value.trim().isEmpty) {
-                            return "Enter description";
-                          }
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      /// Attachment
-                      OutlinedButton.icon(
-                        style:
-                            OutlinedButton.styleFrom(
-                          minimumSize:
-                              const Size.fromHeight(
-                                  55),
-                          shape:
-                              RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(
-                                    14),
+            : Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: maxWidth,
+                  ),
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal:
+                          horizontalPadding,
+                      vertical: 20,
+                    ),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                                                    Text(
+                            widget.notice == null
+                                ? "Create Notice"
+                                : "Update Notice",
+                            style: TextStyle(
+                              fontSize: isMobile ? 22 : 28,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        onPressed: pickAttachment,
-                        icon: const Icon(
-                          Icons.attach_file,
-                        ),
-                        label: Text(
-                          attachmentName.isEmpty
-                              ? "Choose Attachment (Optional)"
-                              : attachmentName,
-                          overflow:
-                              TextOverflow.ellipsis,
-                        ),
-                      ),
 
-                      const SizedBox(height: 15),
+                          const SizedBox(height: 8),
 
-                      /// Pin Notice
-                      SwitchListTile(
-                        value: isPinned,
-                        activeThumbColor: Colors.blue,
-                        title: const Text(
-                          "Pin this Notice",
-                        ),
-                        subtitle: const Text(
-                          "Pinned notices appear first",
-                        ),
-                        secondary: const Icon(
-                          Icons.push_pin,
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            isPinned = value;
-                          });
-                        },
-                      ),
+                          Text(
+                            "Teacher: $teacherName",
+                            style: TextStyle(
+                              fontSize: isMobile ? 14 : 16,
+                              color: Colors.grey.shade700,
+                            ),
+                          ),
 
-                      const SizedBox(height: 35),
+                          SizedBox(
+                            height: isMobile ? 24 : 32,
+                          ),
 
-                        BlocBuilder<NoticeBloc,
-                          NoticeState>(
-                        builder: (context, state) {
-                          final loading =
-                              state
-                                  is NoticeLoading;
+                          /// Notice Title
+                          TextFormField(
+                            controller: _titleController,
+                            style: TextStyle(
+                              fontSize: isMobile ? 15 : 16,
+                            ),
+                            decoration: decoration(
+                              label: "Notice Title",
+                              icon: Icons.title,
+                            ),
+                            validator: (value) {
+                              if (value == null ||
+                                  value.trim().isEmpty) {
+                                return "Enter notice title";
+                              }
+                              return null;
+                            },
+                          ),
 
-                          return SizedBox(
-                            width: double.infinity,
-                            height: 55,
+                          SizedBox(
+                            height: isMobile ? 16 : 20,
+                          ),
 
-                            child:
-                                ElevatedButton.icon(
-                              style:
-                                  ElevatedButton
-                                      .styleFrom(
-                                backgroundColor:
-                                    Colors.blue,
-                                foregroundColor:
-                                    Colors.white,
-                                shape:
-                                    RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                          14),
-                                ),
+                          /// Description
+                          TextFormField(
+                            controller:
+                                _descriptionController,
+                            maxLines: isMobile ? 5 : 6,
+                            style: TextStyle(
+                              fontSize: isMobile ? 15 : 16,
+                            ),
+                            decoration: decoration(
+                              label: "Description",
+                              icon:
+                                  Icons.description_outlined,
+                            ),
+                            validator: (value) {
+                              if (value == null ||
+                                  value.trim().isEmpty) {
+                                return "Enter description";
+                              }
+                              return null;
+                            },
+                          ),
+
+                          SizedBox(
+                            height: isMobile ? 20 : 24,
+                          ),
+
+                          /// Attachment
+                          OutlinedButton.icon(
+                            onPressed: pickAttachment,
+                            icon: const Icon(
+                              Icons.attach_file,
+                            ),
+                            label: Text(
+                              attachmentName.isEmpty
+                                  ? "Choose Attachment (Optional)"
+                                  : attachmentName,
+                              overflow:
+                                  TextOverflow.ellipsis,
+                            ),
+                            style:
+                                OutlinedButton.styleFrom(
+                              minimumSize: Size(
+                                double.infinity,
+                                isMobile ? 52 : 58,
                               ),
+                              shape:
+                                  RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                        14),
+                              ),
+                            ),
+                          ),
 
-                              onPressed: loading
-                                  ? null
-                                  : () async {
-                                      if (!_formKey
-                                          .currentState!
-                                          .validate()) {
-                                        return;
-                                      }
-
-                                      String?
-                                          uploadedUrl =
-                                          attachmentUrl;
-
-                                      String?
-                                          uploadedName =
-                                          attachmentName;
-
-                                      try {
-                                        /// Upload file
-                                        if (selectedFile !=
-                                            null) {
-                                          final cloudinary =
-                                              CloudinaryService();
-
-                                          final result =
-                                              await cloudinary
-                                                  .uploadFile(
-                                            selectedFile!,
-                                          );
-
-                                          uploadedUrl =
-                                              result[
-                                                  "url"];
-
-                                          uploadedName =
-                                              result[
-                                                  "name"];
-                                        }
-
-                                        /// Create Notice
-                                        final notice =
-                                            TeacherNoticeModel(
-                                          id: widget
-                                                  .notice
-                                                  ?.id ??
-                                              FirebaseFirestore
-                                                  .instance
-                                                  .collection(
-                                                      "notices")
-                                                  .doc()
-                                                  .id,
-
-                                          title:
-                                              _titleController
-                                                  .text
-                                                  .trim(),
-
-                                          description:
-                                              _descriptionController
-                                                  .text
-                                                  .trim(),
-
-                                          teacherId:
-                                              teacherId,
-
-                                          teacherName:
-                                              teacherName,
-
-                                          attachmentUrl:
-                                              uploadedUrl,
-
-                                          attachmentName:
-                                              uploadedName,
-
-                                          isPinned:
-                                              isPinned,
-
-                                          createdAt: widget
-                                                  .notice
-                                                  ?.createdAt ??
-                                              DateTime
-                                                  .now(),
-                                        );
-
-                                        /// Add / Update
-                                        if (widget.notice ==
-                                            null) {
-                                          context
-                                              .read<
-                                                  NoticeBloc>()
-                                              .add(
-                                                AddNoticeEvent(
-                                                    notice),
-                                              );
-                                        } else {
-                                          context
-                                              .read<
-                                                  NoticeBloc>()
-                                              .add(
-                                                UpdateNoticeEvent(
-                                                    notice),
-                                              );
-                                        }
-                                      } catch (e) {
-                                        ScaffoldMessenger.of(
-                                                context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            backgroundColor:
-                                                Colors.red,
-                                            content: Text(
-                                              e.toString(),
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    },
-
-                              icon: loading
-                                  ? const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child:
-                                          CircularProgressIndicator(
-                                        color:
-                                            Colors.white,
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : const Icon(
-                                      Icons.save,
-                                    ),
-
-                              label: Text(
-                                loading
-                                    ? "Saving..."
-                                    : widget.notice ==
-                                            null
-                                        ? "Publish Notice"
-                                        : "Update Notice",
-                                style:
-                                    const TextStyle(
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  fontSize: 16,
+                          if (attachmentName.isNotEmpty)
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(
+                                      top: 8),
+                              child: Text(
+                                attachmentName,
+                                overflow:
+                                    TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.grey,
                                 ),
                               ),
                             ),
-                          );
-                        },
+
+                          SizedBox(
+                            height: isMobile ? 18 : 22,
+                          ),
+
+                          /// Pin Notice
+                          Card(
+                            elevation: 0,
+                            color: Colors.white,
+                            shape:
+                                RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(
+                                      14),
+                            ),
+                            child: SwitchListTile(
+                              value: isPinned,
+                              activeColor:
+                                  AppTheme.primary,
+                              secondary: const Icon(
+                                Icons.push_pin,
+                                color:
+                                    AppTheme.primary,
+                              ),
+                              title: Text(
+                                "Pin this Notice",
+                                style: TextStyle(
+                                  fontSize: isMobile
+                                      ? 15
+                                      : 17,
+                                  fontWeight:
+                                      FontWeight.w600,
+                                ),
+                              ),
+                              subtitle: Text(
+                                "Pinned notices appear first",
+                                style: TextStyle(
+                                  fontSize: isMobile
+                                      ? 13
+                                      : 14,
+                                ),
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  isPinned = value;
+                                });
+                              },
+                            ),
+                          ),
+
+                          SizedBox(
+                            height: isMobile ? 28 : 36,
+                          ),
+
+                          BlocBuilder<NoticeBloc,
+                              NoticeState>(
+                            builder:
+                                (context, state) {
+                              final loading =
+                                  state
+                                      is NoticeLoading;
+
+                              return SizedBox(
+                                width:
+                                    double.infinity,
+                                height: isMobile
+                                    ? 54
+                                    : 58,
+                                child:
+                                    ElevatedButton.icon(
+                                  style:
+                                      ElevatedButton
+                                          .styleFrom(
+                                    backgroundColor:
+                                        AppTheme
+                                            .primary,
+                                    foregroundColor:
+                                        Colors.white,
+                                    shape:
+                                        RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius
+                                              .circular(
+                                                  14),
+                                    ),
+                                  ),
+                                  onPressed:
+                                      loading
+                                          ? null
+                                          : () async {
+                                              if (!_formKey
+                                                  .currentState!
+                                                  .validate()) {
+                                                return;
+                                              }
+
+                                              String?
+                                                  uploadedUrl =
+                                                  attachmentUrl;
+
+                                              String?
+                                                  uploadedName =
+                                                  attachmentName;
+
+                                              try {
+                                                if (selectedFile !=
+                                                    null) {
+                                                  final result =
+                                                      await CloudinaryService()
+                                                          .uploadFile(
+                                                              selectedFile!);
+
+                                                  uploadedUrl =
+                                                      result[
+                                                          "url"];
+
+                                                  uploadedName =
+                                                      result[
+                                                          "name"];
+                                                }
+
+                                                final notice =
+                                                    TeacherNoticeModel(
+                                                  id: widget
+                                                          .notice
+                                                          ?.id ??
+                                                      FirebaseFirestore
+                                                          .instance
+                                                          .collection(
+                                                              "notices")
+                                                          .doc()
+                                                          .id,
+                                                  title:
+                                                      _titleController
+                                                          .text
+                                                          .trim(),
+                                                  description:
+                                                      _descriptionController
+                                                          .text
+                                                          .trim(),
+                                                  teacherId:
+                                                      teacherId,
+                                                  teacherName:
+                                                      teacherName,
+                                                  attachmentUrl:
+                                                      uploadedUrl,
+                                                  attachmentName:
+                                                      uploadedName,
+                                                  isPinned:
+                                                      isPinned,
+                                                  createdAt: widget
+                                                          .notice
+                                                          ?.createdAt ??
+                                                      DateTime
+                                                          .now(),
+                                                );
+
+                                                if (widget.notice ==
+                                                    null) {
+                                                  context
+                                                      .read<
+                                                          NoticeBloc>()
+                                                      .add(
+                                                        AddNoticeEvent(
+                                                            notice),
+                                                      );
+                                                } else {
+                                                  context
+                                                      .read<
+                                                          NoticeBloc>()
+                                                      .add(
+                                                        UpdateNoticeEvent(
+                                                            notice),
+                                                      );
+                                                }
+                                              } catch (e) {
+                                                ScaffoldMessenger.of(
+                                                        context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    backgroundColor:
+                                                        Colors.red,
+                                                    content: Text(
+                                                      e.toString(),
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                  icon: loading
+                                      ? const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child:
+                                              CircularProgressIndicator(
+                                            strokeWidth:
+                                                2,
+                                            color: Colors
+                                                .white,
+                                          ),
+                                        )
+                                      : Icon(
+                                          widget.notice ==
+                                                  null
+                                              ? Icons
+                                                  .publish
+                                              : Icons
+                                                  .save,
+                                        ),
+                                  label: Text(
+                                    loading
+                                        ? "Saving..."
+                                        : widget.notice ==
+                                                null
+                                            ? "Publish Notice"
+                                            : "Update Notice",
+                                    style: TextStyle(
+                                      fontSize:
+                                          isMobile
+                                              ? 15
+                                              : 17,
+                                      fontWeight:
+                                          FontWeight
+                                              .bold,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
