@@ -17,48 +17,22 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
   late TabController _tabController;
   final AdminTeamService _teamService = AdminTeamService();
 
+  static const String _allDeptLabel = 'All Dept';
+  static const String _allSemLabel = 'All Sem';
+
   // Selected Filter Values
-  String selectedDept = 'All Dept';
-  String selectedSem = 'All Sem';
+  String selectedDept = _allDeptLabel;
+  String selectedSem = _allSemLabel;
 
-  // Dropdown Data Lists
-  final List<String> departmentList = [
-    'All Dept',
-    'Civil',
-    'Computer',
-    'Architecture',
-  ];
-
-  // Department अनुसार Semester List ल्याउने Helper Method
-  List<String> _getSemesterList() {
-    if (selectedDept == 'Architecture') {
-      return [
-        'All Sem',
-        'Sem 1',
-        'Sem 2',
-        'Sem 3',
-        'Sem 4',
-        'Sem 5',
-        'Sem 6',
-        'Sem 7',
-        'Sem 8',
-        'Sem 9',
-        'Sem 10',
-      ];
-    } else {
-      return [
-        'All Sem',
-        'Sem 1',
-        'Sem 2',
-        'Sem 3',
-        'Sem 4',
-        'Sem 5',
-        'Sem 6',
-        'Sem 7',
-        'Sem 8',
-      ];
-    }
-  }
+  // Single, shared listeners — reused by the filter row (to derive dynamic
+  // dropdown options from the real posts) and by the "All" tab, instead of
+  // opening a fresh Firestore stream on every rebuild/filter change.
+  late final Stream<List<TeamModel>> _allTeamsStream = _teamService
+      .getAllTeams();
+  late final Stream<List<TeamModel>> _openTeamsStream = _teamService
+      .getTeamsByStatus(TeamPostStatus.open);
+  late final Stream<List<TeamModel>> _closedTeamsStream = _teamService
+      .getTeamsByStatus(TeamPostStatus.closed);
 
   @override
   void initState() {
@@ -72,6 +46,25 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  /// Builds dropdown options straight from whatever departments/semesters
+  /// actually exist on real posts, instead of a fixed guessed-at list — so
+  /// the filters always reflect the current data.
+  List<String> _dynamicOptions(
+    List<TeamModel> teams,
+    String Function(TeamModel) pick,
+    String allLabel,
+  ) {
+    final values =
+        teams
+            .map(pick)
+            .map((v) => v.trim())
+            .where((v) => v.isNotEmpty)
+            .toSet()
+            .toList()
+          ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    return [allLabel, ...values];
   }
 
   void _showDeleteConfirm(BuildContext context, TeamModel team) {
@@ -266,37 +259,51 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
       ),
       body: Column(
         children: [
-          // Single Row Filters (Department र Semester मात्र)
+          // Single Row Filters (Department र Semester मात्र) — options are
+          // derived live from the posts that actually exist in Firestore.
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 10.0,
               vertical: 10.0,
             ),
-            child: Row(
-              children: [
-                // 1. Department Dropdown
-                Expanded(
-                  child: _buildDropdown(selectedDept, departmentList, (val) {
-                    setState(() {
-                      selectedDept = val!;
-                      if (selectedDept != 'Architecture' &&
-                          (selectedSem == 'Sem 9' || selectedSem == 'Sem 10')) {
-                        selectedSem = 'All Sem';
-                      }
-                    });
-                  }),
-                ),
-                const SizedBox(width: 8),
+            child: StreamBuilder<List<TeamModel>>(
+              stream: _allTeamsStream,
+              builder: (context, snapshot) {
+                final teams = snapshot.data ?? const <TeamModel>[];
+                final deptOptions = _dynamicOptions(
+                  teams,
+                  (t) => t.department,
+                  _allDeptLabel,
+                );
+                final semOptions = _dynamicOptions(
+                  teams,
+                  (t) => t.semester,
+                  _allSemLabel,
+                );
 
-                // 2. Semester Dropdown
-                Expanded(
-                  child: _buildDropdown(
-                    selectedSem,
-                    _getSemesterList(),
-                    (val) => setState(() => selectedSem = val!),
-                  ),
-                ),
-              ],
+                return Row(
+                  children: [
+                    // 1. Department Dropdown
+                    Expanded(
+                      child: _buildDropdown(
+                        selectedDept,
+                        deptOptions,
+                        (val) => setState(() => selectedDept = val!),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+
+                    // 2. Semester Dropdown
+                    Expanded(
+                      child: _buildDropdown(
+                        selectedSem,
+                        semOptions,
+                        (val) => setState(() => selectedSem = val!),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
 
@@ -305,9 +312,9 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
             child: TabBarView(
               controller: _tabController,
               children: [
-                _buildTeamList(null),
-                _buildTeamList(TeamPostStatus.open),
-                _buildTeamList(TeamPostStatus.closed),
+                _KeepAliveWrapper(child: _buildTeamList(_allTeamsStream)),
+                _KeepAliveWrapper(child: _buildTeamList(_openTeamsStream)),
+                _KeepAliveWrapper(child: _buildTeamList(_closedTeamsStream)),
               ],
             ),
           ),
@@ -350,13 +357,7 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
     );
   }
 
-  /// [status] is `null` for the "All" tab, otherwise `TeamPostStatus.open`
-  /// or `TeamPostStatus.closed`.
-  Widget _buildTeamList(String? status) {
-    final Stream<List<TeamModel>> stream = status == null
-        ? _teamService.getAllTeams()
-        : _teamService.getTeamsByStatus(status);
-
+  Widget _buildTeamList(Stream<List<TeamModel>> stream) {
     return StreamBuilder<List<TeamModel>>(
       stream: stream,
       builder: (context, snapshot) {
@@ -377,7 +378,7 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
         var teams = snapshot.data ?? [];
 
         // Apply Local Department Filter
-        if (selectedDept != 'All Dept') {
+        if (selectedDept != _allDeptLabel) {
           teams = teams
               .where(
                 (t) => t.department.toLowerCase() == selectedDept.toLowerCase(),
@@ -386,7 +387,7 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
         }
 
         // Apply Local Semester Filter
-        if (selectedSem != 'All Sem') {
+        if (selectedSem != _allSemLabel) {
           teams = teams.where((t) => t.semester == selectedSem).toList();
         }
 
@@ -655,5 +656,33 @@ class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
         ],
       ),
     );
+  }
+}
+
+/// Keeps a `TabBarView` page (and whatever `StreamBuilder` it holds) alive
+/// once it has loaded once, instead of letting `TabBarView`/`PageView`
+/// dispose it when it scrolls out of view. Without this, switching tabs
+/// cancels the Firestore listener inside the shared team-posts stream, and
+/// re-listening to that same (now-once-cancelled) `Stream` instance can get
+/// stuck in `ConnectionState.waiting` forever — this is what caused the
+/// "All" tab to spin indefinitely after switching tabs a few times.
+class _KeepAliveWrapper extends StatefulWidget {
+  const _KeepAliveWrapper({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_KeepAliveWrapper> createState() => _KeepAliveWrapperState();
+}
+
+class _KeepAliveWrapperState extends State<_KeepAliveWrapper>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context); // required by AutomaticKeepAliveClientMixin
+    return widget.child;
   }
 }
