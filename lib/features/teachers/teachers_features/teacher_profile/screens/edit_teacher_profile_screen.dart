@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/assignments/services/cloudinary_service.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/teacher_profile/widgets/save_button.dart';
 
@@ -188,7 +189,7 @@ class _EditTeacherProfileScreenState
           appBar: AppBar(
             title: const Text("Edit Profile"),
             centerTitle: true,
-            backgroundColor: Colors.blue,
+            backgroundColor:AppTheme.primary,
             foregroundColor: Colors.white,
           ),
 
@@ -232,13 +233,15 @@ class _EditTeacherProfileScreenState
                       }
                       return null;
                     },
+                    color: AppTheme.primary,
                   ),
 
                   ProfileTextField(
                     controller: _emailController,
                     label: "Email",
                     icon: Icons.email,
-                    readOnly: true,
+                    readOnly: true,color: AppTheme.primary,
+
                   ),
 
                   ProfileTextField(
@@ -246,7 +249,9 @@ class _EditTeacherProfileScreenState
                     label: "Phone Number",
                     icon: Icons.phone,
                     keyboardType: TextInputType.phone,
+                    color: AppTheme.primary,
                   ),
+                  
 
                   const SizedBox(height: 25),
 
@@ -265,6 +270,7 @@ class _EditTeacherProfileScreenState
                     label: "Department",
                     icon: Icons.school,
                     readOnly: true,
+                    color: AppTheme.primary,
                   ),
 
                   ProfileTextField(
@@ -272,18 +278,21 @@ class _EditTeacherProfileScreenState
                     label: "Designation",
                     icon: Icons.work,
                     readOnly: true,
+                    color: AppTheme.primary,
                   ),
 
                   ProfileTextField(
                     controller: _qualificationController,
                     label: "Qualification",
                     icon: Icons.menu_book,
+                   color: AppTheme.primary
                   ),
 
                   ProfileTextField(
                     controller: _experienceController,
                     label: "Experience",
                     icon: Icons.star,
+                    color : AppTheme.primary,
                   ),
 
                   const SizedBox(height: 35),

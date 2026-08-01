@@ -19,10 +19,19 @@ class AdminAssignmentService {
 
   // 3. Delete Submission
   static Future<void> deleteSubmission(String id) async {
-    await _db.collection('submissions').doc(id).delete();
+    // Note: Yedi submissions ko collection name assignment_submissions ho vane yeta pani change garna sakchau
+    await _db.collection('assignment_submissions').doc(id).delete();
   }
 
-  // 4. Share Feature
+  // 4. Get Submissions For Specific Assignment (Naya Method Added Here ✨)
+  static Stream<QuerySnapshot> getSubmissionsForAssignment(String assignmentId) {
+    return _db
+        .collection('assignment_submissions') // AssignmentDetailScreen sanga match gareko collection name
+        .where('assignmentId', isEqualTo: assignmentId)
+        .snapshots();
+  }
+
+  // 5. Share Feature
   static void shareAssignmentDetails(
     String title,
     String dept,
@@ -36,6 +45,8 @@ class AdminAssignmentService {
         "Semester: $sem\n"
         "Deadline: $deadline\n\n"
         "Please check the NexCampus app for full details.";
-    SharePlus.instance.share(ShareParams(text: text));
+    
+    // share_plus package ko updated syntax anusar
+    Share.share(text);
   }
 }

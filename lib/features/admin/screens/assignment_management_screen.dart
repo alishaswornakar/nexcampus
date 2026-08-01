@@ -21,10 +21,9 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
   late TabController _tabController;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  // Filters
+  // Filters (Section removed)
   String? _selectedDepartment;
   String? _selectedSemester;
-  String? _selectedSection;
 
   final List<String> _departments = ['Computer', 'Civil', 'Architecture'];
 
@@ -53,8 +52,6 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
     '9th',
     '10th',
   ];
-
-  final List<String> _sections = ['A', 'B', 'C', 'D', 'E'];
 
   // 🎯 Helper method to get semester list based on selected department
   List<String> _getAvailableSemesters() {
@@ -129,7 +126,7 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
                             if (!context.mounted) return;
 
                             if (pickedDate != null) {
-                              if(!context.mounted) return;
+                              if (!context.mounted) return;
                               TimeOfDay? pickedTime = await showTimePicker(
                                 context: context,
                                 initialTime: TimeOfDay.fromDateTime(
@@ -188,36 +185,6 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
     );
   }
 
-  // 👁️ VIEW DETAILS DIALOG
-  void showViewDetailsDialog(String title, String content, String metadata) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                metadata,
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-              const Divider(),
-              Text(content, style: const TextStyle(fontSize: 14)),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Close"),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final primaryColor = AppTheme.primaryColor ?? Colors.blue;
@@ -249,9 +216,9 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
       ),
       body: Column(
         children: [
-          // 🔍 FILTERS SECTION (Department, Semester, Section)
+          // 🔍 FILTERS SECTION (Department, Semester only)
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(12),
             color: Colors.white,
             child: Row(
               children: [
@@ -283,7 +250,7 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
                     },
                   ),
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: 12),
 
                 // Dynamic Sem Dropdown
                 Expanded(
@@ -301,26 +268,6 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
                       ),
                     ],
                     onChanged: (val) => setState(() => _selectedSemester = val),
-                  ),
-                ),
-                const SizedBox(width: 6),
-
-                // Sec Dropdown
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    initialValue: _selectedSection,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: "Sec",
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                    ),
-                    items: [
-                      const DropdownMenuItem(value: null, child: Text("All")),
-                      ..._sections.map(
-                        (sec) => DropdownMenuItem(value: sec, child: Text(sec)),
-                      ),
-                    ],
-                    onChanged: (val) => setState(() => _selectedSection = val),
                   ),
                 ),
               ],
@@ -370,9 +317,6 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
                   a.semester != _selectedSemester) {
                 return false;
               }
-              if (_selectedSection != null && a.section != _selectedSection) {
-                return false;
-              }
               return true;
             })
             .toList();
@@ -409,7 +353,7 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "By: ${item.teacherName} | Dept: ${item.department} (${item.semester}-${item.section})",
+                      "By: ${item.teacherName} | Dept: ${item.department} (${item.semester})",
                     ),
                     Text(
                       "Posted: $dateStr",
@@ -523,9 +467,6 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
                   s.semester != _selectedSemester) {
                 return false;
               }
-              if (_selectedSection != null && s.section != _selectedSection) {
-                return false;
-              }
               return true;
             })
             .toList();
@@ -560,7 +501,7 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
                   children: [
                     Text("Assignment: ${item.assignmentTitle}"),
                     Text(
-                      "Dept: ${item.department} (${item.semester}-${item.section})",
+                      "Dept: ${item.department} (${item.semester})",
                     ),
                     Text(
                       "Submitted At: $submitTimeStr",

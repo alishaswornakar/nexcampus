@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 import '../models/assignment_model.dart';
 import '../services/admin_assignment_service.dart';
+// AdminSubmissionsListScreen import garnu hola:
+import 'admin_submissions_list_screen.dart'; 
 
 class AssignmentDetailScreen extends StatefulWidget {
   final AssignmentModel assignment;
@@ -204,7 +206,6 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //final primaryColor = AppTheme.primaryColor ?? Colors.blue;
     final createdStr = DateFormat(
       'MMM dd, yyyy - hh:mm a',
     ).format(_assignment.createdDate);
@@ -389,6 +390,41 @@ class _AssignmentDetailScreenState extends State<AssignmentDetailScreen> {
                       style: const TextStyle(fontSize: 14, height: 1.4),
                     ),
                   ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // 🚀 VIEW STUDENT SUBMISSIONS BUTTON (Yeta rakhda sabse attractive ra accessible hunxa)
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue.shade700,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AdminSubmissionsListScreen(
+                        assignmentId: _assignment.id,
+                        assignmentTitle: _assignment.title,
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.visibility, color: Colors.white),
+                label: const Text(
+                  "View Student Submissions",
+                  style: TextStyle(
+                    color: Colors.white, 
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
                 ),
               ),
             ),
