@@ -47,7 +47,7 @@ class NoteTile extends StatelessWidget {
     if (name.endsWith(".jpg") ||
         name.endsWith(".jpeg") ||
         name.endsWith(".png")) {
-      return AppTheme.primary ;
+      return AppTheme.primary;
     }
 
     return Colors.grey;
@@ -63,35 +63,31 @@ class NoteTile extends StatelessWidget {
     final padding = isDesktop
         ? 22.0
         : isTablet
-            ? 20.0
-            : 16.0;
+        ? 20.0
+        : 16.0;
 
     final avatarRadius = isDesktop
         ? 30.0
         : isTablet
-            ? 28.0
-            : 24.0;
+        ? 28.0
+        : 24.0;
 
     final titleSize = isDesktop
         ? 19.0
         : isTablet
-            ? 18.0
-            : 16.0;
+        ? 18.0
+        : 16.0;
 
     final bodySize = isDesktop
         ? 15.0
         : isTablet
-            ? 14.0
-            : 13.0;
+        ? 14.0
+        : 13.0;
 
     return Card(
       elevation: 2,
-      margin: EdgeInsets.only(
-        bottom: isTablet ? 18 : 14,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-      ),
+      margin: EdgeInsets.only(bottom: isTablet ? 18 : 14),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
         onTap: onTap,
@@ -100,16 +96,15 @@ class NoteTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               /// Header
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   CircleAvatar(
                     radius: avatarRadius,
-                    backgroundColor:
-                        _iconColor(note.fileName).withOpacity(.12),
+                    backgroundColor: _iconColor(
+                      note.fileName,
+                    ).withValues(alpha: .12),
                     child: Icon(
                       _fileIcon(note.fileName),
                       color: _iconColor(note.fileName),
@@ -123,7 +118,6 @@ class NoteTile extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
                         Text(
                           note.title,
                           maxLines: 2,
@@ -155,10 +149,7 @@ class NoteTile extends StatelessWidget {
                         value: "delete",
                         child: Row(
                           children: [
-                            Icon(
-                              Icons.delete,
-                              color: Colors.red,
-                            ),
+                            Icon(Icons.delete, color: Colors.red),
                             SizedBox(width: 8),
                             Text("Delete"),
                           ],
@@ -178,20 +169,14 @@ class NoteTile extends StatelessWidget {
 
               /// File Name
               Container(
-                padding: EdgeInsets.all(
-                  isTablet ? 14 : 12,
-                ),
+                padding: EdgeInsets.all(isTablet ? 14 : 12),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-
-                    const Icon(
-                      Icons.attach_file,
-                      color: AppTheme.primary,
-                    ),
+                    const Icon(Icons.attach_file, color: AppTheme.primary),
 
                     const SizedBox(width: 8),
 
@@ -200,9 +185,7 @@ class NoteTile extends StatelessWidget {
                         note.fileName,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: bodySize,
-                        ),
+                        style: TextStyle(fontSize: bodySize),
                       ),
                     ),
                   ],
@@ -218,11 +201,9 @@ class NoteTile extends StatelessWidget {
                 spacing: 10,
                 runSpacing: 10,
                 children: [
-
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-
                       Icon(
                         Icons.person_outline,
                         size: 18,
@@ -233,16 +214,13 @@ class NoteTile extends StatelessWidget {
 
                       Text(
                         note.uploadedBy,
-                        style: TextStyle(
-                          fontSize: bodySize,
-                        ),
+                        style: TextStyle(fontSize: bodySize),
                       ),
                     ],
                   ),
 
                   Text(
-                    DateFormat("dd MMM yyyy")
-                        .format(note.createdAt),
+                    DateFormat("dd MMM yyyy").format(note.createdAt),
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: bodySize,
@@ -266,8 +244,7 @@ class NoteTile extends StatelessWidget {
                         horizontal: isTablet ? 22 : 18,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     icon: const Icon(Icons.visibility),
