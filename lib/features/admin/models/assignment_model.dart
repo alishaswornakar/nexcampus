@@ -40,6 +40,8 @@ class AssignmentModel {
     );
   }
 
+  get filesUrl => null;
+
   Map<String, dynamic> toMap() {
     return {
       'title': title,
