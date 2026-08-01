@@ -1,31 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:nexcampus_app/features/student/blocs/result/screens/results_screen.dart';
+import 'package:nexcampus_app/features/student/blocs/team_finder/screens/team_finder_screen.dart';
 import 'quick_tile.dart';
-//import '../screens/alerts_screen.dart';
+
 import 'package:nexcampus_app/features/student/blocs/notices/screens/notices_screen.dart';
 import '../blocs/attendance/screens/attendance_screen.dart';
+
 import '../../../features/student/blocs/digital_queue/screens/digital_queue_home_screen.dart';
-//import 'package:nexcampus_app/features/student/blocs/notes/screens/notes_screen.dart';
 import 'package:nexcampus_app/features/student/blocs/syllabus/screens/syllabus_screen.dart';
-//import '../screens/schedule_screen.dart';
-//import '../screens/fees_screen.dart';
+
 import 'package:nexcampus_app/features/student/blocs/anonymous_issue_reporting/screens/anonymous_issue_reporting_screen.dart';
-import 'package:nexcampus_app/features/student/blocs/team_finder/screens/team_finder_screen.dart';
-//import '../screens/library_screen.dart';
+
+
 import '../blocs/assignment/screens/tasks_screen.dart';
 
-/// Plain data holder for the logged-in student's profile, read once from
-/// Firestore (`users/{uid}`) and reused across every Quick Access tile
-/// that needs it (Digital Queue, Team Finder, Tasks, etc).
+
+/// Student profile data used by Quick Access features
 class _StudentProfile {
+
   final String studentId;
   final String studentName;
   final String studentEmail;
   final String rollNumber;
   final String department;
   final String semester;
+
 
   const _StudentProfile({
     required this.studentId,
@@ -36,218 +38,683 @@ class _StudentProfile {
     required this.semester,
   });
 
+
   factory _StudentProfile.fromFirestore(
     String studentId,
-    Map<String, dynamic>? data,
+    Map<String,dynamic>? data,
     User authUser,
-  ) {
-    final map = data ?? const {};
+  ){
+
+    final map = data ?? {};
+
     return _StudentProfile(
+
       studentId: studentId,
-      studentName: (map['fullName'] as String?)?.trim().isNotEmpty == true
-          ? map['fullName'] as String
-          : (authUser.displayName ?? 'Student'),
-      studentEmail: (map['email'] as String?) ?? authUser.email ?? '',
+
+
+      studentName:
+          (map['fullName'] as String?)?.trim().isNotEmpty == true
+              ? map['fullName']
+              : (authUser.displayName ?? "Student"),
+
+
+      studentEmail:
+          (map['email'] as String?) ??
+          authUser.email ??
+          "",
+
+
       rollNumber:
-          (map['rollNumber'] as String?) ?? (map['roll'] as String?) ?? '',
-      department: (map['department'] as String?) ?? '',
-      semester: (map['semester'] as String?) ?? '',
+          (map['rollNumber'] as String?) ??
+          (map['roll'] as String?) ??
+          "",
+
+
+      department:
+          (map['department'] as String?) ??
+          "",
+
+
+      semester:
+          (map['semester'] as String?) ??
+          "",
+
     );
   }
+
 }
 
-/// Session-level cache so the extra Firestore fields (roll number,
-/// department, semester) are fetched at most once per app session instead
-/// of every time the dashboard is rebuilt/revisited.
+
+
+
+/// Cache profile data during app session
 class _ProfileCache {
+
   static _StudentProfile? cached;
+
   static Future<_StudentProfile>? inFlight;
+
 }
+
+
+
 
 class QuickAccessGrid extends StatefulWidget {
+
   final String studentId;
 
-  const QuickAccessGrid({required this.studentId, super.key});
+
+  const QuickAccessGrid({
+    required this.studentId,
+    super.key,
+  });
+
+
 
   @override
-  State<QuickAccessGrid> createState() => _QuickAccessGridState();
+  State<QuickAccessGrid> createState() =>
+      _QuickAccessGridState();
+
 }
 
-class _QuickAccessGridState extends State<QuickAccessGrid> {
-  late final User _authUser = FirebaseAuth.instance.currentUser!;
 
-  /// Instantly available — no Firestore call needed. Tiles that only need
-  /// studentId/name/email can use this on the very first frame.
+
+
+class _QuickAccessGridState
+    extends State<QuickAccessGrid> {
+
+
+
+  late final User _authUser =
+      FirebaseAuth.instance.currentUser!;
+
+
+
   late _StudentProfile _profile =
+
       _ProfileCache.cached ??
+
       _StudentProfile(
+
         studentId: _authUser.uid,
-        studentName: _authUser.displayName ?? 'Student',
-        studentEmail: _authUser.email ?? '',
-        rollNumber: '',
-        department: '',
-        semester: '',
+
+        studentName:
+            _authUser.displayName ??
+            "Student",
+
+        studentEmail:
+            _authUser.email ??
+            "",
+
+        rollNumber: "",
+
+        department: "",
+
+        semester: "",
+
       );
+
+
 
   @override
   void initState() {
+
     super.initState();
-    if (_ProfileCache.cached == null) {
+
+
+    if(_ProfileCache.cached == null){
+
       _loadExtraProfileFields();
+
     }
+
   }
 
-  /// Fetches roll number / department / semester in the background and
-  /// quietly updates the tiles that need them once it arrives — it never
-  /// blocks the initial render of the grid.
+
+
+
   Future<void> _loadExtraProfileFields() async {
-    _ProfileCache.inFlight ??= FirebaseFirestore.instance
-        .collection('users')
-        .doc(_authUser.uid)
-        .get()
-        .then(
-          (snap) => _StudentProfile.fromFirestore(
-            _authUser.uid,
-            snap.data(),
-            _authUser,
-          ),
-        );
+
+
+    _ProfileCache.inFlight ??=
+
+        FirebaseFirestore.instance
+            .collection("users")
+            .doc(_authUser.uid)
+            .get()
+            .then(
+
+              (snap)=>
+
+              _StudentProfile.fromFirestore(
+
+                _authUser.uid,
+
+                snap.data(),
+
+                _authUser,
+
+              ),
+
+            );
+
+
 
     try {
-      final profile = await _ProfileCache.inFlight!;
-      _ProfileCache.cached = profile;
-      if (mounted) {
-        setState(() => _profile = profile);
+
+
+      final profile =
+          await _ProfileCache.inFlight!;
+
+
+
+      _ProfileCache.cached =
+          profile;
+
+
+
+      if(mounted){
+
+        setState((){
+
+          _profile = profile;
+
+        });
+
       }
-    } catch (_) {
-      // Silently keep the fallback (uid/name/email) — these fields aren't
-      // critical for first paint, so we don't show an error for them.
+
+
+    }catch(_){
+
     }
-  }
 
-  @override
+
+  }
+    @override
   Widget build(BuildContext context) {
+
+
     final profile = _profile;
+
+
     final currentStudent = CurrentStudent(
+
       studentId: profile.studentId,
+
       studentName: profile.studentName,
+
       studentEmail: profile.studentEmail,
+
       rollNumber: profile.rollNumber,
+
       department: profile.department,
+
       semester: profile.semester,
+
     );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          "Quick Access",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
 
-        const SizedBox(height: 10),
 
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 1.55,
+    return LayoutBuilder(
+
+      builder: (context, constraints) {
+
+
+        final width = constraints.maxWidth;
+
+
+
+        int crossAxisCount;
+
+
+        double childAspectRatio;
+
+
+
+        double titleSize;
+
+
+
+        double spacing;
+
+
+
+        if(width < 400){
+
+          // Small phones
+
+          crossAxisCount = 2;
+
+          childAspectRatio = 1.35;
+
+          titleSize = 16;
+
+          spacing = 10;
+
+
+        }
+
+        else if(width < 700){
+
+          // Normal phones
+
+          crossAxisCount = 2;
+
+          childAspectRatio = 1.55;
+
+          titleSize = 18;
+
+          spacing = 12;
+
+
+        }
+
+        else if(width < 1100){
+
+          // Tablets
+
+          crossAxisCount = 3;
+
+          childAspectRatio = 1.65;
+
+          titleSize = 19;
+
+          spacing = 16;
+
+
+        }
+
+        else{
+
+          // Large screens / emulator desktop
+
+          crossAxisCount = 4;
+
+          childAspectRatio = 1.75;
+
+          titleSize = 20;
+
+          spacing = 18;
+
+
+        }
+
+
+
+
+        return Column(
+
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
+
+
           children: [
-            QuickTile(
-              icon: Icons.calendar_today,
-              label: "Attendance",
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      AttendanceScreen(studentId: profile.studentId),
-                ),
+
+
+
+            Text(
+
+              "Quick Access",
+
+              style: TextStyle(
+
+                fontSize: titleSize,
+
+                fontWeight:
+                    FontWeight.bold,
+
               ),
+
             ),
-            QuickTile(
-              icon: Icons.assignment,
-              label: "Assignments",
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => TasksScreen(
-                    department: profile.department,
-                    semester: profile.semester,
-                    studentId: profile.studentId,
+
+
+
+            SizedBox(
+
+              height: spacing,
+
+            ),
+
+
+
+            GridView.builder(
+
+              itemCount: 8,
+
+
+              shrinkWrap: true,
+
+
+              physics:
+                  const NeverScrollableScrollPhysics(),
+
+
+
+              gridDelegate:
+                  SliverGridDelegateWithFixedCrossAxisCount(
+
+                crossAxisCount:
+                    crossAxisCount,
+
+
+                mainAxisSpacing:
+                    spacing,
+
+
+                crossAxisSpacing:
+                    spacing,
+
+
+                childAspectRatio:
+                    childAspectRatio,
+
+              ),
+
+
+
+              itemBuilder:
+                  (context,index){
+
+
+
+                final tiles = [
+
+
+
+                  QuickTile(
+
+                    icon:
+                        Icons.calendar_today,
+
+                    label:
+                        "Attendance",
+
+                    onTap: ()=>
+
+                    Navigator.push(
+
+                      context,
+
+                      MaterialPageRoute(
+
+                        builder: (_) =>
+                            AttendanceScreen(
+
+                              studentId:
+                                  profile.studentId,
+
+                            ),
+
+                      ),
+
+                    ),
+
                   ),
-                ),
-              ),
-            ),
-            QuickTile(
-              icon: Icons.hourglass_bottom,
-              label: "Digital Queue",
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      DigitalQueueHomeScreen(student: currentStudent),
-                ),
-              ),
-            ),
-            QuickTile(
-              icon: Icons.menu_book,
-              label: "Syllabus",
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SyllabusScreen()),
-              ),
-            ),
-            QuickTile(
-              icon: Icons.campaign,
-              label: "Notices",
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const NoticesScreen()),
-              ),
-            ),
-            QuickTile(
-              icon: Icons.report_problem,
-              label: "Reporting",
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AnonymousIssueReportingScreen(
-                    studentId: profile.studentId,
-                    studentName: profile.studentName,
+
+
+
+
+                  QuickTile(
+
+                    icon:
+                        Icons.assignment,
+
+                    label:
+                        "Assignments",
+
+                    onTap: ()=>
+
+                    Navigator.push(
+
+                      context,
+
+                      MaterialPageRoute(
+
+                        builder: (_) =>
+                            TasksScreen(
+
+                              department:
+                                  profile.department,
+
+                              semester:
+                                  profile.semester,
+
+                              studentId:
+                                  profile.studentId,
+
+                            ),
+
+                      ),
+
+                    ),
+
                   ),
-                ),
-              ),
-            ),
-            QuickTile(
-              icon: Icons.groups,
-              label: "Team Finder",
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TeamFinderScreen(
-                    studentId: profile.studentId,
-                    studentName: profile.studentName,
-                    studentEmail: profile.studentEmail,
-                    rollNumber: profile.rollNumber,
-                    department: profile.department,
-                    semester: profile.semester,
+
+
+
+
+                  QuickTile(
+
+                    icon:
+                        Icons.hourglass_bottom,
+
+                    label:
+                        "Digital Queue",
+
+                    onTap: ()=>
+
+                    Navigator.push(
+
+                      context,
+
+                      MaterialPageRoute(
+
+                        builder: (_) =>
+                            DigitalQueueHomeScreen(
+
+                              student:
+                                  currentStudent,
+
+                            ),
+
+                      ),
+
+                    ),
+
                   ),
-                ),
-              ),
+
+
+
+
+
+                  QuickTile(
+
+                    icon:
+                        Icons.menu_book,
+
+                    label:
+                        "Syllabus",
+
+                    onTap: ()=>
+
+                    Navigator.push(
+
+                      context,
+
+                      MaterialPageRoute(
+
+                        builder: (_) =>
+                            const SyllabusScreen(),
+
+                      ),
+
+                    ),
+
+                  ),
+
+
+
+
+
+                  QuickTile(
+
+                    icon:
+                        Icons.campaign,
+
+                    label:
+                        "Notices",
+
+                    onTap: ()=>
+
+                    Navigator.push(
+
+                      context,
+
+                      MaterialPageRoute(
+
+                        builder: (_) =>
+                            const NoticesScreen(),
+
+                      ),
+
+                    ),
+
+                  ),
+
+
+
+
+                  QuickTile(
+
+                    icon:
+                        Icons.report_problem,
+
+                    label:
+                        "Reporting",
+
+                    onTap: ()=>
+
+                    Navigator.push(
+
+                      context,
+
+                      MaterialPageRoute(
+
+                        builder: (_) =>
+                            AnonymousIssueReportingScreen(
+
+                              studentId:
+                                  profile.studentId,
+
+                              studentName:
+                                  profile.studentName,
+
+                            ),
+
+                      ),
+
+                    ),
+
+                  ),
+
+
+
+
+                  QuickTile(
+
+                    icon:
+                        Icons.groups,
+
+                    label:
+                        "Team Finder",
+
+                    onTap: ()=>
+
+                    Navigator.push(
+
+                      context,
+
+                      MaterialPageRoute(
+
+                        builder: (_) =>
+                            TeamFinderScreen(
+
+                              studentId:
+                                  profile.studentId,
+
+                              studentName:
+                                  profile.studentName,
+
+                              studentEmail:
+                                  profile.studentEmail,
+
+                              rollNumber:
+                                  profile.rollNumber,
+
+                              department:
+                                  profile.department,
+
+                              semester:
+                                  profile.semester,
+
+                            ),
+
+                      ),
+
+                    ),
+
+                  ),
+
+
+
+
+                  QuickTile(
+
+                    icon:
+                        Icons.poll,
+
+                    label:
+                        "Results",
+
+                    onTap: ()=>
+
+                    Navigator.push(
+
+                      context,
+
+                      MaterialPageRoute(
+
+                        builder: (_) =>
+                            const ResultsScreen(),
+
+                      ),
+
+                    ),
+
+                  ),
+
+
+                ];
+
+
+
+                return tiles[index];
+
+              },
+
+
             ),
-            QuickTile(
-              icon: Icons.poll,
-              label: "Results",
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ResultsScreen()),
-              ),
-            ),
+
+
           ],
-        ),
-      ],
+
+
+        );
+
+
+      },
+
     );
+
   }
-}
+    }

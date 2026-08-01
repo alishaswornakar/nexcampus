@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/teacher_profile/blocs/bloc/teacherprofile_bloc.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/teacher_profile/blocs/bloc/teacherprofile_event.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/teacher_profile/blocs/bloc/teacherprofile_state.dart';
@@ -14,9 +15,13 @@ class TeacherProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          TeacherProfileBloc(TeacherProfileRepository(TeacherProfileService()))
-            ..add(const LoadTeacherProfileEvent()),
+      create: (_) => TeacherProfileBloc(
+        TeacherProfileRepository(
+          TeacherProfileService(),
+        ),
+      )..add(
+          const LoadTeacherProfileEvent(),
+        ),
       child: const _TeacherProfileView(),
     );
   }
@@ -27,138 +32,243 @@ class _TeacherProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
+    final bool isMobile = width < 600;
+    final bool isTablet = width >= 600 && width < 1000;
+
+    final double horizontalPadding =
+        isMobile ? 16 : (isTablet ? 20 : 28);
+
+    final double avatarRadius =
+        isMobile ? 55 : (isTablet ? 65 : 75);
+
+    final double titleSize =
+        isMobile ? 24 : (isTablet ? 26 : 28);
+
+    final double emailSize =
+        isMobile ? 14 : 16;
+
+    final double buttonHeight =
+        isMobile ? 54 : 60;
+
+    final double buttonFont =
+        isMobile ? 16 : 17;
+
     return Scaffold(
       backgroundColor: const Color(0xffF5F7FA),
 
       appBar: AppBar(
         title: const Text("Teacher Profile"),
         centerTitle: true,
-        backgroundColor: Colors.blue,
+        backgroundColor: AppTheme.primary,
         foregroundColor: Colors.white,
       ),
 
-      body: BlocBuilder<TeacherProfileBloc, TeacherProfileState>(
+      body: BlocBuilder<
+          TeacherProfileBloc,
+          TeacherProfileState>(
         builder: (context, state) {
+
           if (state is TeacherProfileLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
 
           if (state is TeacherProfileError) {
             return Center(
               child: Text(
                 state.message,
-                style: const TextStyle(color: Colors.red),
+                style: const TextStyle(
+                  color: Colors.red,
+                ),
               ),
             );
           }
 
           if (state is TeacherProfileLoaded) {
+
             final teacher = state.profile;
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  // Profile Picture
-                  CircleAvatar(
-                    radius: 55,
-                    backgroundColor: Colors.blue.shade100,
-                    backgroundImage:
-                        teacher.photoUrl != null && teacher.photoUrl!.isNotEmpty
-                        ? NetworkImage(teacher.photoUrl!)
-                        : null,
-                    child: teacher.photoUrl == null || teacher.photoUrl!.isEmpty
-                        ? const Icon(Icons.person, size: 60, color: Colors.blue)
-                        : null,
+            return Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 700,
+                ),
+
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(
+                    horizontalPadding,
                   ),
 
-                  const SizedBox(height: 15),
+                  child: Column(
+                    children: [
 
-                  Text(
-                    teacher.fullName,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 5),
-
-                  Text(
-                    teacher.email,
-                    style: TextStyle(color: Colors.grey.shade700),
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  _buildInfoCard(
-                    icon: Icons.school,
-                    title: "Department",
-                    value: teacher.department ?? "Not Available",
-                  ),
-
-                  _buildInfoCard(
-                    icon: Icons.badge,
-                    title: "Employee ID",
-                    value: teacher.employeeId ?? "Not Available",
-                  ),
-
-                  _buildInfoCard(
-                    icon: Icons.work,
-                    title: "Designation",
-                    value: teacher.designation ?? "Not Available",
-                  ),
-
-                  _buildInfoCard(
-                    icon: Icons.menu_book,
-                    title: "Qualification",
-                    value: teacher.qualification ?? "Not Available",
-                  ),
-
-                  _buildInfoCard(
-                    icon: Icons.star,
-                    title: "Experience",
-                    value: teacher.experience ?? "Not Available",
-                  ),
-
-                  _buildInfoCard(
-                    icon: Icons.phone,
-                    title: "Phone",
-                    value: teacher.phone ?? "Not Available",
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      icon: const Icon(Icons.edit),
-                      label: const Text("Edit Profile"),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
+                      /// Profile Avatar
+                      CircleAvatar(
+                        radius: avatarRadius,
+                        backgroundColor:
+                            Colors.blue.shade100,
+                        backgroundImage:
+                            teacher.photoUrl != null &&
+                                    teacher.photoUrl!.isNotEmpty
+                                ? NetworkImage(
+                                    teacher.photoUrl!,
+                                  )
+                                : null,
+                        child:
+                            teacher.photoUrl == null ||
+                                    teacher.photoUrl!.isEmpty
+                                ? Icon(
+                                    Icons.person,
+                                    size: avatarRadius,
+                                    color: AppTheme.primary,
+                                  )
+                                : null,
                       ),
-                      onPressed: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => BlocProvider.value(
-                              value: context.read<TeacherProfileBloc>(),
-                              child: EditTeacherProfileScreen(profile: teacher),
+
+                      SizedBox(
+                        height:
+                            isMobile ? 16 : 22,
+                      ),
+
+                      /// Teacher Name
+                      Text(
+                        teacher.fullName,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: titleSize,
+                          fontWeight:
+                              FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(height: 6),
+
+                      /// Email
+                      Text(
+                        teacher.email,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: emailSize,
+                          color:
+                              Colors.grey.shade700,
+                        ),
+                      ),
+
+                      SizedBox(
+                        height:
+                            isMobile ? 28 : 36,
+                      ),
+
+                      _buildInfoCard(
+                        context: context,
+                        icon: Icons.school,
+                        title: "Department",
+                        value: teacher.department ??
+                            "Not Available",
+                      ),
+
+                      _buildInfoCard(
+                        context: context,
+                        icon: Icons.badge,
+                        title: "Employee ID",
+                        value: teacher.employeeId ??
+                            "Not Available",
+                      ),
+
+                      _buildInfoCard(
+                        context: context,
+                        icon: Icons.work,
+                        title: "Designation",
+                        value: teacher.designation ??
+                            "Not Available",
+                      ),
+                                            _buildInfoCard(
+                        context: context,
+                        icon: Icons.menu_book,
+                        title: "Qualification",
+                        value: teacher.qualification ??
+                            "Not Available",
+                      ),
+
+                      _buildInfoCard(
+                        context: context,
+                        icon: Icons.star,
+                        title: "Experience",
+                        value: teacher.experience ??
+                            "Not Available",
+                      ),
+
+                      _buildInfoCard(
+                        context: context,
+                        icon: Icons.phone,
+                        title: "Phone",
+                        value: teacher.phone ??
+                            "Not Available",
+                      ),
+
+                      SizedBox(
+                        height: isMobile ? 28 : 36,
+                      ),
+
+                      SizedBox(
+                        width: double.infinity,
+                        height: buttonHeight,
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.edit),
+                          label: Text(
+                            "Edit Profile",
+                            style: TextStyle(
+                              fontSize: buttonFont,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                        );
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primary,
+                            foregroundColor: Colors.white,
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(14),
+                            ),
+                          ),
+                          onPressed: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    BlocProvider.value(
+                                  value: context.read<
+                                      TeacherProfileBloc>(),
+                                  child:
+                                      EditTeacherProfileScreen(
+                                    profile: teacher,
+                                  ),
+                                ),
+                              ),
+                            );
 
-                        if (!context.mounted) return; // <-- add this guard
+                            if (!context.mounted) {
+                              return;
+                            }
 
-                        context.read<TeacherProfileBloc>().add(
-                          const LoadTeacherProfileEvent(),
-                        );
-                      },
-                    ),
+                            context
+                                .read<TeacherProfileBloc>()
+                                .add(
+                                  const LoadTeacherProfileEvent(),
+                                );
+                          },
+                        ),
+                      ),
+
+                      SizedBox(
+                        height: isMobile ? 20 : 30,
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             );
           }
@@ -168,25 +278,89 @@ class _TeacherProfileView extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildInfoCard({
+    Widget _buildInfoCard({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String value,
   }) {
+    final width = MediaQuery.of(context).size.width;
+
+    final bool isMobile = width < 600;
+    final bool isTablet = width >= 600 && width < 1000;
+
+    final double avatarRadius =
+        isMobile ? 22 : (isTablet ? 24 : 26);
+
+    final double iconSize =
+        isMobile ? 20 : 22;
+
+    final double titleSize =
+        isMobile ? 14 : 15;
+
+    final double valueSize =
+        isMobile ? 15 : 16;
+
     return Card(
-      margin: const EdgeInsets.only(bottom: 15),
+      margin: EdgeInsets.only(
+        bottom: isMobile ? 14 : 18,
+      ),
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: Colors.blue.shade50,
-          child: Icon(icon, color: Colors.blue),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 14 : 18,
+          vertical: isMobile ? 12 : 16,
         ),
-        title: Text(title),
-        subtitle: Text(
-          value,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              radius: avatarRadius,
+              backgroundColor: Colors.blue.shade100,
+              child: Icon(
+                icon,
+                color: AppTheme.primary,
+                size: iconSize,
+              ),
+            ),
+
+            SizedBox(
+              width: isMobile ? 12 : 16,
+            ),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: titleSize,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  Text(
+                    value,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: valueSize,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
