@@ -25,40 +25,35 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
   String? _selectedDepartment;
   String? _selectedSemester;
 
-  final List<String> _departments = ['Computer', 'Civil', 'Architecture'];
+  final List<String> _departments = [
+    'Computer Engineering',
+    'Civil Engineering',
+    'Architecture',
+  ];
 
   // 8 Semesters List for Computer and Civil
-  final List<String> _semesters8 = [
-    '1st',
-    '2nd',
-    '3rd',
-    '4th',
-    '5th',
-    '6th',
-    '7th',
-    '8th',
-  ];
+  final List<String> _semesters8 = ['1', '2', '3', '4', '5', '6', '7', '8'];
 
   // 10 Semesters List for Architecture
   final List<String> _semesters10 = [
-    '1st',
-    '2nd',
-    '3rd',
-    '4th',
-    '5th',
-    '6th',
-    '7th',
-    '8th',
-    '9th',
-    '10th',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10',
   ];
 
   // 🎯 Helper method to get semester list based on selected department
   List<String> _getAvailableSemesters() {
     if (_selectedDepartment == 'Architecture') {
       return _semesters10;
-    } else if (_selectedDepartment == 'Computer' ||
-        _selectedDepartment == 'Civil') {
+    } else if (_selectedDepartment == 'Computer Engineering' ||
+        _selectedDepartment == 'Civil Engineering') {
       return _semesters8;
     }
     // If no department selected (All), allow all 10 semesters
@@ -457,7 +452,8 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
         // id -> title lookup so each submission can show a readable
         // assignment name instead of a raw assignmentId.
         final Map<String, AssignmentModel> assignmentsById = {
-          for (final doc in assignmentSnapshot.data?.docs ?? <QueryDocumentSnapshot>[])
+          for (final doc
+              in assignmentSnapshot.data?.docs ?? <QueryDocumentSnapshot>[])
             doc.id: AssignmentModel.fromMap(
               doc.data() as Map<String, dynamic>,
               doc.id,
@@ -493,7 +489,8 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
                   final dept = linked?.department ?? s.department;
                   final sem = linked?.semester ?? s.semester;
 
-                  if (_selectedDepartment != null && dept != _selectedDepartment) {
+                  if (_selectedDepartment != null &&
+                      dept != _selectedDepartment) {
                     return false;
                   }
                   if (_selectedSemester != null && sem != _selectedSemester) {
@@ -515,7 +512,8 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
               itemBuilder: (context, index) {
                 final item = submissions[index];
                 final assignmentTitle =
-                    assignmentsById[item.assignmentId]?.title ?? "Unknown Assignment";
+                    assignmentsById[item.assignmentId]?.title ??
+                    "Unknown Assignment";
                 final submitTimeStr = DateFormat(
                   'MMM dd, yyyy - hh:mm a',
                 ).format(item.submittedAt);
@@ -542,12 +540,13 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text("Assignment: $assignmentTitle"),
-                        Text(
-                          "Dept: ${item.department} (${item.semester})",
-                        ),
+                        Text("Dept: ${item.department} (${item.semester})"),
                         Text(
                           "Submitted At: $submitTimeStr",
-                          style: const TextStyle(fontSize: 11, color: Colors.green),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.green,
+                          ),
                         ),
                         if (item.isGraded)
                           Text(
