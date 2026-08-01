@@ -1,71 +1,135 @@
+// lib/features/admin/team_finder/services/admin_team_service.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/team_model.dart';
 import 'package:flutter/foundation.dart';
 
+import '../models/team_model.dart';
+
+class AdminTeamServiceException implements Exception {
+  final String message;
+  AdminTeamServiceException(this.message);
+  @override
+  String toString() => 'AdminTeamServiceException: $message';
+}
+
+/// Admin-side data layer for the Team Finder feature.
+///
+/// Reads and writes the exact same Firestore collections the student side
+/// uses (see `TeamFinderFirestoreService`):
+///   - `team_posts`         (was incorrectly `project_teams` before)
+///   - `team_applications`
+///
+/// Students don't have an approval workflow ('Pending' / 'Approved' /
+/// 'Rejected' doesn't exist in their schema) — a post is simply `open` or
+/// `closed`. Admin acts as a moderator on top of that: it can force-close a
+/// post (stop new applications), reopen one, delete a post (and its
+/// applications), and inspect who has applied.
 class AdminTeamService {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  AdminTeamService({FirebaseFirestore? firestore})
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
-  // Collection reference
-  final CollectionReference _teamCollection = FirebaseFirestore.instance
-      .collection('project_teams');
+  final FirebaseFirestore _firestore;
 
-  // 1. Status (Pending, Approved, Rejected) अनुसार Real-time Teams को Stream ल्याउने
-  Stream<List<TeamModel>> getTeamsByStatus(String status) {
-    return _teamCollection.where('status', isEqualTo: status).snapshots().map((
-      snapshot,
-    ) {
-      return snapshot.docs.map((doc) {
-        return TeamModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
-      }).toList();
-    });
-  }
+  CollectionReference<Map<String, dynamic>> get _postsRef =>
+      _firestore.collection('team_posts');
+  CollectionReference<Map<String, dynamic>> get _applicationsRef =>
+      _firestore.collection('team_applications');
 
-  // 2. सबै Project Teams हरूको Stream ल्याउने (Filter बिना)
+  TeamModel _decode(DocumentSnapshot<Map<String, dynamic>> doc) =>
+      TeamModel.fromMap(doc.data()!, doc.id);
+
+  // ===================== STREAMS =====================
+
+  /// All team posts, newest first. No status filter.
   Stream<List<TeamModel>> getAllTeams() {
-    return _teamCollection
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .map((snapshot) {
-          return snapshot.docs.map((doc) {
-            return TeamModel.fromMap(
-              doc.data() as Map<String, dynamic>,
-              doc.id,
-            );
-          }).toList();
-        });
-  }
-
-  // 3. Team Request को Status Update गर्ने (Approve वा Reject)
-  Future<void> updateTeamStatus(
-    String teamId,
-    String status, {
-    String? reason,
-  }) async {
     try {
-      Map<String, dynamic> updateData = {'status': status};
-
-      // यदि Status Reject गरिएको छ भने कारण (reason) थप्ने, नभए खाली गर्ने
-      if (status == 'Rejected' && reason != null) {
-        updateData['rejectReason'] = reason;
-      } else if (status == 'Approved') {
-        updateData['rejectReason'] =
-            FieldValue.delete(); // Reject reason हटाउने
-      }
-
-      await _teamCollection.doc(teamId).update(updateData);
+      return _postsRef
+          .orderBy('createdAt', descending: true)
+          .snapshots()
+          .map((snap) => snap.docs.map(_decode).toList());
     } catch (e) {
-      debugPrint("Error updating team status: $e");
-      rethrow;
+      throw AdminTeamServiceException('Failed to load teams: $e');
     }
   }
 
-  // 4. Admin ले कुनै Post Delete गर्ने
-  Future<void> deleteTeam(String teamId) async {
+  /// Team posts filtered by status. Accepts [TeamPostStatus.open] or
+  /// [TeamPostStatus.closed] to match the values students actually write.
+  Stream<List<TeamModel>> getTeamsByStatus(String status) {
     try {
-      await _teamCollection.doc(teamId).delete();
+      return _postsRef
+          .where('status', isEqualTo: status)
+          .orderBy('createdAt', descending: true)
+          .snapshots()
+          .map((snap) => snap.docs.map(_decode).toList());
     } catch (e) {
-      debugPrint("Error deleting team: $e");
-      rethrow;
+      throw AdminTeamServiceException('Failed to load $status teams: $e');
+    }
+  }
+
+  /// Applicants for a given post, newest first — lets admin see who has
+  /// applied without needing the full student bloc/repository stack.
+  Stream<List<TeamApplicationSummary>> getApplicantsForPost(String postId) {
+    try {
+      return _applicationsRef
+          .where('postId', isEqualTo: postId)
+          .orderBy('createdAt', descending: true)
+          .snapshots()
+          .map(
+            (snap) => snap.docs
+                .map((d) => TeamApplicationSummary.fromMap(d.data(), d.id))
+                .toList(),
+          );
+    } catch (e) {
+      throw AdminTeamServiceException('Failed to load applicants: $e');
+    }
+  }
+
+  // ===================== MUTATIONS =====================
+
+  /// Force-closes a post so students can no longer apply to it. Unlike the
+  /// student-side `closePost`, this doesn't check post ownership — admin can
+  /// close any post.
+  Future<void> closePost(String postId) async {
+    try {
+      await _postsRef.doc(postId).update({
+        'status': TeamPostStatus.closed,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      debugPrint('Error closing post: $e');
+      throw AdminTeamServiceException('Failed to close post: $e');
+    }
+  }
+
+  /// Reopens a previously closed post.
+  Future<void> reopenPost(String postId) async {
+    try {
+      await _postsRef.doc(postId).update({
+        'status': TeamPostStatus.open,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      debugPrint('Error reopening post: $e');
+      throw AdminTeamServiceException('Failed to reopen post: $e');
+    }
+  }
+
+  /// Deletes a post and cascades the delete to its applications, matching
+  /// the cleanup behavior of the student-side `deletePost`.
+  Future<void> deleteTeam(String postId) async {
+    final postRef = _postsRef.doc(postId);
+    try {
+      final applications = await _applicationsRef
+          .where('postId', isEqualTo: postId)
+          .get();
+      final batch = _firestore.batch();
+      for (final doc in applications.docs) {
+        batch.delete(doc.reference);
+      }
+      batch.delete(postRef);
+      await batch.commit();
+    } catch (e) {
+      debugPrint('Error deleting team: $e');
+      throw AdminTeamServiceException('Failed to delete post: $e');
     }
   }
 }

@@ -1,4 +1,6 @@
+// lib/features/admin/team_finder/screens/admin_team_management_screen.dart
 import 'package:flutter/material.dart';
+
 import '../models/team_model.dart';
 import '../services/admin_team_service.dart';
 
@@ -10,8 +12,7 @@ class AdminTeamManagementScreen extends StatefulWidget {
       _AdminTeamManagementScreenState();
 }
 
-class _AdminTeamManagementScreenState
-    extends State<AdminTeamManagementScreen>
+class _AdminTeamManagementScreenState extends State<AdminTeamManagementScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final AdminTeamService _teamService = AdminTeamService();
@@ -33,14 +34,28 @@ class _AdminTeamManagementScreenState
     if (selectedDept == 'Architecture') {
       return [
         'All Sem',
-        'Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5',
-        'Sem 6', 'Sem 7', 'Sem 8', 'Sem 9', 'Sem 10'
+        'Sem 1',
+        'Sem 2',
+        'Sem 3',
+        'Sem 4',
+        'Sem 5',
+        'Sem 6',
+        'Sem 7',
+        'Sem 8',
+        'Sem 9',
+        'Sem 10',
       ];
     } else {
       return [
         'All Sem',
-        'Sem 1', 'Sem 2', 'Sem 3', 'Sem 4',
-        'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'
+        'Sem 1',
+        'Sem 2',
+        'Sem 3',
+        'Sem 4',
+        'Sem 5',
+        'Sem 6',
+        'Sem 7',
+        'Sem 8',
       ];
     }
   }
@@ -48,44 +63,168 @@ class _AdminTeamManagementScreenState
   @override
   void initState() {
     super.initState();
-    // 4 Tabs: All, Pending, Approved, Rejected
-    _tabController = TabController(length: 4, vsync: this);
+    // 3 Tabs: All, Open, Closed — matches TeamPostStatus on the student side
+    // (there is no Pending/Approved/Rejected workflow in that schema).
+    _tabController = TabController(length: 3, vsync: this);
   }
 
-  void _showRejectDialog(BuildContext context, String teamId) {
-    final reasonController = TextEditingController();
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _showDeleteConfirm(BuildContext context, TeamModel team) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("Reject Team Request"),
-        content: TextField(
-          controller: reasonController,
-          decoration: const InputDecoration(
-            hintText: "Enter rejection reason...",
-            border: OutlineInputBorder(),
-          ),
-          maxLines: 3,
+        title: const Text('Delete Post'),
+        content: Text(
+          'Delete "${team.title}"? This also removes all applications '
+          'submitted to it. This cannot be undone.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text("Cancel"),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {
-              if (reasonController.text.trim().isNotEmpty) {
-                await _teamService.updateTeamStatus(
-                  teamId,
-                  'Rejected',
-                  reason: reasonController.text.trim(),
-                );
-                if (context.mounted) Navigator.pop(ctx);
+              Navigator.pop(ctx);
+              try {
+                await _teamService.deleteTeam(team.id);
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(e.toString())));
+                }
               }
             },
-            child: const Text("Reject", style: TextStyle(color: Colors.white)),
+            child: const Text('Delete', style: TextStyle(color: Colors.white)),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showApplicants(BuildContext context, TeamModel team) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.3,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return Column(
+              children: [
+                const SizedBox(height: 10),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Text(
+                    'Applicants · ${team.title}',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: StreamBuilder<List<TeamApplicationSummary>>(
+                    stream: _teamService.getApplicantsForPost(team.id),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      final applicants = snapshot.data ?? [];
+                      if (applicants.isEmpty) {
+                        return const Center(
+                          child: Text(
+                            'No applicants yet.',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        );
+                      }
+                      return ListView.separated(
+                        controller: scrollController,
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        itemCount: applicants.length,
+                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        itemBuilder: (context, index) {
+                          final a = applicants[index];
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              a.applicantName.isEmpty
+                                  ? a.applicantEmail
+                                  : a.applicantName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                            subtitle: Text(
+                              a.rollNumber,
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                            trailing: _applicationStatusChip(a.status),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _applicationStatusChip(String status) {
+    Color color;
+    switch (status) {
+      case 'accepted':
+        color = Colors.green;
+        break;
+      case 'rejected':
+        color = Colors.red;
+        break;
+      case 'withdrawn':
+        color = Colors.grey;
+        break;
+      default:
+        color = Colors.orange;
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        status,
+        style: TextStyle(
+          color: color,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
@@ -104,7 +243,7 @@ class _AdminTeamManagementScreenState
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          "Team Approvals",
+          "Team Finder Posts",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         bottom: TabBar(
@@ -112,14 +251,16 @@ class _AdminTeamManagementScreenState
           indicatorColor: Colors.white,
           indicatorWeight: 3,
           isScrollable: false,
-          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+          ),
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
           tabs: const [
             Tab(text: "All"),
-            Tab(text: "Pending"),
-            Tab(text: "Approved"),
-            Tab(text: "Rejected"),
+            Tab(text: "Open"),
+            Tab(text: "Closed"),
           ],
         ),
       ),
@@ -127,24 +268,23 @@ class _AdminTeamManagementScreenState
         children: [
           // Single Row Filters (Department र Semester मात्र)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10.0,
+              vertical: 10.0,
+            ),
             child: Row(
               children: [
                 // 1. Department Dropdown
                 Expanded(
-                  child: _buildDropdown(
-                    selectedDept,
-                    departmentList,
-                    (val) {
-                      setState(() {
-                        selectedDept = val!;
-                        if (selectedDept != 'Architecture' &&
-                            (selectedSem == 'Sem 9' || selectedSem == 'Sem 10')) {
-                          selectedSem = 'All Sem';
-                        }
-                      });
-                    },
-                  ),
+                  child: _buildDropdown(selectedDept, departmentList, (val) {
+                    setState(() {
+                      selectedDept = val!;
+                      if (selectedDept != 'Architecture' &&
+                          (selectedSem == 'Sem 9' || selectedSem == 'Sem 10')) {
+                        selectedSem = 'All Sem';
+                      }
+                    });
+                  }),
                 ),
                 const SizedBox(width: 8),
 
@@ -165,10 +305,9 @@ class _AdminTeamManagementScreenState
             child: TabBarView(
               controller: _tabController,
               children: [
-                _buildTeamList("All"),
-                _buildTeamList("Pending"),
-                _buildTeamList("Approved"),
-                _buildTeamList("Rejected"),
+                _buildTeamList(null),
+                _buildTeamList(TeamPostStatus.open),
+                _buildTeamList(TeamPostStatus.closed),
               ],
             ),
           ),
@@ -178,7 +317,10 @@ class _AdminTeamManagementScreenState
   }
 
   Widget _buildDropdown(
-      String value, List<String> items, ValueChanged<String?> onChanged) {
+    String value,
+    List<String> items,
+    ValueChanged<String?> onChanged,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
       decoration: BoxDecoration(
@@ -191,9 +333,16 @@ class _AdminTeamManagementScreenState
           value: items.contains(value) ? value : items.first,
           isExpanded: true,
           icon: const Icon(Icons.keyboard_arrow_down, size: 20),
-          style: const TextStyle(color: Colors.black87, fontSize: 12, fontWeight: FontWeight.w500),
+          style: const TextStyle(
+            color: Colors.black87,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
           items: items.map((item) {
-            return DropdownMenuItem(value: item, child: Text(item, overflow: TextOverflow.ellipsis));
+            return DropdownMenuItem(
+              value: item,
+              child: Text(item, overflow: TextOverflow.ellipsis),
+            );
           }).toList(),
           onChanged: onChanged,
         ),
@@ -201,8 +350,10 @@ class _AdminTeamManagementScreenState
     );
   }
 
-  Widget _buildTeamList(String status) {
-    Stream<List<TeamModel>> stream = (status == "All")
+  /// [status] is `null` for the "All" tab, otherwise `TeamPostStatus.open`
+  /// or `TeamPostStatus.closed`.
+  Widget _buildTeamList(String? status) {
+    final Stream<List<TeamModel>> stream = status == null
         ? _teamService.getAllTeams()
         : _teamService.getTeamsByStatus(status);
 
@@ -213,11 +364,25 @@ class _AdminTeamManagementScreenState
           return const Center(child: CircularProgressIndicator());
         }
 
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              'Failed to load posts: ${snapshot.error}',
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+              textAlign: TextAlign.center,
+            ),
+          );
+        }
+
         var teams = snapshot.data ?? [];
 
         // Apply Local Department Filter
         if (selectedDept != 'All Dept') {
-          teams = teams.where((t) => t.department.toLowerCase() == selectedDept.toLowerCase()).toList();
+          teams = teams
+              .where(
+                (t) => t.department.toLowerCase() == selectedDept.toLowerCase(),
+              )
+              .toList();
         }
 
         // Apply Local Semester Filter
@@ -228,7 +393,7 @@ class _AdminTeamManagementScreenState
         if (teams.isEmpty) {
           return Center(
             child: Text(
-              "No ${status == 'All' ? '' : status} teams found.",
+              "No posts found.",
               style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
             ),
           );
@@ -247,16 +412,9 @@ class _AdminTeamManagementScreenState
   }
 
   Widget _buildTeamCard(TeamModel team) {
-    Color statusBg = Colors.orange.shade50;
-    Color statusColor = Colors.orange;
-
-    if (team.status == 'Approved') {
-      statusBg = Colors.green.shade50;
-      statusColor = Colors.green;
-    } else if (team.status == 'Rejected') {
-      statusBg = Colors.red.shade50;
-      statusColor = Colors.red;
-    }
+    final bool isOpen = team.isOpen;
+    final Color statusBg = isOpen ? Colors.green.shade50 : Colors.grey.shade200;
+    final Color statusColor = isOpen ? Colors.green : Colors.grey.shade700;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -266,7 +424,7 @@ class _AdminTeamManagementScreenState
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha:0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -279,14 +437,19 @@ class _AdminTeamManagementScreenState
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                team.title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+              Expanded(
+                child: Text(
+                  team.title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
@@ -294,7 +457,7 @@ class _AdminTeamManagementScreenState
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  team.status,
+                  isOpen ? 'Open' : 'Closed',
                   style: TextStyle(
                     color: statusColor,
                     fontSize: 11,
@@ -339,76 +502,153 @@ class _AdminTeamManagementScreenState
           // Description
           Text(
             team.description,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
           ),
+
+          // Skills
+          if (team.skillsNeeded.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: team.skillsNeeded
+                  .map(
+                    (s) => Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.blue.withValues(alpha: 0.25),
+                        ),
+                      ),
+                      child: Text(
+                        s,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.blue.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ],
           const SizedBox(height: 10),
 
-          // Slots & Leader
+          // Slots & Owner
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
-                  const Icon(Icons.group_outlined, size: 14, color: Colors.grey),
+                  const Icon(
+                    Icons.group_outlined,
+                    size: 14,
+                    color: Colors.grey,
+                  ),
                   const SizedBox(width: 4),
                   Text(
-                    "${team.filledSlots}/${team.totalSlots} filled",
+                    "${team.slotsFilled}/${team.slotsTotal} filled",
                     style: const TextStyle(fontSize: 11, color: Colors.grey),
                   ),
                 ],
               ),
-              Text(
-                team.leaderName,
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontStyle: FontStyle.italic,
-                  color: Colors.grey,
+              Flexible(
+                child: Text(
+                  team.ownerName.isEmpty
+                      ? team.ownerEmail
+                      : '${team.ownerName} · ${team.rollNumber}',
+                  textAlign: TextAlign.end,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey,
+                  ),
                 ),
               ),
             ],
           ),
 
-          // Rejection Reason
-          if (team.status == 'Rejected' && team.rejectReason != null) ...[
-            const SizedBox(height: 6),
-            Container(
-              padding: const EdgeInsets.all(6),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.red.shade50,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                "Reason: ${team.rejectReason}",
-                style: TextStyle(fontSize: 11, color: Colors.red.shade800),
-              ),
-            ),
-          ],
-
           // Admin Action Buttons
           const Divider(height: 16),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if (team.status != 'Approved')
-                TextButton.icon(
-                  onPressed: () async {
-                    await _teamService.updateTeamStatus(team.id, 'Approved');
-                  },
-                  icon: const Icon(Icons.check_circle, color: Colors.green, size: 16),
-                  label: const Text("Approve", style: TextStyle(color: Colors.green, fontSize: 12)),
+              TextButton.icon(
+                onPressed: () => _showApplicants(context, team),
+                icon: const Icon(Icons.people_alt_outlined, size: 16),
+                label: Text(
+                  'Applicants',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
                 ),
-              if (team.status != 'Rejected')
-                TextButton.icon(
-                  onPressed: () => _showRejectDialog(context, team.id),
-                  icon: const Icon(Icons.cancel, color: Colors.orange, size: 16),
-                  label: const Text("Reject", style: TextStyle(color: Colors.orange, fontSize: 12)),
-                ),
-              IconButton(
-                icon: const Icon(Icons.delete_outline, color: Colors.red, size: 18),
-                onPressed: () async {
-                  await _teamService.deleteTeam(team.id);
-                },
+              ),
+              Row(
+                children: [
+                  if (isOpen)
+                    TextButton.icon(
+                      onPressed: () async {
+                        try {
+                          await _teamService.closePost(team.id);
+                        } catch (e) {
+                          {
+                            if (!mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(e.toString())),
+                            );
+                          }
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.lock_outline,
+                        color: Colors.orange,
+                        size: 16,
+                      ),
+                      label: const Text(
+                        "Close",
+                        style: TextStyle(color: Colors.orange, fontSize: 12),
+                      ),
+                    )
+                  else
+                    TextButton.icon(
+                      onPressed: () async {
+                        try {
+                          await _teamService.reopenPost(team.id);
+                        } catch (e) {
+                          {
+                            if (!mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(e.toString())),
+                            );
+                          }
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.lock_open,
+                        color: Colors.green,
+                        size: 16,
+                      ),
+                      label: const Text(
+                        "Reopen",
+                        style: TextStyle(color: Colors.green, fontSize: 12),
+                      ),
+                    ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      color: Colors.red,
+                      size: 18,
+                    ),
+                    onPressed: () => _showDeleteConfirm(context, team),
+                  ),
+                ],
               ),
             ],
           ),
