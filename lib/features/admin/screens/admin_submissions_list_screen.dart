@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:nexcampus_app/features/student/blocs/notices/screens/pdf_viewer_screen.dart';
+import '../models/submission_model.dart';
 import '../services/admin_assignment_service.dart';
+import 'submission_detail_screen.dart';
 
+/// Shows every student submission for a single assignment.
+///
+/// Reached from [AssignmentDetailScreen] via the
+/// "View Student Submissions" button. Pulls live from
+/// `AdminAssignmentService.getSubmissionsForAssignment`, which queries the
+/// `assignment_submissions` collection filtered by assignmentId — the same
+/// collection the student module writes into, so this now reflects real
+/// submissions instead of an empty/mismatched collection.
 class AdminSubmissionsListScreen extends StatelessWidget {
   final String assignmentId;
   final String assignmentTitle;
@@ -19,220 +28,141 @@ class AdminSubmissionsListScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F5FB),
       appBar: AppBar(
-        title: Text("Submissions: $assignmentTitle"),
+        title: Text(
+          "Submissions · $assignmentTitle",
+          style: const TextStyle(color: Colors.black, fontSize: 16),
+          overflow: TextOverflow.ellipsis,
+        ),
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
         elevation: 0.5,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: AdminAssignmentService.getSubmissionsForAssignment(
-          assignmentId,
-        ),
+        stream: AdminAssignmentService.getSubmissionsForAssignment(assignmentId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
+          if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children:  [
-                  Icon(Icons.folder_open, size: 60, color: Colors.grey),
-                  SizedBox(height: 12),
-                  Text(
-                    "No student submissions found yet.",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
+              child: Text("No students have submitted this assignment yet."),
             );
           }
 
-          final docs = snapshot.data!.docs;
+          final submissions = snapshot.data!.docs.map((doc) {
+            return SubmissionModel.fromMap(
+              doc.data() as Map<String, dynamic>,
+              doc.id,
+            );
+          }).toList();
+
+          // Most recent submission first.
+          submissions.sort((a, b) => b.submittedAt.compareTo(a.submittedAt));
 
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: docs.length,
+            padding: const EdgeInsets.all(12),
+            itemCount: submissions.length,
             itemBuilder: (context, index) {
-              var data = docs[index].data() as Map<String, dynamic>;
-
-              // Student data fields mapping
-              String studentName = data['studentName'] ?? 'Unknown Student';
-              String roll = data['roll'] ?? 'N/A';
-              String remarks = data['remarks'] ?? '';
-              String? pdfUrl = data['pdfUrl'];
-              Timestamp? submittedAtTimestamp = data['submittedAt'];
-
-              DateTime submittedAt =
-                  submittedAtTimestamp?.toDate() ?? DateTime.now();
-              String formattedDate = DateFormat(
+              final item = submissions[index];
+              final submitTimeStr = DateFormat(
                 'MMM dd, yyyy - hh:mm a',
-              ).format(submittedAt);
+              ).format(item.submittedAt);
 
               return Card(
-                elevation: 1.5,
-                margin: const EdgeInsets.only(bottom: 12),
+                margin: const EdgeInsets.only(bottom: 10),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  leading: CircleAvatar(
+                    backgroundColor: item.isGraded
+                        ? Colors.green.shade100
+                        : Colors.orange.shade100,
+                    child: Icon(
+                      item.isGraded ? Icons.grading : Icons.hourglass_top,
+                      color: item.isGraded ? Colors.green : Colors.orange,
+                    ),
+                  ),
+                  title: Text(
+                    "${item.studentName} (${item.roll})",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Student Name & Roll Number Header
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                const CircleAvatar(
-                                  radius: 18,
-                                  backgroundColor: Colors.blueAccent,
-                                  child: Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    studentName,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.blue.shade50,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.blue.shade100),
-                            ),
-                            child: Text(
-                              "Roll: $roll",
-                              style: TextStyle(
-                                color: Colors.blue.shade800,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Submitted Date Info
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.check_circle_outline,
-                            size: 16,
+                      Text("Submitted: $submitTimeStr"),
+                      if (item.isGraded)
+                        Text(
+                          "Grade: ${item.grade}",
+                          style: const TextStyle(
                             color: Colors.green,
+                            fontWeight: FontWeight.bold,
                           ),
-                          const SizedBox(width: 6),
-                          Text(
-                            "Submitted on: $formattedDate",
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      // Remarks Section (if available)
-                      if (remarks.isNotEmpty && remarks != 'No remarks') ...[
-                        const SizedBox(height: 8),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey.shade200),
-                          ),
-                          child: Text(
-                            "Remarks: $remarks",
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey.shade800,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
+                        )
+                      else
+                        const Text(
+                          "Not graded yet",
+                          style: TextStyle(color: Colors.orange),
                         ),
-                      ],
-
-                      const SizedBox(height: 14),
-
-                      // PDF View Button or Empty state
-                      SizedBox(
-                        width: double.infinity,
-                        child: pdfUrl != null && pdfUrl.isNotEmpty
-                            ? ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red.shade50,
-                                  foregroundColor: Colors.red.shade700,
-                                  elevation: 0,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 10,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    side: BorderSide(
-                                      color: Colors.red.shade200,
-                                    ),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => PdfViewerScreen(
-                                        pdfUrl: pdfUrl,
-                                        title: "$studentName's Submission",
-                                      ),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(
-                                  Icons.picture_as_pdf,
-                                  size: 18,
-                                ),
-                                label: const Text(
-                                  "View Submitted PDF",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              )
-                            : Container(
-                                padding: const EdgeInsets.all(8),
-                                alignment: Alignment.center,
-                                child: const Text(
-                                  "No document attached by student.",
-                                  style: TextStyle(
-                                    fontStyle: FontStyle.italic,
-                                    color: Colors.grey,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ),
+                    ],
+                  ),
+                  trailing: PopupMenuButton<String>(
+                    onSelected: (val) {
+                      if (val == 'view') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SubmissionDetailScreen(
+                              submission: item,
+                              assignmentTitle: assignmentTitle,
+                            ),
+                          ),
+                        );
+                      } else if (val == 'delete') {
+                        AdminAssignmentService.deleteSubmission(item.id);
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'view',
+                        child: Row(
+                          children: [
+                            Icon(Icons.visibility, color: Colors.blue),
+                            SizedBox(width: 8),
+                            Text("View Details"),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text("Delete"),
+                          ],
+                        ),
                       ),
                     ],
                   ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SubmissionDetailScreen(
+                          submission: item,
+                          assignmentTitle: assignmentTitle,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               );
             },

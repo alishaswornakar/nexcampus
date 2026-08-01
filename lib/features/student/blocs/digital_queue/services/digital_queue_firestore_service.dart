@@ -414,12 +414,14 @@ class DigitalQueueFirestoreService {
         }
       });
 
-      await _archiveTokenById(tokenId);
+      unawaited(_archiveTokenById(tokenId));
 
       if (wasWaiting && serviceId != null && removedPosition > 0) {
-        await _recalculateQueuePositions(
-          serviceId: serviceId!,
-          removedPosition: removedPosition,
+        unawaited(
+          _recalculateQueuePositions(
+            serviceId: serviceId!,
+            removedPosition: removedPosition,
+          ),
         );
       }
     } on QueueException {

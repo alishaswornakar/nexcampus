@@ -149,9 +149,6 @@ class DigitalQueueBloc extends Bloc<DigitalQueueEvent, DigitalQueueState> {
         state.copyWith(
           actionStatus: QueueActionStatus.success,
           lastJoinedToken: token,
-          // The active-token stream (if subscribed) will also pick this up
-          // automatically; we set it here too so the UI has it instantly
-          // even before the stream's next snapshot arrives.
           activeToken: token,
           activeTokenStatus: ActiveTokenStatus.loaded,
         ),
@@ -192,10 +189,9 @@ class DigitalQueueBloc extends Bloc<DigitalQueueEvent, DigitalQueueState> {
       emit(
         state.copyWith(
           actionStatus: QueueActionStatus.success,
-          // Clear immediately for responsive UI; the active-token stream
-          // will confirm this with its own null emission shortly after.
           clearActiveToken: true,
           activeTokenStatus: ActiveTokenStatus.loaded,
+          tokenCancelled: true,
         ),
       );
     } catch (error) {
@@ -221,6 +217,7 @@ class DigitalQueueBloc extends Bloc<DigitalQueueEvent, DigitalQueueState> {
         actionStatus: QueueActionStatus.none,
         actionError: null,
         clearLastJoinedToken: true,
+        tokenCancelled: false,
       ),
     );
   }

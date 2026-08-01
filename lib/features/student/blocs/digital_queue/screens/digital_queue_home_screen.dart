@@ -105,6 +105,38 @@ class _DigitalQueueView extends StatelessWidget {
             previous.actionStatus != current.actionStatus,
         listener: (context, state) {
           if (state.actionStatus == QueueActionStatus.success &&
+              state.tokenCancelled) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                backgroundColor: Colors.red,
+                behavior: SnackBarBehavior.floating,
+                duration: Duration(seconds: 2),
+                content: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 12,
+                      backgroundColor: Colors.white,
+                      child: Icon(Icons.close, color: Colors.red, size: 16),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        "Token cancelled successfully.",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+
+            context.read<DigitalQueueBloc>().add(
+              const DigitalQueueActionResultCleared(),
+            );
+
+            return;
+          }
+          if (state.actionStatus == QueueActionStatus.success &&
               state.lastJoinedToken != null) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

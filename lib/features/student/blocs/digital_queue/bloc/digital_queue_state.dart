@@ -43,6 +43,7 @@ class DigitalQueueState extends Equatable {
     this.actionStatus = QueueActionStatus.none,
     this.actionError,
     this.lastJoinedToken,
+    this.tokenCancelled = false,
   });
 
   // --- Queue services list ---
@@ -68,6 +69,7 @@ class DigitalQueueState extends Equatable {
   /// a "your token" confirmation screen without waiting on the active
   /// token stream to catch up.
   final QueueTokenModel? lastJoinedToken;
+  final bool tokenCancelled;
 
   /// Convenience getter: true when the student currently holds a token
   /// (waiting or serving) for any service.
@@ -88,6 +90,7 @@ class DigitalQueueState extends Equatable {
     String? actionError,
     QueueTokenModel? lastJoinedToken,
     bool clearLastJoinedToken = false,
+    bool? tokenCancelled,
   }) {
     return DigitalQueueState(
       servicesStatus: servicesStatus ?? this.servicesStatus,
@@ -104,6 +107,7 @@ class DigitalQueueState extends Equatable {
       lastJoinedToken: clearLastJoinedToken
           ? null
           : (lastJoinedToken ?? this.lastJoinedToken),
+      tokenCancelled: tokenCancelled ?? this.tokenCancelled,
     );
   }
 
@@ -121,5 +125,6 @@ class DigitalQueueState extends Equatable {
     actionStatus,
     actionError,
     lastJoinedToken,
+    tokenCancelled,
   ];
 }

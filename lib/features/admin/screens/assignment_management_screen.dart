@@ -440,113 +440,168 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
   }
 
   // 2️⃣ STUDENT SUBMISSIONS TAB
+  //
+  // Submissions are written by the student module into the
+  // `assignment_submissions` collection and only store `assignmentId`
+  // (no assignment title). To show a readable title we join against the
+  // `assignments` collection here, keyed by assignmentId, using a nested
+  // StreamBuilder so both stay live.
   Widget _buildStudentSubmissionsTab() {
     return StreamBuilder<QuerySnapshot>(
-      stream: _db.collection('submissions').snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+      stream: _db.collection('assignments').snapshots(),
+      builder: (context, assignmentSnapshot) {
+        if (assignmentSnapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Center(child: Text("No submissions found."));
-        }
 
-        final submissions = snapshot.data!.docs
-            .map((doc) {
-              return SubmissionModel.fromMap(
-                doc.data() as Map<String, dynamic>,
-                doc.id,
-              );
-            })
-            .where((s) {
-              if (_selectedDepartment != null &&
-                  s.department != _selectedDepartment) {
-                return false;
-              }
-              if (_selectedSemester != null &&
-                  s.semester != _selectedSemester) {
-                return false;
-              }
-              return true;
-            })
-            .toList();
+        // id -> title lookup so each submission can show a readable
+        // assignment name instead of a raw assignmentId.
+        final Map<String, AssignmentModel> assignmentsById = {
+          for (final doc in assignmentSnapshot.data?.docs ?? <QueryDocumentSnapshot>[])
+            doc.id: AssignmentModel.fromMap(
+              doc.data() as Map<String, dynamic>,
+              doc.id,
+            ),
+        };
 
-        return ListView.builder(
-          itemCount: submissions.length,
-          padding: const EdgeInsets.all(12),
-          itemBuilder: (context, index) {
-            final item = submissions[index];
-            final submitTimeStr = DateFormat(
-              'MMM dd, yyyy - hh:mm a',
-            ).format(item.submittedAt);
+        return StreamBuilder<QuerySnapshot>(
+          stream: AdminAssignmentService.getAllSubmissions(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text("Error: ${snapshot.error}"));
+            }
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return const Center(child: Text("No submissions found."));
+            }
 
-            return Card(
-              margin: const EdgeInsets.only(bottom: 10),
-              child: ListTile(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          SubmissionDetailScreen(submission: item),
-                    ),
+            final submissions = snapshot.data!.docs
+                .map((doc) {
+                  return SubmissionModel.fromMap(
+                    doc.data() as Map<String, dynamic>,
+                    doc.id,
                   );
-                },
-                title: Text(
-                  "${item.studentName} (${item.studentRoll})",
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Assignment: ${item.assignmentTitle}"),
-                    Text(
-                      "Dept: ${item.department} (${item.semester})",
-                    ),
-                    Text(
-                      "Submitted At: $submitTimeStr",
-                      style: const TextStyle(fontSize: 11, color: Colors.green),
-                    ),
-                  ],
-                ),
-                trailing: PopupMenuButton<String>(
-                  onSelected: (val) {
-                    if (val == 'view') {
+                })
+                .where((s) {
+                  // Filter using the linked assignment's department/semester,
+                  // since the submission itself also carries department and
+                  // semester (copied at submit time) — fall back to that if
+                  // the assignment can't be found (e.g. deleted assignment).
+                  final linked = assignmentsById[s.assignmentId];
+                  final dept = linked?.department ?? s.department;
+                  final sem = linked?.semester ?? s.semester;
+
+                  if (_selectedDepartment != null && dept != _selectedDepartment) {
+                    return false;
+                  }
+                  if (_selectedSemester != null && sem != _selectedSemester) {
+                    return false;
+                  }
+                  return true;
+                })
+                .toList();
+
+            if (submissions.isEmpty) {
+              return const Center(
+                child: Text("No submissions match the selected filters."),
+              );
+            }
+
+            return ListView.builder(
+              itemCount: submissions.length,
+              padding: const EdgeInsets.all(12),
+              itemBuilder: (context, index) {
+                final item = submissions[index];
+                final assignmentTitle =
+                    assignmentsById[item.assignmentId]?.title ?? "Unknown Assignment";
+                final submitTimeStr = DateFormat(
+                  'MMM dd, yyyy - hh:mm a',
+                ).format(item.submittedAt);
+
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  child: ListTile(
+                    onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              SubmissionDetailScreen(submission: item),
+                          builder: (context) => SubmissionDetailScreen(
+                            submission: item,
+                            assignmentTitle: assignmentTitle,
+                          ),
                         ),
                       );
-                    } else if (val == 'delete') {
-                      AdminAssignmentService.deleteSubmission(item.id);
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'view',
-                      child: Row(
-                        children: [
-                          Icon(Icons.visibility, color: Colors.blue),
-                          SizedBox(width: 8),
-                          Text("View Details"),
-                        ],
-                      ),
+                    },
+                    title: Text(
+                      "${item.studentName} (${item.roll})",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    const PopupMenuItem(
-                      value: 'delete',
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete, color: Colors.red),
-                          SizedBox(width: 8),
-                          Text("Delete"),
-                        ],
-                      ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Assignment: $assignmentTitle"),
+                        Text(
+                          "Dept: ${item.department} (${item.semester})",
+                        ),
+                        Text(
+                          "Submitted At: $submitTimeStr",
+                          style: const TextStyle(fontSize: 11, color: Colors.green),
+                        ),
+                        if (item.isGraded)
+                          Text(
+                            "Grade: ${item.grade}",
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                    trailing: PopupMenuButton<String>(
+                      onSelected: (val) {
+                        if (val == 'view') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SubmissionDetailScreen(
+                                submission: item,
+                                assignmentTitle: assignmentTitle,
+                              ),
+                            ),
+                          );
+                        } else if (val == 'delete') {
+                          AdminAssignmentService.deleteSubmission(item.id);
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'view',
+                          child: Row(
+                            children: [
+                              Icon(Icons.visibility, color: Colors.blue),
+                              SizedBox(width: 8),
+                              Text("View Details"),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete, color: Colors.red),
+                              SizedBox(width: 8),
+                              Text("Delete"),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             );
           },
         );

@@ -121,21 +121,20 @@ class AuthService {
   // =========================
   // LOGIN
   // =========================
- Future<UserCredential> login({
-  required String email,
-  required String password,
-}) async {
-  final credential =
-      await _auth.signInWithEmailAndPassword(
-    email: email,
-    password: password,
-  );
+  Future<UserCredential> login({
+    required String email,
+    required String password,
+  }) async {
+    final credential = await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
 
-  await FCMService.saveToken();
-  FCMService.listenTokenRefresh();
+    await FCMService.saveToken();
+    FCMService.listenTokenRefresh();
 
-  return credential;
-}
+    return credential;
+  }
 
   // =========================
   // SIGNUP (EMAIL)
@@ -173,7 +172,7 @@ class AuthService {
       'createdAt': FieldValue.serverTimestamp(),
     });
     await FCMService.saveToken();
-FCMService.listenTokenRefresh();
+    FCMService.listenTokenRefresh();
   }
 
   // =========================
@@ -181,7 +180,12 @@ FCMService.listenTokenRefresh();
   // =========================
   Future<String> getUserRole(String uid) async {
     final doc = await _firestore.collection('users').doc(uid).get();
-    return doc['role'];
+
+    if (!doc.exists) {
+      throw Exception("User document not found");
+    }
+
+    return (doc.data()?['role'] ?? '') as String;
   }
 
   // =========================
@@ -202,8 +206,7 @@ FCMService.listenTokenRefresh();
         idToken: googleAuth.idToken,
       );
 
-      final userCredential =
-          await _auth.signInWithCredential(credential);
+      final userCredential = await _auth.signInWithCredential(credential);
 
       final user = userCredential.user;
 
@@ -223,7 +226,7 @@ FCMService.listenTokenRefresh();
         }
       }
       await FCMService.saveToken();
-FCMService.listenTokenRefresh();
+      FCMService.listenTokenRefresh();
 
       return userCredential;
     } catch (e) {
