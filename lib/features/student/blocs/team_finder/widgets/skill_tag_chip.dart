@@ -1,5 +1,6 @@
 // lib/features/student/blocs/team_finder/widgets/skill_tag_chip.dart
 import 'package:flutter/material.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 /// Small pill used to render a single skill/tag.
 /// Used inside [TeamPostCard], the detail screen, and the create-post form.
@@ -23,9 +24,9 @@ class SkillTagChip extends StatelessWidget {
         vertical: dense ? 4 : 6,
       ),
       decoration: BoxDecoration(
-        color: Colors.blue.withValues(alpha:0.08),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.blue.withValues(alpha:0.25)),
+        border: Border.all(color: AppTheme.primary.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -34,8 +35,8 @@ class SkillTagChip extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: dense ? 11 : 12,
-              color: Colors.blue.shade700,
-              fontWeight: FontWeight.w500,
+              color: AppTheme.primary,
+              fontWeight: FontWeight.w600,
             ),
           ),
           if (onDeleted != null) ...[
@@ -45,7 +46,7 @@ class SkillTagChip extends StatelessWidget {
               child: Icon(
                 Icons.close,
                 size: dense ? 12 : 14,
-                color: Colors.blue.shade700,
+                color: AppTheme.primary,
               ),
             ),
           ],

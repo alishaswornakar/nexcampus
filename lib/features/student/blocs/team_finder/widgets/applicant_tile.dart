@@ -1,5 +1,6 @@
 // lib/features/student/blocs/team_finder/widgets/applicant_tile.dart
 import 'package:flutter/material.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import '../models/team_application_model.dart';
 
@@ -38,13 +39,13 @@ class ApplicantTile extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor: Colors.blue.withValues(alpha: 0.1),
+                backgroundColor: AppTheme.primary.withValues(alpha: 0.1),
                 child: Text(
                   application.applicantName.isNotEmpty
                       ? application.applicantName[0].toUpperCase()
                       : '?',
-                  style: TextStyle(
-                    color: Colors.blue.shade700,
+                  style: const TextStyle(
+                    color: AppTheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -110,7 +111,7 @@ class ApplicantTile extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: isResponding ? null : onAccept,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: AppTheme.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
