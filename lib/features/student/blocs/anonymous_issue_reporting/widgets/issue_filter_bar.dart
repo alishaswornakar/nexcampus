@@ -1,5 +1,6 @@
 // lib/features/student/blocs/anonymous_issue_reporting/widgets/issue_filter_bar.dart
 import 'package:flutter/material.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 /// Category filter row for the Feed tab. Pass `null` to mean "All".
 class IssueFilterBar extends StatelessWidget {
@@ -17,7 +18,7 @@ class IssueFilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 36,
+      height: 40,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
@@ -58,12 +59,12 @@ class _FilterPill extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 9),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF29B6F6) : Colors.white,
+          color: selected ? AppTheme.primary : Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: selected ? const Color(0xFF29B6F6) : Colors.grey.shade300,
+            color: selected ? AppTheme.primary : AppTheme.border,
           ),
         ),
         child: Text(
@@ -71,7 +72,7 @@ class _FilterPill extends StatelessWidget {
           style: TextStyle(
             fontSize: 12.5,
             fontWeight: FontWeight.w600,
-            color: selected ? Colors.white : Colors.grey.shade700,
+            color: selected ? Colors.white : AppTheme.textPrimary,
           ),
         ),
       ),

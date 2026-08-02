@@ -8,11 +8,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 /// In-app PDF viewer for notice attachments.
-///
-/// Downloads the PDF at [pdfUrl] into a temp file (once — reused if already
-/// present) and renders it with `flutter_pdfview`, so students can read the
-/// attachment right inside the app instead of downloading it and relying on
-/// a third-party PDF app / browser.
 class PdfViewerScreen extends StatefulWidget {
   final String pdfUrl;
   final String title;
@@ -48,9 +43,6 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
 
     try {
       final dir = await getTemporaryDirectory();
-
-      // Derive a stable, filesystem-safe file name from the URL so repeat
-      // visits to the same notice reuse the cached download.
       final rawName = widget.pdfUrl.split('/').last.split('?').first;
       final fileName = rawName.toLowerCase().endsWith('.pdf')
           ? rawName
@@ -84,17 +76,26 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 380;
+    final isTablet = screenWidth > 600;
+
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
         title: Text(
           widget.title,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(fontSize: 18, color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: AppTheme.primary,
         foregroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         actions: [
           if (_isRendered && _totalPages > 0)
             Padding(
@@ -102,17 +103,21 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
               child: Center(
                 child: Text(
                   '${_currentPage + 1} / $_totalPages',
-                  style: const TextStyle(fontSize: 14, color: Colors.white),
+                  style: TextStyle(
+                    fontSize: isSmallScreen ? 12 : 14,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
         ],
       ),
-      body: _buildBody(),
+      body: _buildBody(isSmallScreen, isTablet),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(bool isSmallScreen, bool isTablet) {
     if (_error != null) {
       return Center(
         child: Padding(
@@ -120,22 +125,36 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 56, color: Colors.red),
-              const SizedBox(height: 12),
+              Icon(
+                Icons.error_outline,
+                size: isSmallScreen ? 48 : 64,
+                color: Colors.red.shade300,
+              ),
+              const SizedBox(height: 16),
               Text(
                 _error!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppTheme.textSecondary),
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: isSmallScreen ? 14 : (isTablet ? 18 : 16),
+                ),
               ),
-              const SizedBox(height: 20),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
+              const SizedBox(height: 24),
+              FilledButton.icon(
+                style: FilledButton.styleFrom(
                   backgroundColor: AppTheme.primary,
                   foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
                 onPressed: _downloadAndLoad,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
+                label: const Text('Try Again'),
               ),
             ],
           ),
@@ -144,8 +163,24 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     }
 
     if (_localPath == null) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppTheme.primary),
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(
+              strokeWidth: 3.0,
+              color: AppTheme.primary,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Loading PDF...',
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: isSmallScreen ? 14 : 16,
+              ),
+            ),
+          ],
+        ),
       );
     }
 
@@ -184,7 +219,10 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
         ),
         if (!_isRendered)
           const Center(
-            child: CircularProgressIndicator(color: AppTheme.primary),
+            child: CircularProgressIndicator(
+              strokeWidth: 3.0,
+              color: AppTheme.primary,
+            ),
           ),
       ],
     );

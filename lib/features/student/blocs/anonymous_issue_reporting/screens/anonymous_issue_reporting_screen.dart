@@ -162,6 +162,8 @@ class _AnonymousIssueViewState extends State<_AnonymousIssueView>
       backgroundColor: AppTheme.background,
       appBar: AppBar(
         backgroundColor: AppTheme.primary,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
         title: const Text(
           'Anonymous Issues',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -170,22 +172,57 @@ class _AnonymousIssueViewState extends State<_AnonymousIssueView>
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          indicatorColor: Colors.white,
-          indicatorWeight: 3,
-          tabs: const [
-            Tab(text: 'Feed'),
-            Tab(text: 'My Posts'),
-            Tab(text: 'My Reports'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Container(
+              height: 44,
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: AppTheme.primary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(22),
+              ),
+              child: TabBar(
+                controller: _tabController,
+                dividerColor: Colors.transparent,
+                indicatorSize: TabBarIndicatorSize.tab,
+                indicator: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.06),
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white70,
+                labelStyle: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+                tabs: const [
+                  Tab(text: 'Community'),
+                  Tab(text: 'My Issues'),
+                  Tab(text: 'My Reports'),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _fabAction,
         backgroundColor: AppTheme.primary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         child: Icon(_fabIcon, color: Colors.white),
       ),
       body: TabBarView(

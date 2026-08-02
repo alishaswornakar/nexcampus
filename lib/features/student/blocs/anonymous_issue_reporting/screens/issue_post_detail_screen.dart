@@ -1,7 +1,7 @@
 // lib/features/student/blocs/anonymous_issue_reporting/screens/issue_post_detail_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import '../bloc/anonymous_issue_bloc.dart';
 import '../bloc/anonymous_issue_event.dart';
 import '../bloc/anonymous_issue_state.dart';
@@ -151,22 +151,24 @@ class _IssuePostDetailScreenState extends State<IssuePostDetailScreen> {
           return Scaffold(
             backgroundColor: IssueColors.background,
             appBar: AppBar(
-              backgroundColor: IssueColors.skyBlueDark,
+              backgroundColor: AppTheme.background,
+              elevation: 0,
               title: const Text(
-                'Post',
+                'Issue Details',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppTheme.textPrimary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               actions: _isOwner
                   ? [
                       PopupMenuButton<String>(
-                        iconColor: Colors.white,
+                        iconColor: AppTheme.textPrimary,
+                        // ...rest unchanged
                         onSelected: (value) async {
                           if (value == 'resolve') {
                             context.read<AnonymousIssueBloc>().add(

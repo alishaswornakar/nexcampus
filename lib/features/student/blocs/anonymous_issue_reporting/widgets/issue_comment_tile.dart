@@ -1,6 +1,6 @@
 // lib/features/student/blocs/anonymous_issue_reporting/widgets/issue_comment_tile.dart
 import 'package:flutter/material.dart';
-
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import '../models/issue_comment_model.dart';
 import 'anonymous_avatar.dart';
 
@@ -70,7 +70,7 @@ class IssueCommentTile extends StatelessWidget {
                                 vertical: 1,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF29B6F6),
+                                color: AppTheme.primary,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: const Text(
@@ -117,7 +117,7 @@ class IssueCommentTile extends StatelessWidget {
                                   : Icons.thumb_up_outlined,
                               size: 13,
                               color: hasUpvoted
-                                  ? const Color(0xFF29B6F6)
+                                  ? AppTheme.primary
                                   : Colors.grey.shade500,
                             ),
                             if (comment.upvoteCount > 0) ...[
@@ -127,7 +127,7 @@ class IssueCommentTile extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 11,
                                   color: hasUpvoted
-                                      ? const Color(0xFF29B6F6)
+                                      ? AppTheme.primary
                                       : Colors.grey.shade600,
                                   fontWeight: FontWeight.w600,
                                 ),

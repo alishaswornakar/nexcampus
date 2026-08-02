@@ -12,36 +12,52 @@ import '../widgets/notice_tile.dart';
 import 'notice_detail_screen.dart';
 
 /// Student-facing Notices screen.
-///
-/// This is the "student" end of the teacher <-> student notices connection:
-/// it listens to the same `notices` Firestore collection the teacher
-/// `NoticeScreen` publishes to, so any notice a teacher adds/pins/edits
-/// shows up here automatically, in real time. There is no floating action
-/// button and no edit/delete/pin menu — students only view.
 class NoticesScreen extends StatelessWidget {
   const NoticesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 380;
+    final isTablet = screenWidth > 600;
+
     return BlocProvider(
       create: (_) =>
           NoticeBloc(TeacherNoticeRepository(TeacherNoticeService()))
             ..add(LoadNoticesEvent()),
       child: Scaffold(
         backgroundColor: AppTheme.background,
-
         appBar: AppBar(
-          title: const Text("Notices"),
+          title: const Text(
+            "Notices",
+            style: TextStyle(fontSize: 18, color: Colors.white),
+          ),
           centerTitle: true,
           backgroundColor: AppTheme.primary,
           foregroundColor: Colors.white,
+          elevation: 0,
         ),
-
         body: BlocBuilder<NoticeBloc, NoticeState>(
           builder: (context, state) {
             if (state is NoticeLoading || state is NoticeInitial) {
-              return const Center(
-                child: CircularProgressIndicator(color: AppTheme.primary),
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(
+                      strokeWidth: 3.0,
+                      color: AppTheme.primary,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Loading notices...',
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: isSmallScreen ? 14 : 16,
+                      ),
+                    ),
+                  ],
+                ),
               );
             }
 
@@ -49,10 +65,51 @@ class NoticesScreen extends StatelessWidget {
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.all(24),
-                  child: Text(
-                    state.message,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.red),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: isSmallScreen ? 48 : 64,
+                        color: Colors.red.shade300,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Could not load notices',
+                        style: TextStyle(
+                          fontSize: isSmallScreen ? 18 : 22,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey.shade800,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        state.message,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: isSmallScreen ? 13 : 15,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      FilledButton.icon(
+                        onPressed: () {
+                          context.read<NoticeBloc>().add(LoadNoticesEvent());
+                        },
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Try Again'),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AppTheme.primary,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );
@@ -60,25 +117,45 @@ class NoticesScreen extends StatelessWidget {
 
             if (state is NoticesLoaded) {
               if (state.notices.isEmpty) {
-                return const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.campaign_outlined,
-                        size: 80,
-                        color: AppTheme.textSecondary,
-                      ),
-                      SizedBox(height: 15),
-                      Text(
-                        "No Notices Found",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primary.withValues(alpha: 0.06),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.campaign_outlined,
+                            size: isSmallScreen ? 48 : 64,
+                            color: AppTheme.primary.withValues(alpha: 0.5),
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 20),
+                        Text(
+                          "No Notices Found",
+                          style: TextStyle(
+                            fontSize: isSmallScreen ? 18 : 22,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.grey.shade800,
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Check back later for updates from your teachers",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: isSmallScreen ? 13 : 15,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }
@@ -87,23 +164,124 @@ class NoticesScreen extends StatelessWidget {
                 color: AppTheme.primary,
                 onRefresh: () async {
                   context.read<NoticeBloc>().add(LoadNoticesEvent());
+                  await Future<void>.delayed(const Duration(milliseconds: 400));
                 },
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: state.notices.length,
-                  itemBuilder: (context, index) {
-                    final notice = state.notices[index];
-
-                    return NoticeTile(
-                      notice: notice,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => NoticeDetailScreen(notice: notice),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return CustomScrollView(
+                      slivers: [
+                        // Header with stats
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(
+                              isTablet ? 32 : 16,
+                              16,
+                              isTablet ? 32 : 16,
+                              8,
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.primary.withValues(
+                                      alpha: 0.08,
+                                    ),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.campaign,
+                                        size: isSmallScreen ? 14 : 18,
+                                        color: AppTheme.primary,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        '${state.notices.length} notices',
+                                        style: TextStyle(
+                                          fontSize: isSmallScreen ? 12 : 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppTheme.primary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Spacer(),
+                                if (state.notices.any((n) => n.isPinned))
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.primary.withValues(
+                                        alpha: 0.08,
+                                      ),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.push_pin,
+                                          size: isSmallScreen ? 12 : 14,
+                                          color: AppTheme.primary,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'Pinned',
+                                          style: TextStyle(
+                                            fontSize: isSmallScreen ? 10 : 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppTheme.primary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
-                        );
-                      },
+                        ),
+                        // Notices list
+                        SliverPadding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isTablet ? 32 : 16,
+                            vertical: 4,
+                          ),
+                          sliver: SliverList.builder(
+                            itemCount: state.notices.length,
+                            itemBuilder: (context, index) {
+                              final notice = state.notices[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: NoticeTile(
+                                  notice: notice,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            NoticeDetailScreen(notice: notice),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        // Bottom padding
+                        SliverToBoxAdapter(
+                          child: SizedBox(height: isTablet ? 32 : 24),
+                        ),
+                      ],
                     );
                   },
                 ),

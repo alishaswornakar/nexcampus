@@ -1,6 +1,6 @@
 // lib/features/student/blocs/anonymous_issue_reporting/widgets/issue_post_card.dart
 import 'package:flutter/material.dart';
-
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import '../models/issue_post_model.dart';
 import '../utils/anonymous_identity.dart';
 import '../utils/issue_colors.dart';
@@ -37,9 +37,9 @@ class IssuePostCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.primary.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.grey.shade200),
+          border: Border.all(color: AppTheme.border),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.03),
@@ -108,25 +108,7 @@ class IssuePostCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (post.isResolved)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'Resolved',
-                      style: TextStyle(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.green.shade700,
-                      ),
-                    ),
-                  ),
+                _StatusBadge(isResolved: post.isResolved),
               ],
             ),
             const SizedBox(height: 10),
@@ -141,7 +123,11 @@ class IssuePostCard extends StatelessWidget {
               post.body,
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 13.5, color: Colors.grey.shade800, height: 1.35),
+              style: TextStyle(
+                fontSize: 13.5,
+                color: Colors.grey.shade800,
+                height: 1.35,
+              ),
             ),
             const SizedBox(height: 10),
             CategoryChip(label: post.category, dense: true),
@@ -149,11 +135,11 @@ class IssuePostCard extends StatelessWidget {
             Row(
               children: [
                 _ActionButton(
-                  icon: hasUpvoted
-                      ? Icons.thumb_up
-                      : Icons.thumb_up_outlined,
+                  icon: hasUpvoted ? Icons.thumb_up : Icons.thumb_up_outlined,
                   label: '${post.upvoteCount}',
-                  color: hasUpvoted ? IssueColors.skyBlue : Colors.grey.shade600,
+                  color: hasUpvoted
+                      ? IssueColors.skyBlue
+                      : Colors.grey.shade600,
                   onTap: onUpvote,
                 ),
                 const SizedBox(width: 18),
@@ -215,6 +201,39 @@ class _ActionButton extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusBadge extends StatelessWidget {
+  const _StatusBadge({required this.isResolved});
+  final bool isResolved;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color color = isResolved
+        ? const Color(0xFF16A34A)
+        : const Color(0xFFD97706);
+    final Color bg = isResolved
+        ? const Color(0xFFDCFCE7)
+        : const Color(0xFFFEF3C7);
+    final String label = isResolved ? 'RESOLVED' : 'OPEN';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+          color: color,
+          letterSpacing: 0.3,
         ),
       ),
     );

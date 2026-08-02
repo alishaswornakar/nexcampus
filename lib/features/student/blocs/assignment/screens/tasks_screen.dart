@@ -15,10 +15,7 @@ import '../widgets/assignment_card.dart';
 import '../widgets/assignment_empty_widget.dart';
 import 'assignment_tasks_detail_screen.dart';
 
-/// Student-facing "Tasks" screen. AppBar (title/color) is unchanged.
-/// The tab selector below it is now a horizontally scrollable pill row
-/// matching Figma, with an added "All" tab — everything else keeps the
-/// existing [AssignmentBloc] wiring.
+/// Student-facing "Tasks" screen.
 class TasksScreen extends StatelessWidget {
   const TasksScreen({
     super.key,
@@ -65,8 +62,6 @@ class _TasksScreenBody extends StatefulWidget {
 class _TasksScreenBodyState extends State<_TasksScreenBody>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-
-  static const Color _accent = Color(0xFF4C4FE0);
 
   static const List<String> _tabLabels = [
     'All',
@@ -134,7 +129,9 @@ class _TasksScreenBodyState extends State<_TasksScreenBody>
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
           decoration: BoxDecoration(
-            color: selected ? _accent : const Color(0xFFEDEDF5),
+            color: selected
+                ? AppTheme.primary
+                : AppTheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
@@ -179,7 +176,9 @@ class _TasksScreenBodyState extends State<_TasksScreenBody>
             child: BlocBuilder<AssignmentBloc, AssignmentState>(
               builder: (context, state) {
                 if (state is AssignmentLoading || state is AssignmentInitial) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                    child: CircularProgressIndicator(color: AppTheme.primary),
+                  );
                 }
 
                 if (state is AssignmentError) {
@@ -208,6 +207,9 @@ class _TasksScreenBodyState extends State<_TasksScreenBody>
                                 semester: widget.semester,
                                 studentId: widget.studentId,
                               ),
+                            ),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: AppTheme.primary,
                             ),
                             child: const Text('Retry'),
                           ),
@@ -301,6 +303,7 @@ class _AssignmentList extends StatelessWidget {
   Widget build(BuildContext context) {
     if (items.isEmpty) {
       return RefreshIndicator(
+        color: AppTheme.primary,
         onRefresh: onRefresh,
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -324,6 +327,7 @@ class _AssignmentList extends StatelessWidget {
     }
 
     return RefreshIndicator(
+      color: AppTheme.primary,
       onRefresh: onRefresh,
       child: ListView.builder(
         physics: const AlwaysScrollableScrollPhysics(),
