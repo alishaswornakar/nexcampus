@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _startSplashSequence() {
-    const typingSpeed = Duration(milliseconds: 55);
+    const typingSpeed = Duration(milliseconds: 85);
     int charIndex = 0;
 
     _typewriterTimer = Timer.periodic(typingSpeed, (timer) {
@@ -62,9 +62,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _getStarted() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const AuthWrapper()),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const AuthWrapper()));
   }
 
   @override
@@ -183,23 +183,23 @@ class _WelcomeCard extends StatelessWidget {
               "Welcome to the future",
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: AppTheme.textPrimary,
               ),
             ),
             const SizedBox(height: 12),
             Text(
-              "Elevate your academic experience with our "
-              "premium management ecosystem.",
+              "Elevate your academic experience with "
+              "our premium management ecosystem.",
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 13,
                 color: Colors.grey.shade600,
                 height: 1.4,
               ),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               height: 55,

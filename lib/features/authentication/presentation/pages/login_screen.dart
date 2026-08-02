@@ -304,20 +304,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (state is AuthAuthenticated) {
           await NotificationService.saveToken();
+
+          if (!context.mounted) return;
+
           if (state.role == 'admin') {
-            if (!context.mounted) return;
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (_) => const AdminDashboardScreen()),
             );
-          }
-          if (!context.mounted) {
             return;
           } else if (state.role == 'teacher') {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (_) => const TeacherDashboard()),
             );
+            return;
           } else {
             final user = FirebaseAuth.instance.currentUser;
             if (!context.mounted) return;
@@ -331,6 +332,7 @@ class _LoginScreenState extends State<LoginScreen> {
             }
           }
         }
+
         if (!context.mounted) return;
         if (state is AuthError) {
           ScaffoldMessenger.of(
