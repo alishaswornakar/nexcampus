@@ -13,14 +13,6 @@ import '../widgets/queue_empty_widget.dart';
 import '../widgets/queue_service_card.dart';
 import 'queue_history_screen.dart';
 
-/// Model for the currently logged-in student, used to populate every
-/// join-queue request. Swap the body of wherever this is constructed
-/// to pull from your actual SharedPreferences session keys once you
-/// wire up integration.
-///
-/// NOTE: public (no leading underscore) since it's used as a parameter
-/// type on the public `DigitalQueueHomeScreen` constructor — a private
-/// type can't appear in a public API's signature.
 class CurrentStudent {
   const CurrentStudent({
     required this.studentId,
@@ -39,11 +31,6 @@ class CurrentStudent {
   final String semester;
 }
 
-/// Top-level screen for the Digital Queue feature: lists all services
-/// the student can join, and shows their active token (if any) pinned
-/// at the top. Provides the [DigitalQueueBloc] for this screen and its
-/// children (history screen is pushed on top and reuses the same bloc
-/// via `BlocProvider.value`).
 class DigitalQueueHomeScreen extends StatelessWidget {
   const DigitalQueueHomeScreen({super.key, required this.student});
 
@@ -160,128 +147,149 @@ class _DigitalQueueView extends StatelessWidget {
         },
         child: RefreshIndicator(
           onRefresh: () async {
-            // Streams are already live; this just gives the user a
-            // tactile "refreshed" gesture without re-subscribing.
             await Future<void>.delayed(const Duration(milliseconds: 400));
           },
-          child: CustomScrollView(
-            slivers: [
-              // --- Active token banner (only when the student holds one) ---
-              BlocBuilder<DigitalQueueBloc, DigitalQueueState>(
-                buildWhen: (previous, current) =>
-                    previous.activeToken != current.activeToken ||
-                    previous.actionStatus != current.actionStatus,
-                builder: (context, state) {
-                  if (state.activeToken == null) {
-                    return const SliverToBoxAdapter(child: SizedBox.shrink());
-                  }
-                  // Look up totalWaiting for the matching service, if the
-                  // services stream has already loaded it, to feed the
-                  // progress bar inside ActiveTokenCard.
-                  int? totalWaiting;
-                  if (state.servicesStatus == QueueServicesStatus.loaded) {
-                    final match = state.services.where(
-                      (s) => s.id == state.activeToken!.serviceId,
-                    );
-                    if (match.isNotEmpty) {
-                      totalWaiting = match.first.totalWaiting;
-                    }
-                  }
-                  return SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: ActiveTokenCard(
-                        token: state.activeToken!,
-                        totalWaiting: totalWaiting,
-                        isCancelInProgress:
-                            state.actionStatus == QueueActionStatus.inProgress,
-                        onCancel: () => context.read<DigitalQueueBloc>().add(
-                          DigitalQueueCancelRequested(
-                            tokenId: state.activeToken!.id,
-                            studentId: student.studentId,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return CustomScrollView(
+                slivers: [
+                  // Active token banner
+                  BlocBuilder<DigitalQueueBloc, DigitalQueueState>(
+                    buildWhen: (previous, current) =>
+                        previous.activeToken != current.activeToken ||
+                        previous.actionStatus != current.actionStatus,
+                    builder: (context, state) {
+                      if (state.activeToken == null) {
+                        return const SliverToBoxAdapter(
+                          child: SizedBox.shrink(),
+                        );
+                      }
+                      int? totalWaiting;
+                      if (state.servicesStatus == QueueServicesStatus.loaded) {
+                        final match = state.services.where(
+                          (s) => s.id == state.activeToken!.serviceId,
+                        );
+                        if (match.isNotEmpty) {
+                          totalWaiting = match.first.totalWaiting;
+                        }
+                      }
+                      return SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 12, bottom: 8),
+                          child: ActiveTokenCard(
+                            token: state.activeToken!,
+                            totalWaiting: totalWaiting,
+                            isCancelInProgress:
+                                state.actionStatus ==
+                                QueueActionStatus.inProgress,
+                            onCancel: () =>
+                                context.read<DigitalQueueBloc>().add(
+                                  DigitalQueueCancelRequested(
+                                    tokenId: state.activeToken!.id,
+                                    studentId: student.studentId,
+                                  ),
+                                ),
                           ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(16, 20, 16, 12),
+                      child: Text(
+                        'Available Services',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.3,
                         ),
                       ),
                     ),
-                  );
-                },
-              ),
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(16, 20, 16, 8),
-                  child: Text(
-                    'Available Services',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                ),
-              ),
-              // --- Services list ---
-              BlocBuilder<DigitalQueueBloc, DigitalQueueState>(
-                builder: (context, state) {
-                  switch (state.servicesStatus) {
-                    case QueueServicesStatus.initial:
-                    case QueueServicesStatus.loading:
-                      return const SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 40),
-                          child: Center(child: CircularProgressIndicator()),
-                        ),
-                      );
-                    case QueueServicesStatus.failure:
-                      return SliverToBoxAdapter(
-                        child: QueueEmptyWidget(
-                          icon: Icons.error_outline,
-                          title: 'Could not load services',
-                          subtitle: state.servicesError,
-                        ),
-                      );
-                    case QueueServicesStatus.loaded:
-                      if (state.services.isEmpty) {
-                        return const SliverToBoxAdapter(
-                          child: QueueEmptyWidget(
-                            icon: Icons.inbox_outlined,
-                            title: 'No queue services available',
-                          ),
-                        );
-                      }
-                      return SliverList.builder(
-                        itemCount: state.services.length,
-                        itemBuilder: (context, index) {
-                          final service = state.services[index];
-                          final alreadyInAnotherQueue =
-                              state.hasActiveToken &&
-                              state.activeToken!.serviceId != service.id;
-                          return QueueServiceCard(
-                            service: service,
-                            isJoinInProgress:
-                                state.actionStatus ==
-                                QueueActionStatus.inProgress,
-                            disabledReason: alreadyInAnotherQueue
-                                ? 'You already have an active token for ${state.activeToken!.serviceName}'
-                                : (state.hasActiveToken &&
-                                          state.activeToken!.serviceId ==
-                                              service.id
-                                      ? 'You are already in this queue'
-                                      : null),
-                            onJoin: () => context.read<DigitalQueueBloc>().add(
-                              DigitalQueueJoinRequested(
-                                studentId: student.studentId,
-                                studentName: student.studentName,
-                                studentEmail: student.studentEmail,
-                                rollNumber: student.rollNumber,
-                                department: student.department,
-                                semester: student.semester,
-                                serviceId: service.id,
-                              ),
+                  // Services list
+                  BlocBuilder<DigitalQueueBloc, DigitalQueueState>(
+                    builder: (context, state) {
+                      switch (state.servicesStatus) {
+                        case QueueServicesStatus.initial:
+                        case QueueServicesStatus.loading:
+                          return const SliverToBoxAdapter(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 40),
+                              child: Center(child: CircularProgressIndicator()),
                             ),
                           );
-                        },
-                      );
-                  }
-                },
-              ),
-              const SliverToBoxAdapter(child: SizedBox(height: 24)),
-            ],
+                        case QueueServicesStatus.failure:
+                          return SliverToBoxAdapter(
+                            child: QueueEmptyWidget(
+                              icon: Icons.error_outline,
+                              title: 'Could not load services',
+                              subtitle: state.servicesError,
+                            ),
+                          );
+                        case QueueServicesStatus.loaded:
+                          if (state.services.isEmpty) {
+                            return const SliverToBoxAdapter(
+                              child: QueueEmptyWidget(
+                                icon: Icons.inbox_outlined,
+                                title: 'No queue services available',
+                              ),
+                            );
+                          }
+                          return SliverPadding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width > 600
+                                  ? 24
+                                  : 16,
+                            ),
+                            sliver: SliverList.builder(
+                              itemCount: state.services.length,
+                              itemBuilder: (context, index) {
+                                final service = state.services[index];
+                                final alreadyInAnotherQueue =
+                                    state.hasActiveToken &&
+                                    state.activeToken!.serviceId != service.id;
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: QueueServiceCard(
+                                    service: service,
+                                    isJoinInProgress:
+                                        state.actionStatus ==
+                                        QueueActionStatus.inProgress,
+                                    disabledReason: alreadyInAnotherQueue
+                                        ? 'You already have an active token for ${state.activeToken!.serviceName}'
+                                        : (state.hasActiveToken &&
+                                                  state
+                                                          .activeToken!
+                                                          .serviceId ==
+                                                      service.id
+                                              ? 'You are already in this queue'
+                                              : null),
+                                    onJoin: () =>
+                                        context.read<DigitalQueueBloc>().add(
+                                          DigitalQueueJoinRequested(
+                                            studentId: student.studentId,
+                                            studentName: student.studentName,
+                                            studentEmail: student.studentEmail,
+                                            rollNumber: student.rollNumber,
+                                            department: student.department,
+                                            semester: student.semester,
+                                            serviceId: service.id,
+                                          ),
+                                        ),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                      }
+                    },
+                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                ],
+              );
+            },
           ),
         ),
       ),

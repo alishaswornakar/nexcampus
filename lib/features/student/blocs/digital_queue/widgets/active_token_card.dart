@@ -9,15 +9,6 @@ import 'estimated_wait_card.dart';
 import 'queue_progress_indicator.dart';
 import 'queue_status_card.dart';
 
-/// Composed card shown when the student holds an active token
-/// (waiting/serving). Assembles [CurrentTokenCard], [QueueStatusCard],
-/// [EstimatedWaitCard] + [QueueProgressIndicator] (hidden once
-/// `serving`), and [CancelTokenCard] into one cohesive card — this is
-/// the single widget the home screen actually places on-screen.
-///
-/// `totalWaiting` is optional: pass it (from the matching
-/// `QueueServiceModel` in the services stream) to also render the
-/// progress bar; omit it to show only the numeric position/ETA tiles.
 class ActiveTokenCard extends StatelessWidget {
   const ActiveTokenCard({
     super.key,
@@ -37,48 +28,66 @@ class ActiveTokenCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 380;
+    final isTablet = screenWidth > 600;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 0,
-      color: _isServing
-          ? theme.colorScheme.primaryContainer
-          : theme.colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            CurrentTokenCard(
-              tokenNumber: token.tokenNumber,
-              serviceName: token.serviceName,
-              counterName: token.counterName,
-            ),
-            const SizedBox(height: 16),
-            QueueStatusCard(status: token.status),
-            if (!_isServing) ...[
-              const SizedBox(height: 16),
-              EstimatedWaitCard(
-                queuePosition: token.queuePosition,
-                estimatedWaitMinutes: token.estimatedWaitMinutes,
-              ),
-              if (totalWaiting != null) ...[
-                const SizedBox(height: 14),
-                QueueProgressIndicator(
-                  queuePosition: token.queuePosition,
-                  totalWaiting: totalWaiting!,
-                ),
-              ],
-            ],
-            const SizedBox(height: 20),
-            CancelTokenCard(
-              serviceName: token.serviceName,
-              queuePosition: token.queuePosition,
-              isInProgress: isCancelInProgress,
-              onConfirmedCancel: onCancel,
-            ),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: EdgeInsets.all(isSmallScreen ? 16 : (isTablet ? 24 : 20)),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.colorScheme.primary.withValues(alpha:0.06),
+            theme.colorScheme.primary.withValues(alpha:0.02),
           ],
         ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha:0.12),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withValues(alpha:0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          CurrentTokenCard(
+            tokenNumber: token.tokenNumber,
+            serviceName: token.serviceName,
+            counterName: token.counterName,
+          ),
+          SizedBox(height: isSmallScreen ? 12 : 14),
+          QueueStatusCard(status: token.status),
+          if (!_isServing) ...[
+            SizedBox(height: isSmallScreen ? 12 : 14),
+            EstimatedWaitCard(
+              queuePosition: token.queuePosition,
+              estimatedWaitMinutes: token.estimatedWaitMinutes,
+            ),
+            if (totalWaiting != null) ...[
+              SizedBox(height: isSmallScreen ? 12 : 14),
+              QueueProgressIndicator(
+                queuePosition: token.queuePosition,
+                totalWaiting: totalWaiting!,
+              ),
+            ],
+          ],
+          SizedBox(height: isSmallScreen ? 12 : 16),
+          CancelTokenCard(
+            serviceName: token.serviceName,
+            queuePosition: token.queuePosition,
+            isInProgress: isCancelInProgress,
+            onConfirmedCancel: onCancel,
+          ),
+        ],
       ),
     );
   }

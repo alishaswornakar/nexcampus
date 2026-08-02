@@ -1,41 +1,17 @@
+// assignment/screens/assignment_tasks_detail_screen.dart
 import 'package:flutter/material.dart';
-//import 'package:url_launcher/url_launcher.dart';
-import 'dart:io';
-import 'package:file_picker/file_picker.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:nexcampus_app/core/constants/app_theme.dart';
-import '../../../../teachers/teachers_features/assignments/models/assignment_submission_model.dart';
-import '../../../../teachers/teachers_features/assignments/repository/assignment_submission_repository.dart';
-import '../../../../teachers/teachers_features/assignments/services/assignment_submission_service.dart';
-import '../../../../teachers/teachers_features/assignments/services/cloudinary_service.dart';
-import '../models/assignment_model.dart';
-import '../widgets/assignment_status_chip.dart';
-import '../../../screens/pdf_viewer_screen.dart';
 
-/// Full detail view for a single student assignment.
-///
-/// - Shows assignment info + teacher-attached PDF (if any).
-/// - If [StudentAssignmentModel.canSubmit] is true (pending/overdue),
-///   shows a submission form: pick a PDF via [CloudinaryService], add
-///   optional remarks, and submit.
-/// - If already submitted, shows the submission (locked from editing).
-/// - If graded, shows grade + feedback in addition to the submission.
-///
-/// NOTE: This screen writes directly through
-/// [AssignmentSubmissionRepository] rather than dispatching a bloc event,
-/// because the parent [TasksScreen]'s `AssignmentBloc` is scoped locally
-/// and is not guaranteed to be an ancestor of this pushed route. The
-/// existing live Firestore streams in the bloc (via `WatchAssignments`)
-/// will automatically reflect the new submission once written.
-///
-/// [studentName] and [roll] are treated as a fallback only. Before writing
-/// a submission, this screen looks up the signed-in user's `users/{uid}`
-/// document (the same pattern used by the teacher-side
-/// `SubmitAssignmentScreen`) and prefers `fullName`/`roll` from there, so
-/// the teacher's grading screens always see a real name instead of a
-/// blank one.
-class AssignmentTasksDetailScreen extends StatefulWidget {
+import 'package:nexcampus_app/core/constants/app_theme.dart';
+import '../models/assignment_model.dart';
+import '../../../screens/pdf_viewer_screen.dart';
+import 'submit_assignment_screen.dart';
+
+/// Detail view for a single student assignment, matching the Figma
+/// "Assignment Details" screen: one rounded card (title, instructor,
+/// due date, description, reference file, instructor row) followed by
+/// either a "Submit Assignment" button, the student's own submission,
+/// or the grade + submission.
+class AssignmentTasksDetailScreen extends StatelessWidget {
   const AssignmentTasksDetailScreen({
     super.key,
     required this.assignment,
@@ -49,21 +25,8 @@ class AssignmentTasksDetailScreen extends StatefulWidget {
   final String studentName;
   final String roll;
 
-  @override
-  State<AssignmentTasksDetailScreen> createState() =>
-      _AssignmentTasksDetailScreenState();
-}
-
-class _AssignmentTasksDetailScreenState
-    extends State<AssignmentTasksDetailScreen> {
-  final AssignmentSubmissionRepository _repository =
-      AssignmentSubmissionRepository(AssignmentSubmissionService());
-
-  final TextEditingController _remarksController = TextEditingController();
-
-  Map<String, dynamic>? _pickedFile;
-  bool _uploading = false;
-  bool _submitting = false;
+  static const Color _accent = Color(0xFF4C4FE0);
+  static const Color _cardBg = Color(0xFFEEF0FB);
 
   static const List<String> _months = [
     'Jan',
@@ -80,19 +43,18 @@ class _AssignmentTasksDetailScreenState
     'Dec',
   ];
 
-  @override
-  void dispose() {
-    _remarksController.dispose();
-    super.dispose();
+  static String _formatDate(DateTime date) =>
+      '${date.day.toString().padLeft(2, '0')} ${_months[date.month - 1]} ${date.year}';
+
+  static String _formatTime(DateTime date) {
+    final hour24 = date.hour;
+    final minute = date.minute.toString().padLeft(2, '0');
+    final period = hour24 >= 12 ? 'PM' : 'AM';
+    final hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
+    return '$hour12:$minute $period';
   }
 
-  String _formatDate(DateTime date) {
-    final day = date.day.toString().padLeft(2, '0');
-    final month = _months[date.month - 1];
-    return '$day $month ${date.year}';
-  }
-
-  void openPdf(String url, String title) {
+  void _openPdf(BuildContext context, String url, String title) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -101,123 +63,34 @@ class _AssignmentTasksDetailScreenState
     );
   }
 
-  Future<void> _pickPdf() async {
-    setState(() => _uploading = true);
-    try {
-      // Let user pick a PDF file
-      final pickResult = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['pdf'],
-        withData: false,
-      );
-
-      if (pickResult == null || pickResult.files.isEmpty) return;
-
-      final path = pickResult.files.first.path;
-      if (path == null) return;
-
-      final file = File(path);
-
-      final cloudinary = CloudinaryService();
-      final result = await cloudinary.uploadFile(file);
-
-      // ignore: unnecessary_null_comparison
-      if (result != null) {
-        setState(() => _pickedFile = result);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
-      }
-    } finally {
-      if (mounted) setState(() => _uploading = false);
-    }
+  void _openSubmitScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SubmitAssignmentScreen(
+          assignment: assignment,
+          studentId: studentId,
+          studentName: studentName,
+          roll: roll,
+        ),
+      ),
+    );
   }
 
-  Future<void> _submit() async {
-    if (_pickedFile == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please attach a PDF before submitting.')),
-      );
-      return;
-    }
-
-    setState(() => _submitting = true);
-
-    try {
-      // Look up the signed-in student's profile so the submission carries
-      // a real name/roll number. Falls back to whatever was passed into
-      // this widget if the profile can't be read for any reason, so a
-      // Firestore hiccup never blocks the submission itself.
-      String studentName = widget.studentName;
-      String roll = widget.roll;
-
-      final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser != null) {
-        try {
-          final userDoc = await FirebaseFirestore.instance
-              .collection('users')
-              .doc(currentUser.uid)
-              .get();
-
-          final userData = userDoc.data();
-          if (userData != null) {
-            studentName =
-                (userData['fullName'] as String?)?.trim().isNotEmpty == true
-                ? userData['fullName'] as String
-                : studentName;
-            roll = (userData['roll'] as String?)?.trim().isNotEmpty == true
-                ? userData['roll'] as String
-                : roll;
-          }
-        } catch (_) {
-          // Ignore lookup failures and fall back to the widget-provided
-          // values below.
-        }
-      }
-
-      final submission = AssignmentSubmissionModel(
-        id: '${widget.assignment.id}_${widget.studentId}',
-        assignmentId: widget.assignment.id,
-        studentId: widget.studentId,
-        studentName: studentName,
-        roll: roll,
-        department: widget.assignment.department,
-        semester: widget.assignment.semester,
-        pdfUrl: _pickedFile!['url'] as String,
-        title: _pickedFile!['name'] as String,
-        remarks: _remarksController.text.trim(),
-        submittedAt: DateTime.now(),
-      );
-
-      await _repository.submitAssignment(submission);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Assignment submitted successfully.')),
-        );
-        Navigator.of(context).pop(true);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Submission failed: $e')));
-      }
-    } finally {
-      if (mounted) setState(() => _submitting = false);
-    }
+  void _messageInstructor(BuildContext context) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Messaging is coming soon.')));
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final assignment = widget.assignment;
+    final width = MediaQuery.of(context).size.width;
+    final bool isSmall = width < 360;
+    final bool isTablet = width >= 600;
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F6FB),
       appBar: AppBar(
         title: const Text(
           'Assignment Details',
@@ -229,261 +102,364 @@ class _AssignmentTasksDetailScreenState
         ),
         backgroundColor: AppTheme.primary,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    assignment.title,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: isTablet ? 640 : double.infinity,
+            ),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(isSmall ? 14 : 18),
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(isSmall ? 16 : 22),
+                decoration: BoxDecoration(
+                  color: _cardBg,
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      assignment.title,
+                      style: TextStyle(
+                        fontSize: isSmall ? 20 : 24,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF14142B),
+                        height: 1.2,
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    Text(
+                      assignment.teacherName,
+                      style: TextStyle(
+                        fontSize: isSmall ? 13 : 14,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_today_rounded,
+                          size: 16,
+                          color: Colors.red.shade300,
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            'Due ${_formatDate(assignment.dueDate)}, '
+                            '${_formatTime(assignment.dueDate)}',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: isSmall ? 12.5 : 13.5,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.red.shade300,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Divider(color: Colors.grey.shade300, height: 1),
+                    const SizedBox(height: 16),
+                    Text(
+                      assignment.description,
+                      style: TextStyle(
+                        fontSize: isSmall ? 13.5 : 14.5,
+                        color: Colors.grey.shade700,
+                        height: 1.5,
+                      ),
+                    ),
+                    if (assignment.hasAssignmentPdf) ...[
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'REFERENCE MATERIALS',
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.4,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                          Text(
+                            '1 file',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      _FileRow(
+                        fileName:
+                            assignment.assignmentPdfName ?? 'Assignment.pdf',
+                        onTap: () => _openPdf(
+                          context,
+                          assignment.assignmentPdfUrl!,
+                          assignment.assignmentPdfName ?? 'Assignment PDF',
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 20),
+                    Divider(color: Colors.grey.shade300, height: 1),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: isSmall ? 20 : 22,
+                          backgroundColor: _accent.withValues(alpha: 0.15),
+                          child: Text(
+                            assignment.teacherName.isNotEmpty
+                                ? assignment.teacherName[0].toUpperCase()
+                                : 'T',
+                            style: const TextStyle(
+                              color: _accent,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                assignment.teacherName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: isSmall ? 13 : 14,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              Text(
+                                'Course Instructor',
+                                style: TextStyle(
+                                  fontSize: isSmall ? 11 : 12,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: () => _messageInstructor(context),
+                          icon: const Icon(
+                            Icons.mail_outline_rounded,
+                            size: 17,
+                          ),
+                          label: const Text('Message'),
+                          style: TextButton.styleFrom(foregroundColor: _accent),
+                        ),
+                      ],
+                    ),
+                    if (assignment.isGraded) ...[
+                      const SizedBox(height: 20),
+                      _GradeSection(assignment: assignment),
+                      const SizedBox(height: 14),
+                      _SubmissionSection(
+                        assignment: assignment,
+                        onOpenPdf: (url, title) =>
+                            _openPdf(context, url, title),
+                      ),
+                    ] else if (assignment.isSubmitted) ...[
+                      const SizedBox(height: 20),
+                      _SubmissionSection(
+                        assignment: assignment,
+                        onOpenPdf: (url, title) =>
+                            _openPdf(context, url, title),
+                      ),
+                    ],
+                    if (assignment.canSubmit) ...[
+                      const SizedBox(height: 22),
+                      SizedBox(
+                        width: double.infinity,
+                        height: isSmall ? 50 : 56,
+                        child: ElevatedButton(
+                          onPressed: () => _openSubmitScreen(context),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _accent,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          child: const Text(
+                            'Submit Assignment',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-                const SizedBox(width: 12),
-                AssignmentStatusChip(status: assignment.status),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '${assignment.subject} · ${assignment.teacherName}',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              '${assignment.department} · Semester ${assignment.semester}',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FileRow extends StatelessWidget {
+  const _FileRow({required this.fileName, required this.onTap});
+
+  final String fileName;
+  final VoidCallback onTap;
+
+  bool get _isPdf => fileName.toLowerCase().endsWith('.pdf');
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: _isPdf ? Colors.red.shade50 : Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                _isPdf
+                    ? Icons.picture_as_pdf_rounded
+                    : Icons.insert_drive_file_rounded,
+                color: _isPdf ? Colors.red.shade400 : Colors.blue.shade400,
+                size: 18,
               ),
             ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Icon(
-                  Icons.calendar_today_rounded,
-                  size: 16,
-                  color: assignment.isOverdue
-                      ? colorScheme.error
-                      : colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  'Due ${_formatDate(assignment.dueDate)}',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: assignment.isOverdue
-                        ? colorScheme.error
-                        : colorScheme.onSurfaceVariant,
-                    fontWeight: assignment.isOverdue
-                        ? FontWeight.w600
-                        : FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Description',
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(assignment.description, style: theme.textTheme.bodyMedium),
-            if (assignment.hasAssignmentPdf) ...[
-              const SizedBox(height: 16),
-              OutlinedButton.icon(
-                onPressed: () => openPdf(
-                  assignment.assignmentPdfUrl!,
-                  assignment.assignmentPdfName ?? "Assignment PDF",
-                ),
-                icon: const Icon(Icons.picture_as_pdf_rounded),
-                label: Text(
-                  assignment.assignmentPdfName ?? 'View Assignment PDF',
-                  overflow: TextOverflow.ellipsis,
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                fileName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13.5,
                 ),
               ),
-            ],
-            const SizedBox(height: 24),
-            const Divider(),
-            const SizedBox(height: 8),
-            if (assignment.isGraded) _buildGradedSection(theme, colorScheme),
-            if (assignment.isSubmitted && !assignment.isGraded)
-              _buildSubmittedSection(theme, colorScheme),
-            if (assignment.canSubmit) _buildSubmissionForm(theme, colorScheme),
+            ),
+            Icon(Icons.download_rounded, size: 19, color: Colors.grey.shade500),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildGradedSection(ThemeData theme, ColorScheme colorScheme) {
-    final assignment = widget.assignment;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Grade',
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: colorScheme.primaryContainer.withValues(alpha: 0.4),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+class _GradeSection extends StatelessWidget {
+  const _GradeSection({required this.assignment});
+
+  final StudentAssignmentModel assignment;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.grade_rounded,
-                    color: colorScheme.primary,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    assignment.grade,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: colorScheme.primary,
-                    ),
-                  ),
-                ],
+              const Icon(
+                Icons.grade_rounded,
+                color: Color(0xFF1E8E4F),
+                size: 20,
               ),
-              if (assignment.feedback.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Text(assignment.feedback, style: theme.textTheme.bodyMedium),
-              ],
-              if (assignment.gradedAt != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  'Graded on ${_formatDate(assignment.gradedAt!)}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
+              const SizedBox(width: 8),
+              Text(
+                'Grade: ${assignment.grade}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF1E8E4F),
                 ),
-              ],
+              ),
             ],
           ),
-        ),
-        const SizedBox(height: 20),
-        _buildSubmittedSection(theme, colorScheme, heading: 'Your Submission'),
-      ],
+          if (assignment.feedback.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              assignment.feedback,
+              style: TextStyle(color: Colors.grey.shade700),
+            ),
+          ],
+        ],
+      ),
     );
   }
+}
 
-  Widget _buildSubmittedSection(
-    ThemeData theme,
-    ColorScheme colorScheme, {
-    String heading = 'Submission',
-  }) {
-    final assignment = widget.assignment;
+class _SubmissionSection extends StatelessWidget {
+  const _SubmissionSection({required this.assignment, required this.onOpenPdf});
+
+  final StudentAssignmentModel assignment;
+  final void Function(String url, String title) onOpenPdf;
+
+  static const List<String> _months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  String _formatDate(DateTime date) =>
+      '${date.day.toString().padLeft(2, '0')} ${_months[date.month - 1]} ${date.year}';
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          heading,
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 8),
-
         if (assignment.hasSubmissionPdf)
-          OutlinedButton.icon(
-            onPressed: () => openPdf(
+          _FileRow(
+            fileName: assignment.submissionPdfName ?? 'Your submission',
+            onTap: () => onOpenPdf(
               assignment.submissionPdfUrl!,
-              assignment.submissionPdfName ?? "Submitted PDF",
-            ),
-            icon: const Icon(Icons.picture_as_pdf_rounded),
-            label: Text(
-              assignment.submissionPdfName ?? 'View Submitted PDF',
-              overflow: TextOverflow.ellipsis,
+              assignment.submissionPdfName ?? 'Submitted PDF',
             ),
           ),
-        if (assignment.remarks.isNotEmpty) ...[
-          const SizedBox(height: 10),
-          Text('Remarks', style: theme.textTheme.labelLarge),
-          const SizedBox(height: 4),
-          Text(assignment.remarks, style: theme.textTheme.bodyMedium),
-        ],
         if (assignment.submittedAt != null) ...[
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Text(
             'Submitted on ${_formatDate(assignment.submittedAt!)}',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
           ),
         ],
-      ],
-    );
-  }
-
-  Widget _buildSubmissionForm(ThemeData theme, ColorScheme colorScheme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Submit Your Work',
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: _remarksController,
-          maxLines: 3,
-          decoration: const InputDecoration(
-            labelText: 'Remarks (optional)',
-            border: OutlineInputBorder(),
-            alignLabelWithHint: true,
-          ),
-        ),
-        const SizedBox(height: 12),
-        OutlinedButton.icon(
-          onPressed: _uploading ? null : _pickPdf,
-          icon: _uploading
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Icon(Icons.upload_file_rounded),
-          label: Text(
-            _pickedFile == null ? 'Attach PDF' : _pickedFile!['name'] as String,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        const SizedBox(height: 20),
-        SizedBox(
-          width: double.infinity,
-          child: FilledButton(
-            onPressed: _submitting ? null : _submit,
-            child: _submitting
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Text('Submit Assignment'),
-          ),
-        ),
       ],
     );
   }

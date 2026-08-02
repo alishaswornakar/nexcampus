@@ -5,12 +5,6 @@ import 'package:flutter/material.dart';
 import '../models/queue_service_model.dart';
 import 'queue_icon_resolver.dart';
 
-/// Displays a single queue service (e.g. "Library Desk", "Accounts")
-/// on the student's "choose a service" screen.
-///
-/// Shows live status (open/closed), how many students are currently
-/// waiting, and a "Join Queue" action — disabled automatically when
-/// the service is closed.
 class QueueServiceCard extends StatelessWidget {
   const QueueServiceCard({
     super.key,
@@ -22,15 +16,7 @@ class QueueServiceCard extends StatelessWidget {
 
   final QueueServiceModel service;
   final VoidCallback onJoin;
-
-  /// True while a join request for ANY service is in flight — disables
-  /// the button to prevent double-submits, and shows a spinner instead
-  /// of the label on the service actually being joined.
   final bool isJoinInProgress;
-
-  /// Optional reason shown instead of the button when the student
-  /// already holds an active token elsewhere (e.g. "You already have
-  /// an active token"). Passed down from the BLoC state.
   final String? disabledReason;
 
   bool get _canJoin =>
@@ -40,98 +26,215 @@ class QueueServiceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final icon = resolveQueueIcon(service.icon);
+    final isActiveToken =
+        disabledReason != null &&
+        disabledReason!.contains('already have an active token');
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 380;
+    final isTablet = screenWidth > 600;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: theme.colorScheme.outlineVariant),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
+        padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(
-                icon,
-                color: theme.colorScheme.onPrimaryContainer,
-                size: 26,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          service.name,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      _OpenClosedChip(isOpen: service.isOpen),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    service.counterName,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+            // Header row with icon and status
+            Row(
+              children: [
+                Container(
+                  width: isSmallScreen ? 40 : (isTablet ? 56 : 48),
+                  height: isSmallScreen ? 40 : (isTablet ? 56 : 48),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(
+                      isSmallScreen ? 10 : 12,
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Row(
+                  child: Icon(
+                    icon,
+                    color: theme.colorScheme.primary,
+                    size: isSmallScreen ? 20 : (isTablet ? 28 : 24),
+                  ),
+                ),
+                SizedBox(width: isSmallScreen ? 10 : 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _StatPill(
-                        icon: Icons.groups_outlined,
-                        label: '${service.totalWaiting} waiting',
+                      Text(
+                        service.name,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          fontSize: isSmallScreen ? 14 : (isTablet ? 18 : 16),
+                          letterSpacing: -0.3,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(width: 8),
-                      _StatPill(
-                        icon: Icons.timer_outlined,
-                        label: '~${service.averageServiceTime} min/person',
+                      const SizedBox(height: 2),
+                      Text(
+                        service.counterName,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontSize: isSmallScreen ? 11 : (isTablet ? 14 : 12),
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
-                  if (disabledReason != null) ...[
-                    const SizedBox(height: 10),
-                    Text(
-                      disabledReason!,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.error,
+                ),
+                const SizedBox(width: 8),
+                _OpenClosedChip(
+                  isOpen: service.isOpen,
+                  isSmallScreen: isSmallScreen,
+                ),
+              ],
+            ),
+            SizedBox(height: isSmallScreen ? 10 : 14),
+            // Stats row - Wrap to next line on small screens
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              children: [
+                _StatPill(
+                  icon: Icons.people_outline,
+                  label: '${service.totalWaiting} waiting',
+                  isSmallScreen: isSmallScreen,
+                ),
+                _StatPill(
+                  icon: Icons.access_time_outlined,
+                  label: '${service.averageServiceTime} min/person',
+                  isSmallScreen: isSmallScreen,
+                ),
+              ],
+            ),
+            SizedBox(height: isSmallScreen ? 10 : 12),
+            // Action button
+            if (disabledReason != null && !isActiveToken) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.error.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: isSmallScreen ? 14 : 16,
+                      color: theme.colorScheme.error,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        disabledReason!,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.error,
+                          fontSize: isSmallScreen ? 11 : 12,
+                        ),
                       ),
                     ),
                   ],
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: _canJoin ? onJoin : null,
-                      child: isJoinInProgress
-                          ? const SizedBox(
-                              height: 18,
-                              width: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Text(service.isOpen ? 'Join Queue' : 'Closed'),
-                    ),
+                ),
+              ),
+              SizedBox(height: isSmallScreen ? 8 : 10),
+            ],
+            SizedBox(
+              width: double.infinity,
+              height: isSmallScreen ? 40 : (isTablet ? 48 : 44),
+              child: FilledButton(
+                onPressed: _canJoin ? onJoin : null,
+                style: FilledButton.styleFrom(
+                  backgroundColor: _canJoin
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.12),
+                  foregroundColor: _canJoin
+                      ? Colors.white
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.38),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                ],
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isSmallScreen ? 8 : 16,
+                  ),
+                ),
+                child: isJoinInProgress
+                    ? SizedBox(
+                        height: isSmallScreen ? 18 : 20,
+                        width: isSmallScreen ? 18 : 20,
+                        child: const CircularProgressIndicator(
+                          strokeWidth: 2.0,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        service.isOpen
+                            ? (disabledReason != null && isActiveToken
+                                  ? 'In Queue'
+                                  : 'Join Queue')
+                            : 'Closed',
+                        style: TextStyle(
+                          fontSize: isSmallScreen ? 12 : (isTablet ? 16 : 14),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
               ),
             ),
+            // Show "Already in queue" badge for active token
+            if (disabledReason != null && isActiveToken) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 6,
+                  horizontal: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.check_circle_outline,
+                      size: isSmallScreen ? 12 : 14,
+                      color: Colors.orange.shade700,
+                    ),
+                    SizedBox(width: isSmallScreen ? 4 : 6),
+                    Flexible(
+                      child: Text(
+                        'You already have an active token for this service',
+                        style: TextStyle(
+                          fontSize: isSmallScreen ? 10 : 11,
+                          color: Colors.orange.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -140,15 +243,19 @@ class QueueServiceCard extends StatelessWidget {
 }
 
 class _OpenClosedChip extends StatelessWidget {
-  const _OpenClosedChip({required this.isOpen});
+  const _OpenClosedChip({required this.isOpen, required this.isSmallScreen});
 
   final bool isOpen;
+  final bool isSmallScreen;
 
   @override
   Widget build(BuildContext context) {
-    final color = isOpen ? Colors.green : Colors.grey;
+    final color = isOpen ? Colors.green.shade600 : Colors.grey.shade600;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 6 : 10,
+        vertical: isSmallScreen ? 2 : 4,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(20),
@@ -157,16 +264,16 @@ class _OpenClosedChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 6,
-            height: 6,
+            width: isSmallScreen ? 5 : 6,
+            height: isSmallScreen ? 5 : 6,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
-          const SizedBox(width: 5),
+          SizedBox(width: isSmallScreen ? 3 : 5),
           Text(
             isOpen ? 'Open' : 'Closed',
             style: TextStyle(
               color: color,
-              fontSize: 11,
+              fontSize: isSmallScreen ? 9 : 11,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -177,30 +284,44 @@ class _OpenClosedChip extends StatelessWidget {
 }
 
 class _StatPill extends StatelessWidget {
-  const _StatPill({required this.icon, required this.label});
+  const _StatPill({
+    required this.icon,
+    required this.label,
+    required this.isSmallScreen,
+  });
 
   final IconData icon;
   final String label;
+  final bool isSmallScreen;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 6 : 10,
+        vertical: isSmallScreen ? 4 : 5,
+      ),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(width: 4),
+          Icon(
+            icon,
+            size: isSmallScreen ? 12 : 14,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          SizedBox(width: isSmallScreen ? 3 : 5),
           Text(
             label,
             style: theme.textTheme.labelSmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
+              fontSize: isSmallScreen ? 10 : 12,
             ),
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

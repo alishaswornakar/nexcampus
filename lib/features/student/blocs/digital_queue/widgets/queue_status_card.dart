@@ -1,13 +1,8 @@
 // lib/features/student/blocs/digital_queue/widgets/queue_status_card.dart
 
 import 'package:flutter/material.dart';
-
 import 'queue_status_badge.dart';
 
-/// Shows the current token status prominently. When status is
-/// `serving`, replaces the plain badge with a highlighted "your turn"
-/// notice, since that's the single most actionable moment for the
-/// student in the whole feature.
 class QueueStatusCard extends StatelessWidget {
   const QueueStatusCard({super.key, required this.status});
 
@@ -18,6 +13,9 @@ class QueueStatusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 380;
+    final isTablet = screenWidth > 600;
 
     if (!_isServing) {
       return Align(
@@ -28,7 +26,10 @@ class QueueStatusCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+      padding: EdgeInsets.symmetric(
+        vertical: isSmallScreen ? 10 : (isTablet ? 14 : 12),
+        horizontal: isSmallScreen ? 10 : (isTablet ? 18 : 14),
+      ),
       decoration: BoxDecoration(
         color: theme.colorScheme.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -39,16 +40,21 @@ class QueueStatusCard extends StatelessWidget {
           Icon(
             Icons.notifications_active_outlined,
             color: theme.colorScheme.primary,
-            size: 18,
+            size: isSmallScreen ? 16 : (isTablet ? 20 : 18),
           ),
-          const SizedBox(width: 8),
-          Text(
-            "It's your turn — please proceed to the counter",
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.primary,
-              fontWeight: FontWeight.w600,
+          SizedBox(width: isSmallScreen ? 6 : 8),
+          Flexible(
+            child: Text(
+              "It's your turn — please proceed to the counter",
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.w600,
+                fontSize: isSmallScreen ? 12 : (isTablet ? 16 : 14),
+              ),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
             ),
-            textAlign: TextAlign.center,
           ),
         ],
       ),

@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _startSplashSequence() {
-    const typingSpeed = Duration(milliseconds: 85);
+    const typingSpeed = Duration(milliseconds: 65);
     int charIndex = 0;
 
     _typewriterTimer = Timer.periodic(typingSpeed, (timer) {

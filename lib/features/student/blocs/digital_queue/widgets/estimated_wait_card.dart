@@ -2,9 +2,6 @@
 
 import 'package:flutter/material.dart';
 
-/// Shows queue position and estimated wait time side by side. Hidden
-/// entirely once the token status is `serving` (there's no more
-/// waiting left to estimate) — the parent decides whether to show it.
 class EstimatedWaitCard extends StatelessWidget {
   const EstimatedWaitCard({
     super.key,
@@ -17,24 +14,40 @@ class EstimatedWaitCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _InfoTile(
-            icon: Icons.people_outline,
-            label: 'Position',
-            value: '$queuePosition',
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _InfoTile(
-            icon: Icons.hourglass_bottom_outlined,
-            label: 'Est. wait',
-            value: '$estimatedWaitMinutes min',
-          ),
-        ),
-      ],
+    final theme = Theme.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 380;
+    final isTablet = screenWidth > 600;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final spacing = isSmallScreen ? 8.0 : 10.0;
+        return Row(
+          children: [
+            Expanded(
+              child: _InfoTile(
+                icon: Icons.person_outline,
+                label: 'Position',
+                value: '$queuePosition',
+                iconColor: theme.colorScheme.primary,
+                isSmallScreen: isSmallScreen,
+                isTablet: isTablet,
+              ),
+            ),
+            SizedBox(width: spacing),
+            Expanded(
+              child: _InfoTile(
+                icon: Icons.timer_outlined,
+                label: 'Est. wait',
+                value: '$estimatedWaitMinutes min',
+                iconColor: theme.colorScheme.secondary,
+                isSmallScreen: isSmallScreen,
+                isTablet: isTablet,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -44,36 +57,56 @@ class _InfoTile extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.value,
+    this.iconColor,
+    required this.isSmallScreen,
+    required this.isTablet,
   });
 
   final IconData icon;
   final String label;
   final String value;
+  final Color? iconColor;
+  final bool isSmallScreen;
+  final bool isTablet;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14),
+      padding: EdgeInsets.symmetric(
+        vertical: isSmallScreen ? 10 : (isTablet ? 16 : 12),
+        horizontal: isSmallScreen ? 6 : 8,
+      ),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.outlineVariant),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+        ),
       ),
       child: Column(
         children: [
-          Icon(icon, size: 18, color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(height: 6),
+          Icon(
+            icon,
+            size: isSmallScreen ? 16 : (isTablet ? 24 : 20),
+            color: iconColor ?? theme.colorScheme.onSurfaceVariant,
+          ),
+          SizedBox(height: isSmallScreen ? 4 : 6),
           Text(
             value,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
+              fontSize: isSmallScreen ? 16 : (isTablet ? 22 : 18),
+              letterSpacing: -0.3,
             ),
+            overflow: TextOverflow.ellipsis,
           ),
           Text(
             label,
             style: theme.textTheme.labelSmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
+              fontSize: isSmallScreen ? 10 : (isTablet ? 13 : 11),
+              letterSpacing: 0.3,
             ),
           ),
         ],

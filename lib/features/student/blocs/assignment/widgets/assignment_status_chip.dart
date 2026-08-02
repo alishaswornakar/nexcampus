@@ -1,100 +1,91 @@
+// assignment/widgets/assignment_status_chip.dart
 import 'package:flutter/material.dart';
 
 import '../models/assignment_model.dart';
 
-/// A compact, pill-shaped status indicator used across the student
-/// assignment module (task list, detail screen, dashboard cards).
-///
-/// Renders an icon + label pair whose colors and text are derived
-/// from the given [StudentAssignmentStatus].
+/// Small pill-shaped badge shown on assignment cards. For pending
+/// assignments it shows a live countdown to the deadline ("DUE TODAY",
+/// "DUE TOMORROW", "IN 3 DAYS"); for overdue/submitted/graded it shows
+/// a plain status label. Matches the Figma badge style: no icon, bold
+/// small caps text on a tinted background.
 class AssignmentStatusChip extends StatelessWidget {
-  const AssignmentStatusChip({
-    super.key,
-    required this.status,
-  });
+  const AssignmentStatusChip({super.key, required this.assignment});
 
-  final StudentAssignmentStatus status;
+  final StudentAssignmentModel assignment;
+
+  _ChipStyle _style() {
+    switch (assignment.status) {
+      case StudentAssignmentStatus.overdue:
+        return const _ChipStyle(
+          label: 'OVERDUE',
+          background: Color(0xFFFCE4E6),
+          foreground: Color(0xFFD8232A),
+        );
+      case StudentAssignmentStatus.submitted:
+        return const _ChipStyle(
+          label: 'SUBMITTED',
+          background: Color(0xFFDCEAFB),
+          foreground: Color(0xFF1B63C8),
+        );
+      case StudentAssignmentStatus.graded:
+        return const _ChipStyle(
+          label: 'GRADED',
+          background: Color(0xFFDDF2E3),
+          foreground: Color(0xFF1E8E4F),
+        );
+      case StudentAssignmentStatus.pending:
+        final days = assignment.remainingTime.inDays;
+        final bool urgent = assignment.isDueToday || days <= 1;
+        final String label = assignment.isDueToday
+            ? 'DUE TODAY'
+            : days <= 1
+            ? 'DUE TOMORROW'
+            : 'IN $days DAYS';
+        return _ChipStyle(
+          label: label,
+          background: urgent
+              ? const Color(0xFFFCE4E6)
+              : const Color(0xFFFDEACB),
+          foreground: urgent
+              ? const Color(0xFFD8232A)
+              : const Color(0xFFB4720A),
+        );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final _ChipStyle style = _styleFor(status);
-
+    final style = _style();
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: style.background,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            style.icon,
-            size: 16,
-            color: style.foreground,
-          ),
-          const SizedBox(width: 6),
-          Text(
-            style.label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: style.foreground,
-              height: 1.0,
-            ),
-          ),
-        ],
+      child: Text(
+        style.label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.3,
+          color: style.foreground,
+          height: 1.1,
+        ),
       ),
     );
   }
-
-  static _ChipStyle _styleFor(StudentAssignmentStatus status) {
-    switch (status) {
-      case StudentAssignmentStatus.pending:
-        return const _ChipStyle(
-          icon: Icons.schedule_rounded,
-          background: Color(0xFFFFF3CD),
-          foreground: Color(0xFF856404),
-          label: 'Pending',
-        );
-      case StudentAssignmentStatus.overdue:
-        return const _ChipStyle(
-          icon: Icons.warning_amber_rounded,
-          background: Color(0xFFF8D7DA),
-          foreground: Color(0xFF721C24),
-          label: 'Overdue',
-        );
-      case StudentAssignmentStatus.submitted:
-        return const _ChipStyle(
-          icon: Icons.cloud_done_rounded,
-          background: Color(0xFFD1ECF1),
-          foreground: Color(0xFF0C5460),
-          label: 'Submitted',
-        );
-      case StudentAssignmentStatus.graded:
-        return const _ChipStyle(
-          icon: Icons.verified_rounded,
-          background: Color(0xFFD4EDDA),
-          foreground: Color(0xFF155724),
-          label: 'Graded',
-        );
-    }
-  }
 }
 
-/// Internal value holder describing how a given [AssignmentStatus]
-/// should be rendered. Kept private to this file to avoid leaking
-/// presentation details into the rest of the module.
 class _ChipStyle {
   const _ChipStyle({
-    required this.icon,
+    required this.label,
     required this.background,
     required this.foreground,
-    required this.label,
   });
 
-  final IconData icon;
+  final String label;
   final Color background;
   final Color foreground;
-  final String label;
 }

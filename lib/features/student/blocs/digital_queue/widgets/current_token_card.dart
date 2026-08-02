@@ -2,10 +2,6 @@
 
 import 'package:flutter/material.dart';
 
-/// Displays the student's token number, big and centered — the single
-/// most important piece of information on the active-queue screen.
-/// Kept deliberately minimal (no status/actions) so it can be reused
-/// standalone or embedded inside [ActiveTokenCard].
 class CurrentTokenCard extends StatelessWidget {
   const CurrentTokenCard({
     super.key,
@@ -21,34 +17,60 @@ class CurrentTokenCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 380;
+    final isTablet = screenWidth > 600;
+
     return Column(
       children: [
         Text(
           serviceName,
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
+            fontSize: isSmallScreen ? 16 : (isTablet ? 20 : 18),
+            letterSpacing: -0.3,
           ),
           textAlign: TextAlign.center,
         ),
+        const SizedBox(height: 2),
         Text(
           counterName,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
+            fontSize: isSmallScreen ? 12 : (isTablet ? 14 : 13),
           ),
         ),
-        const SizedBox(height: 16),
-        Text(
-          'Your Token',
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+        SizedBox(height: isSmallScreen ? 12 : 16),
+        Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: isSmallScreen ? 14 : (isTablet ? 28 : 20),
+            vertical: isSmallScreen ? 6 : (isTablet ? 14 : 10),
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          '#$tokenNumber',
-          style: theme.textTheme.displayMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.primary,
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primary.withValues(alpha:0.06),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              Text(
+                'Your Token',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontSize: isSmallScreen ? 10 : (isTablet ? 14 : 12),
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '#$tokenNumber',
+                style: theme.textTheme.displayMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  fontSize: isSmallScreen ? 34 : (isTablet ? 50 : 42),
+                  color: theme.colorScheme.primary,
+                  letterSpacing: -1,
+                ),
+              ),
+            ],
           ),
         ),
       ],
