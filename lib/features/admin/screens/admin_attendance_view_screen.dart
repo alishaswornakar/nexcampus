@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-//import 'package:nexcampus_app/core/constants/app_theme.dart';
 import '../models/attendance_model.dart';
 import '../models/admin_subject_model.dart';
 import '../services/admin_attendance_service.dart';
@@ -13,8 +12,9 @@ class AdminAttendanceViewScreen extends StatefulWidget {
       _AdminAttendanceViewScreenState();
 }
 
-class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
-  // Filters
+class _AdminAttendanceViewScreenState
+    extends State<AdminAttendanceViewScreen> {
+  // Filters State
   String? _selectedDepartment = 'Computer Engineering';
   String? _selectedSemester = '1';
 
@@ -25,6 +25,11 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
   /// Date filter
   DateTime _selectedDate = DateTime.now();
 
+  /// Search & Status Filters
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  int _selectedFilterIndex = 0; // 0: All Students, 1: Present, 2: Absent
+
   final List<String> _departments = [
     'Computer Engineering',
     'Civil Engineering',
@@ -32,7 +37,6 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
   ];
 
   final List<String> _semesters8 = ['1', '2', '3', '4', '5', '6', '7', '8'];
-
   final List<String> _semesters10 = [
     '1',
     '2',
@@ -54,151 +58,237 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    //final primaryColor = AppTheme.primaryColor ?? Colors.blue;
     final currentSemesters = _getAvailableSemesters();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F5FB),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text(
-          "Student Attendance View",
-          style: TextStyle(color: Colors.black, fontSize: 18),
+        backgroundColor: const Color(0xFFF8FAFC),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          onPressed: () => Navigator.maybePop(context),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        iconTheme: const IconThemeData(color: Colors.black),
+        title: const Text(
+          'Attendance View',
+          style: TextStyle(
+            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
       ),
-      body: Column(
-        children: [
-          // 🔍 FILTERS SECTION
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-            color: Colors.white,
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    // Dept Dropdown
-                    Expanded(
-                      flex: 1,
-                      child: DropdownButtonFormField<String>(
-                        initialValue: _selectedDepartment,
-                        isExpanded: true,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.black,
-                        ),
-                        decoration: const InputDecoration(
-                          labelText: "Dept",
-                          labelStyle: TextStyle(fontSize: 12),
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 8,
-                          ),
-                        ),
-                        items: _departments
-                            .map(
-                              (d) => DropdownMenuItem(
-                                value: d,
-                                child: Text(d, overflow: TextOverflow.ellipsis),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (val) {
-                          setState(() {
-                            _selectedDepartment = val;
-                            if (_selectedSemester != null &&
-                                !_getAvailableSemesters().contains(
-                                  _selectedSemester,
-                                )) {
-                              _selectedSemester = '1st';
-                            }
-                            // Subject list depends on department/semester,
-                            // so any previously selected subject may no
-                            // longer be valid — fall back to "All Subjects".
-                            _selectedSubjectId = null;
-                            _selectedSubjectName = 'All Subjects';
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-
-                    // Sem Dropdown
-                    Expanded(
-                      flex: 1,
-                      child: DropdownButtonFormField<String>(
-                        initialValue: _selectedSemester,
-                        isExpanded: true,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.black,
-                        ),
-                        decoration: const InputDecoration(
-                          labelText: "Sem",
-                          labelStyle: TextStyle(fontSize: 12),
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 8,
-                          ),
-                        ),
-                        items: currentSemesters
-                            .map(
-                              (s) => DropdownMenuItem(
-                                value: s,
-                                child: Text(s, overflow: TextOverflow.ellipsis),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (val) => setState(() {
-                          _selectedSemester = val;
-                          _selectedSubjectId = null;
-                          _selectedSubjectName = 'All Subjects';
-                        }),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-
-                // Subject Dropdown Row — scoped to the selected
-                // department + semester, matching the teacher-side
-                // subject-selection flow.
-                StreamBuilder<List<AdminSubjectModel>>(
-                  stream: AdminAttendanceService.getSubjects(
-                    department: _selectedDepartment ?? '',
-                    semester: _selectedSemester ?? '',
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 🏷️ Department Filter
+            _buildLabel("Department"),
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedDepartment,
+                  isExpanded: true,
+                  icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+                  style: const TextStyle(
+                    color: Color(0xFF1F2937),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
-                  builder: (context, subjectSnapshot) {
-                    final subjects = subjectSnapshot.data ?? [];
+                  items: _departments
+                      .map(
+                        (d) => DropdownMenuItem(
+                          value: d,
+                          child: Text(d, overflow: TextOverflow.ellipsis),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (val) {
+                    setState(() {
+                      _selectedDepartment = val;
+                      if (_selectedSemester != null &&
+                          !_getAvailableSemesters().contains(_selectedSemester)) {
+                        _selectedSemester = '1';
+                      }
+                      _selectedSubjectId = null;
+                      _selectedSubjectName = 'All Subjects';
+                    });
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
 
-                    // Keep the current selection if it's still valid for
-                    // this department/semester; otherwise fall back.
-                    final validIds = subjects.map((s) => s.id).toSet();
-                    if (_selectedSubjectId != null &&
-                        !validIds.contains(_selectedSubjectId)) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (mounted) {
-                          setState(() {
-                            _selectedSubjectId = null;
-                            _selectedSubjectName = 'All Subjects';
-                          });
-                        }
+            // 🏷️ Semester & Date Filter Row
+            Row(
+              children: [
+                // Semester Dropdown
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildLabel("Semester"),
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.shade200),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _selectedSemester,
+                            isExpanded: true,
+                            icon: const Icon(
+                              Icons.keyboard_arrow_down,
+                              color: Colors.grey,
+                            ),
+                            style: const TextStyle(
+                              color: Color(0xFF1F2937),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            items: currentSemesters
+                                .map(
+                                  (s) => DropdownMenuItem(
+                                    value: s,
+                                    child: Text(
+                                      "Sem $s",
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (val) {
+                              setState(() {
+                                _selectedSemester = val;
+                                _selectedSubjectId = null;
+                                _selectedSubjectName = 'All Subjects';
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+
+                // Date Picker Button
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildLabel("Date"),
+                      const SizedBox(height: 6),
+                      InkWell(
+                        onTap: () async {
+                          DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: _selectedDate,
+                            firstDate: DateTime(2020),
+                            lastDate: DateTime(2030),
+                          );
+                          if (picked != null) {
+                            setState(() => _selectedDate = picked);
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade200),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                DateFormat('dd MMM yyyy').format(_selectedDate),
+                                style: const TextStyle(
+                                  color: Color(0xFF1F2937),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const Icon(
+                                Icons.calendar_today_outlined,
+                                size: 18,
+                                color: Colors.grey,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+
+            // 🏷️ Subject Filter Stream Dropdown
+            _buildLabel("Subject"),
+            const SizedBox(height: 6),
+            StreamBuilder<List<AdminSubjectModel>>(
+              stream: AdminAttendanceService.getSubjects(
+                department: _selectedDepartment ?? '',
+                semester: _selectedSemester ?? '',
+              ),
+              builder: (context, subjectSnapshot) {
+                final subjects = subjectSnapshot.data ?? [];
+
+                final validIds = subjects.map((s) => s.id).toSet();
+                if (_selectedSubjectId != null &&
+                    !validIds.contains(_selectedSubjectId)) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      setState(() {
+                        _selectedSubjectId = null;
+                        _selectedSubjectName = 'All Subjects';
                       });
                     }
+                  });
+                }
 
-                    return DropdownButtonFormField<String>(
-                      initialValue: _selectedSubjectId,
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: _selectedSubjectId,
                       isExpanded: true,
-                      style: const TextStyle(fontSize: 12, color: Colors.black),
-                      decoration: const InputDecoration(
-                        labelText: "Subject",
-                        labelStyle: TextStyle(fontSize: 12),
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 8,
-                        ),
+                      icon: const Icon(
+                        Icons.keyboard_arrow_down,
+                        color: Colors.grey,
+                      ),
+                      style: const TextStyle(
+                        color: Color(0xFF1F2937),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
                       ),
                       items: [
                         const DropdownMenuItem<String>(
@@ -234,64 +324,15 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
                                     .name;
                         });
                       },
-                    );
-                  },
-                ),
-                const SizedBox(height: 10),
-
-                // Date Picker Row
-                InkWell(
-                  onTap: () async {
-                    DateTime? picked = await showDatePicker(
-                      context: context,
-                      initialDate: _selectedDate,
-                      firstDate: DateTime(2020),
-                      lastDate: DateTime(2030),
-                    );
-                    if (picked != null) {
-                      setState(() => _selectedDate = picked);
-                    }
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10,
-                      horizontal: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade400),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Selected Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
-                          ),
-                        ),
-                        const Icon(
-                          Icons.calendar_today,
-                          size: 18,
-                          color: Colors.blue,
-                        ),
-                      ],
                     ),
                   ),
-                ),
-              ],
+                );
+              },
             ),
-          ),
+            const SizedBox(height: 20),
 
-          // 📊 ATTENDANCE STREAM LIST
-          Expanded(
-            child: StreamBuilder<List<AttendanceModel>>(
-              // Real schema: one doc per class session, with a `students`
-              // array. There is no `section` field to filter on.
-              // Filtering now goes department -> semester -> subject, so
-              // switching subjects here matches what the teacher already
-              // sees for that department/semester/subject combination.
+            // 📊 ATTENDANCE DATA STREAM & DISPLAY
+            StreamBuilder<List<AttendanceModel>>(
               stream: AdminAttendanceService.getAttendanceByFilter(
                 department: _selectedDepartment ?? '',
                 semester: _selectedSemester ?? '',
@@ -299,24 +340,22 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
               ),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 40),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
                 }
 
                 if (snapshot.hasError) {
-                  return Center(child: Text("Error: ${snapshot.error}"));
-                }
-
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return Center(
                     child: Text(
-                      "No attendance records found for this department/semester/$_selectedSubjectName.",
+                      "Error: ${snapshot.error}",
+                      style: const TextStyle(color: Colors.red),
                     ),
                   );
                 }
 
-                // Already flattened to one record per student by
-                // AdminAttendanceService.getAttendanceByFilter.
-                final allRecords = snapshot.data!;
+                final allRecords = snapshot.data ?? [];
 
                 // Filter for selected date
                 final dateRecords = allRecords.where((r) {
@@ -325,146 +364,784 @@ class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
                       r.date.day == _selectedDate.day;
                 }).toList();
 
-                // Stats calculation for the selected date. Only
-                // Present/Absent exist in the real data (isPresent is a
-                // bool), so there is no separate Leave bucket.
-                int presentCount = dateRecords.where((r) => r.isPresent).length;
+                int presentCount =
+                    dateRecords.where((r) => r.isPresent).length;
                 int absentCount = dateRecords.where((r) => !r.isPresent).length;
+                int totalCount = dateRecords.length;
+
+                // Filter logic for search & chip buttons
+                final filteredRecords = dateRecords.where((r) {
+                  final matchesSearch = r.fullName
+                          .toLowerCase()
+                          .contains(_searchQuery.toLowerCase()) ||
+                      r.roll
+                          .toLowerCase()
+                          .contains(_searchQuery.toLowerCase());
+
+                  if (_selectedFilterIndex == 1) {
+                    return matchesSearch && r.isPresent;
+                  } else if (_selectedFilterIndex == 2) {
+                    return matchesSearch && !r.isPresent;
+                  }
+                  return matchesSearch;
+                }).toList();
 
                 return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Summary Banner
+                    // 🟦 Class Overview Card
                     Container(
-                      margin: const EdgeInsets.all(12),
-                      padding: const EdgeInsets.all(12),
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 5,
-                          ),
-                        ],
+                        color: const Color(0xFF3B52D4),
+                        borderRadius: BorderRadius.circular(18),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildStatBadge(
-                            "Present",
-                            presentCount,
-                            Colors.green,
+                          const Text(
+                            "Class Overview",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          _buildStatBadge("Absent", absentCount, Colors.red),
+                          const SizedBox(height: 2),
+                          Text(
+                            "$_selectedSubjectName • Sem ${_selectedSemester ?? ''}",
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              _buildOverviewStatCard(
+                                "PRESENT",
+                                "$presentCount",
+                              ),
+                              const SizedBox(width: 10),
+                              _buildOverviewStatCard("Absent", "$absentCount"),
+                              const SizedBox(width: 10),
+                              _buildOverviewStatCard("Total", "$totalCount"),
+                            ],
+                          ),
                         ],
                       ),
                     ),
+                    const SizedBox(height: 20),
 
-                    // List of Students Status
-                    Expanded(
-                      child: dateRecords.isEmpty
-                          ? Center(
-                              child: Text(
-                                "No attendance taken for this date${_selectedSubjectId != null ? ' in $_selectedSubjectName' : ''}.",
-                              ),
-                            )
-                          : ListView.builder(
-                              itemCount: dateRecords.length,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              itemBuilder: (context, index) {
-                                final record = dateRecords[index];
-                                final statusColor = record.isPresent
-                                    ? Colors.green
-                                    : Colors.red;
+                    // 🔍 Search Input
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey.shade200),
+                      ),
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: (val) => setState(() => _searchQuery = val),
+                        decoration: const InputDecoration(
+                          hintText: "Search student name or roll no...",
+                          hintStyle:
+                              TextStyle(color: Colors.grey, fontSize: 14),
+                          prefixIcon: Icon(Icons.search, color: Colors.grey),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
 
-                                return Card(
-                                  margin: const EdgeInsets.only(bottom: 8),
-                                  child: ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: statusColor.withValues(
-                                        alpha: 0.1,
-                                      ),
-                                      backgroundImage:
-                                          record.photoUrl.isNotEmpty
+                    // 🔘 Filter Chips (All Students / Present / Absent)
+                    Row(
+                      children: [
+                        _buildFilterChip(0, "All Students"),
+                        const SizedBox(width: 10),
+                        _buildFilterChip(1, "Present"),
+                        const SizedBox(width: 10),
+                        _buildFilterChip(2, "Absent"),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // 👥 Students List Title
+                    const Text(
+                      "Students",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1F2937),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // List of Student Records
+                    filteredRecords.isEmpty
+                        ? Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(24),
+                            alignment: Alignment.center,
+                            child: Text(
+                              dateRecords.isEmpty
+                                  ? "No attendance taken for this date in $_selectedSubjectName."
+                                  : "No matching student records found.",
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 13,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          )
+                        : ListView.separated(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: filteredRecords.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 10),
+                            itemBuilder: (context, index) {
+                              final record = filteredRecords[index];
+                              final bool isPresent = record.isPresent;
+
+                              return Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFEEF2FF),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 22,
+                                      backgroundColor: Colors.grey.shade300,
+                                      backgroundImage: record
+                                              .photoUrl.isNotEmpty
                                           ? NetworkImage(record.photoUrl)
                                           : null,
                                       child: record.photoUrl.isEmpty
                                           ? Text(
-                                              record.roll.isNotEmpty
-                                                  ? record.roll
-                                                  : '${index + 1}',
-                                              style: TextStyle(
-                                                color: statusColor,
+                                              record.fullName.isNotEmpty
+                                                  ? record.fullName[0]
+                                                      .toUpperCase()
+                                                  : 'S',
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
+                                                color: Color(0xFF3B52D4),
                                               ),
                                             )
                                           : null,
                                     ),
-                                    title: Text(
-                                      record.fullName,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            record.fullName,
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color(0xFF1E293B),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            record.roll.isNotEmpty
+                                                ? record.roll
+                                                : 'No Roll No',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey.shade600,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    // Subject name shown alongside roll no. so
-                                    // it's clear which subject the student was
-                                    // marked present/absent for — especially
-                                    // useful when "All Subjects" is selected.
-                                    subtitle: Text(
-                                      "Roll No: ${record.roll}"
-                                      "${record.subjectName.isNotEmpty ? ' • ${record.subjectName}' : ''}",
-                                    ),
-                                    trailing: Container(
+                                    Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 12,
                                         vertical: 6,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: statusColor.withValues(
-                                          alpha: 0.1,
-                                        ),
-                                        borderRadius: BorderRadius.circular(20),
-                                        border: Border.all(color: statusColor),
+                                        color: isPresent
+                                            ? const Color(0xFFBBF7D0)
+                                            : const Color(0xFFFECDD3),
+                                        borderRadius:
+                                            BorderRadius.circular(20),
                                       ),
                                       child: Text(
-                                        record.status.toUpperCase(),
+                                        isPresent ? "PRESENT" : "ABSENT",
                                         style: TextStyle(
-                                          color: statusColor,
+                                          color: isPresent
+                                              ? const Color(0xFF166534)
+                                              : const Color(0xFF991B1B),
+                                          fontSize: 11,
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 12,
+                                          letterSpacing: 0.5,
                                         ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              },
-                            ),
-                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                   ],
                 );
               },
             ),
-          ),
-        ],
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildStatBadge(String label, int count, Color color) {
-    return Column(
-      children: [
-        Text(
-          "$count",
+  // 🛠️ Helper UI Widgets
+
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: Color(0xFF374151),
+      ),
+    );
+  }
+
+  Widget _buildOverviewStatCard(String title, String count) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.18),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              count,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(int index, String label) {
+    final bool isSelected = _selectedFilterIndex == index;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedFilterIndex = index),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF3B52D4)
+              : const Color(0xFFE5E7EB),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
           style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: color,
+            color: isSelected ? Colors.white : const Color(0xFF4B5563),
+            fontSize: 13,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
           ),
         ),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-      ],
+      ),
     );
   }
 }
+
+// import 'package:flutter/material.dart';
+// import 'package:intl/intl.dart';
+// //import 'package:nexcampus_app/core/constants/app_theme.dart';
+// import '../models/attendance_model.dart';
+// import '../models/admin_subject_model.dart';
+// import '../services/admin_attendance_service.dart';
+
+// class AdminAttendanceViewScreen extends StatefulWidget {
+//   const AdminAttendanceViewScreen({super.key});
+
+//   @override
+//   State<AdminAttendanceViewScreen> createState() =>
+//       _AdminAttendanceViewScreenState();
+// }
+
+// class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
+//   // Filters
+//   String? _selectedDepartment = 'Computer Engineering';
+//   String? _selectedSemester = '1';
+
+//   /// Subject filter
+//   String? _selectedSubjectId;
+//   String _selectedSubjectName = 'All Subjects';
+
+//   /// Date filter
+//   DateTime _selectedDate = DateTime.now();
+
+//   final List<String> _departments = [
+//     'Computer Engineering',
+//     'Civil Engineering',
+//     'Architecture',
+//   ];
+
+//   final List<String> _semesters8 = ['1', '2', '3', '4', '5', '6', '7', '8'];
+
+//   final List<String> _semesters10 = [
+//     '1',
+//     '2',
+//     '3',
+//     '4',
+//     '5',
+//     '6',
+//     '7',
+//     '8',
+//     '9',
+//     '10',
+//   ];
+
+//   List<String> _getAvailableSemesters() {
+//     if (_selectedDepartment == 'Architecture') {
+//       return _semesters10;
+//     }
+//     return _semesters8;
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     //final primaryColor = AppTheme.primaryColor ?? Colors.blue;
+//     final currentSemesters = _getAvailableSemesters();
+
+//     return Scaffold(
+//       backgroundColor: const Color(0xFFF6F5FB),
+//       appBar: AppBar(
+//         title: const Text(
+//           "Student Attendance View",
+//           style: TextStyle(color: Colors.black, fontSize: 18),
+//         ),
+//         backgroundColor: Colors.white,
+//         elevation: 0.5,
+//         iconTheme: const IconThemeData(color: Colors.black),
+//       ),
+//       body: Column(
+//         children: [
+//           // 🔍 FILTERS SECTION
+//           Container(
+//             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+//             color: Colors.white,
+//             child: Column(
+//               children: [
+//                 Row(
+//                   children: [
+//                     // Dept Dropdown
+//                     Expanded(
+//                       flex: 1,
+//                       child: DropdownButtonFormField<String>(
+//                         initialValue: _selectedDepartment,
+//                         isExpanded: true,
+//                         style: const TextStyle(
+//                           fontSize: 12,
+//                           color: Colors.black,
+//                         ),
+//                         decoration: const InputDecoration(
+//                           labelText: "Dept",
+//                           labelStyle: TextStyle(fontSize: 12),
+//                           contentPadding: EdgeInsets.symmetric(
+//                             horizontal: 4,
+//                             vertical: 8,
+//                           ),
+//                         ),
+//                         items: _departments
+//                             .map(
+//                               (d) => DropdownMenuItem(
+//                                 value: d,
+//                                 child: Text(d, overflow: TextOverflow.ellipsis),
+//                               ),
+//                             )
+//                             .toList(),
+//                         onChanged: (val) {
+//                           setState(() {
+//                             _selectedDepartment = val;
+//                             if (_selectedSemester != null &&
+//                                 !_getAvailableSemesters().contains(
+//                                   _selectedSemester,
+//                                 )) {
+//                               _selectedSemester = '1st';
+//                             }
+//                             // Subject list depends on department/semester,
+//                             // so any previously selected subject may no
+//                             // longer be valid — fall back to "All Subjects".
+//                             _selectedSubjectId = null;
+//                             _selectedSubjectName = 'All Subjects';
+//                           });
+//                         },
+//                       ),
+//                     ),
+//                     const SizedBox(width: 6),
+
+//                     // Sem Dropdown
+//                     Expanded(
+//                       flex: 1,
+//                       child: DropdownButtonFormField<String>(
+//                         initialValue: _selectedSemester,
+//                         isExpanded: true,
+//                         style: const TextStyle(
+//                           fontSize: 12,
+//                           color: Colors.black,
+//                         ),
+//                         decoration: const InputDecoration(
+//                           labelText: "Sem",
+//                           labelStyle: TextStyle(fontSize: 12),
+//                           contentPadding: EdgeInsets.symmetric(
+//                             horizontal: 4,
+//                             vertical: 8,
+//                           ),
+//                         ),
+//                         items: currentSemesters
+//                             .map(
+//                               (s) => DropdownMenuItem(
+//                                 value: s,
+//                                 child: Text(s, overflow: TextOverflow.ellipsis),
+//                               ),
+//                             )
+//                             .toList(),
+//                         onChanged: (val) => setState(() {
+//                           _selectedSemester = val;
+//                           _selectedSubjectId = null;
+//                           _selectedSubjectName = 'All Subjects';
+//                         }),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//                 const SizedBox(height: 10),
+
+//                 // Subject Dropdown Row — scoped to the selected
+//                 // department + semester, matching the teacher-side
+//                 // subject-selection flow.
+//                 StreamBuilder<List<AdminSubjectModel>>(
+//                   stream: AdminAttendanceService.getSubjects(
+//                     department: _selectedDepartment ?? '',
+//                     semester: _selectedSemester ?? '',
+//                   ),
+//                   builder: (context, subjectSnapshot) {
+//                     final subjects = subjectSnapshot.data ?? [];
+
+//                     // Keep the current selection if it's still valid for
+//                     // this department/semester; otherwise fall back.
+//                     final validIds = subjects.map((s) => s.id).toSet();
+//                     if (_selectedSubjectId != null &&
+//                         !validIds.contains(_selectedSubjectId)) {
+//                       WidgetsBinding.instance.addPostFrameCallback((_) {
+//                         if (mounted) {
+//                           setState(() {
+//                             _selectedSubjectId = null;
+//                             _selectedSubjectName = 'All Subjects';
+//                           });
+//                         }
+//                       });
+//                     }
+
+//                     return DropdownButtonFormField<String>(
+//                       initialValue: _selectedSubjectId,
+//                       isExpanded: true,
+//                       style: const TextStyle(fontSize: 12, color: Colors.black),
+//                       decoration: const InputDecoration(
+//                         labelText: "Subject",
+//                         labelStyle: TextStyle(fontSize: 12),
+//                         contentPadding: EdgeInsets.symmetric(
+//                           horizontal: 8,
+//                           vertical: 8,
+//                         ),
+//                       ),
+//                       items: [
+//                         const DropdownMenuItem<String>(
+//                           value: null,
+//                           child: Text(
+//                             "All Subjects",
+//                             overflow: TextOverflow.ellipsis,
+//                           ),
+//                         ),
+//                         ...subjects.map(
+//                           (s) => DropdownMenuItem<String>(
+//                             value: s.id,
+//                             child: Text(
+//                               s.name,
+//                               overflow: TextOverflow.ellipsis,
+//                             ),
+//                           ),
+//                         ),
+//                       ],
+//                       onChanged: (val) {
+//                         setState(() {
+//                           _selectedSubjectId = val;
+//                           _selectedSubjectName = val == null
+//                               ? 'All Subjects'
+//                               : subjects
+//                                     .firstWhere(
+//                                       (s) => s.id == val,
+//                                       orElse: () => AdminSubjectModel(
+//                                         id: val,
+//                                         name: 'Unknown Subject',
+//                                       ),
+//                                     )
+//                                     .name;
+//                         });
+//                       },
+//                     );
+//                   },
+//                 ),
+//                 const SizedBox(height: 10),
+
+//                 // Date Picker Row
+//                 InkWell(
+//                   onTap: () async {
+//                     DateTime? picked = await showDatePicker(
+//                       context: context,
+//                       initialDate: _selectedDate,
+//                       firstDate: DateTime(2020),
+//                       lastDate: DateTime(2030),
+//                     );
+//                     if (picked != null) {
+//                       setState(() => _selectedDate = picked);
+//                     }
+//                   },
+//                   child: Container(
+//                     padding: const EdgeInsets.symmetric(
+//                       vertical: 10,
+//                       horizontal: 12,
+//                     ),
+//                     decoration: BoxDecoration(
+//                       border: Border.all(color: Colors.grey.shade400),
+//                       borderRadius: BorderRadius.circular(8),
+//                     ),
+//                     child: Row(
+//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                       children: [
+//                         Text(
+//                           "Selected Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}",
+//                           style: const TextStyle(
+//                             fontWeight: FontWeight.bold,
+//                             fontSize: 13,
+//                           ),
+//                         ),
+//                         const Icon(
+//                           Icons.calendar_today,
+//                           size: 18,
+//                           color: Colors.blue,
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+
+//           // 📊 ATTENDANCE STREAM LIST
+//           Expanded(
+//             child: StreamBuilder<List<AttendanceModel>>(
+//               // Real schema: one doc per class session, with a `students`
+//               // array. There is no `section` field to filter on.
+//               // Filtering now goes department -> semester -> subject, so
+//               // switching subjects here matches what the teacher already
+//               // sees for that department/semester/subject combination.
+//               stream: AdminAttendanceService.getAttendanceByFilter(
+//                 department: _selectedDepartment ?? '',
+//                 semester: _selectedSemester ?? '',
+//                 subjectId: _selectedSubjectId,
+//               ),
+//               builder: (context, snapshot) {
+//                 if (snapshot.connectionState == ConnectionState.waiting) {
+//                   return const Center(child: CircularProgressIndicator());
+//                 }
+
+//                 if (snapshot.hasError) {
+//                   return Center(child: Text("Error: ${snapshot.error}"));
+//                 }
+
+//                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
+//                   return Center(
+//                     child: Text(
+//                       "No attendance records found for this department/semester/$_selectedSubjectName.",
+//                     ),
+//                   );
+//                 }
+
+//                 // Already flattened to one record per student by
+//                 // AdminAttendanceService.getAttendanceByFilter.
+//                 final allRecords = snapshot.data!;
+
+//                 // Filter for selected date
+//                 final dateRecords = allRecords.where((r) {
+//                   return r.date.year == _selectedDate.year &&
+//                       r.date.month == _selectedDate.month &&
+//                       r.date.day == _selectedDate.day;
+//                 }).toList();
+
+//                 // Stats calculation for the selected date. Only
+//                 // Present/Absent exist in the real data (isPresent is a
+//                 // bool), so there is no separate Leave bucket.
+//                 int presentCount = dateRecords.where((r) => r.isPresent).length;
+//                 int absentCount = dateRecords.where((r) => !r.isPresent).length;
+
+//                 return Column(
+//                   children: [
+//                     // Summary Banner
+//                     Container(
+//                       margin: const EdgeInsets.all(12),
+//                       padding: const EdgeInsets.all(12),
+//                       decoration: BoxDecoration(
+//                         color: Colors.white,
+//                         borderRadius: BorderRadius.circular(12),
+//                         boxShadow: [
+//                           BoxShadow(
+//                             color: Colors.black.withValues(alpha: 0.05),
+//                             blurRadius: 5,
+//                           ),
+//                         ],
+//                       ),
+//                       child: Row(
+//                         mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                         children: [
+//                           _buildStatBadge(
+//                             "Present",
+//                             presentCount,
+//                             Colors.green,
+//                           ),
+//                           _buildStatBadge("Absent", absentCount, Colors.red),
+//                         ],
+//                       ),
+//                     ),
+
+//                     // List of Students Status
+//                     Expanded(
+//                       child: dateRecords.isEmpty
+//                           ? Center(
+//                               child: Text(
+//                                 "No attendance taken for this date${_selectedSubjectId != null ? ' in $_selectedSubjectName' : ''}.",
+//                               ),
+//                             )
+//                           : ListView.builder(
+//                               itemCount: dateRecords.length,
+//                               padding: const EdgeInsets.symmetric(
+//                                 horizontal: 12,
+//                               ),
+//                               itemBuilder: (context, index) {
+//                                 final record = dateRecords[index];
+//                                 final statusColor = record.isPresent
+//                                     ? Colors.green
+//                                     : Colors.red;
+
+//                                 return Card(
+//                                   margin: const EdgeInsets.only(bottom: 8),
+//                                   child: ListTile(
+//                                     leading: CircleAvatar(
+//                                       backgroundColor: statusColor.withValues(
+//                                         alpha: 0.1,
+//                                       ),
+//                                       backgroundImage:
+//                                           record.photoUrl.isNotEmpty
+//                                           ? NetworkImage(record.photoUrl)
+//                                           : null,
+//                                       child: record.photoUrl.isEmpty
+//                                           ? Text(
+//                                               record.roll.isNotEmpty
+//                                                   ? record.roll
+//                                                   : '${index + 1}',
+//                                               style: TextStyle(
+//                                                 color: statusColor,
+//                                                 fontWeight: FontWeight.bold,
+//                                               ),
+//                                             )
+//                                           : null,
+//                                     ),
+//                                     title: Text(
+//                                       record.fullName,
+//                                       style: const TextStyle(
+//                                         fontWeight: FontWeight.bold,
+//                                       ),
+//                                     ),
+//                                     // Subject name shown alongside roll no. so
+//                                     // it's clear which subject the student was
+//                                     // marked present/absent for — especially
+//                                     // useful when "All Subjects" is selected.
+//                                     subtitle: Text(
+//                                       "Roll No: ${record.roll}"
+//                                       "${record.subjectName.isNotEmpty ? ' • ${record.subjectName}' : ''}",
+//                                     ),
+//                                     trailing: Container(
+//                                       padding: const EdgeInsets.symmetric(
+//                                         horizontal: 12,
+//                                         vertical: 6,
+//                                       ),
+//                                       decoration: BoxDecoration(
+//                                         color: statusColor.withValues(
+//                                           alpha: 0.1,
+//                                         ),
+//                                         borderRadius: BorderRadius.circular(20),
+//                                         border: Border.all(color: statusColor),
+//                                       ),
+//                                       child: Text(
+//                                         record.status.toUpperCase(),
+//                                         style: TextStyle(
+//                                           color: statusColor,
+//                                           fontWeight: FontWeight.bold,
+//                                           fontSize: 12,
+//                                         ),
+//                                       ),
+//                                     ),
+//                                   ),
+//                                 );
+//                               },
+//                             ),
+//                     ),
+//                   ],
+//                 );
+//               },
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildStatBadge(String label, int count, Color color) {
+//     return Column(
+//       children: [
+//         Text(
+//           "$count",
+//           style: TextStyle(
+//             fontSize: 18,
+//             fontWeight: FontWeight.bold,
+//             color: color,
+//           ),
+//         ),
+//         Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+//       ],
+//     );
+//   }
+// }
