@@ -137,7 +137,7 @@ Text(
 SizedBox(height: height * 0.012),
 
 DropdownButtonFormField<String>(
-  initialValue: selectedDepartment,
+  value: selectedDepartment,
   isExpanded: true,
   decoration: InputDecoration(
     hintText: "Select Department",
@@ -202,7 +202,7 @@ Text(
 SizedBox(height: height * 0.012),
 
 DropdownButtonFormField<String>(
-  initialValue: selectedSemester,
+  value: selectedSemester,
   isExpanded: true,
   decoration: InputDecoration(
     hintText: "Select Semester",
