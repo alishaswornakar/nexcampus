@@ -1,11 +1,10 @@
 // lib/features/student/blocs/anonymous_issue_reporting/widgets/anonymous_avatar.dart
 import 'package:flutter/material.dart';
-
-import '../utils/anonymous_identity.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 /// Circle avatar used instead of a profile photo everywhere in this
-/// feature. Uses a masked/incognito icon so no visual hint of identity is
-/// ever given, colored deterministically from [seed] just for variety.
+/// feature. Always a plain, identity-free silhouette - no visual hint
+/// of who the author is.
 class AnonymousAvatar extends StatelessWidget {
   const AnonymousAvatar({super.key, required this.seed, this.radius = 18});
 
@@ -14,14 +13,13 @@ class AnonymousAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = AnonymousIdentity.colorFor(seed);
     return CircleAvatar(
       radius: radius,
-      backgroundColor: color.withValues(alpha: 0.12),
+      backgroundColor: AppTheme.border,
       child: Icon(
-        Icons.theater_comedy_outlined,
+        Icons.person_outline,
         size: radius,
-        color: color,
+        color: AppTheme.textSecondary,
       ),
     );
   }

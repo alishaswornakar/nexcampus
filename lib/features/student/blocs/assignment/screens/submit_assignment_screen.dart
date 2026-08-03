@@ -1,4 +1,4 @@
-// assignment/screens/submit_assignment_screen.dart  (NEW FILE)
+// assignment/screens/submit_assignment_screen.dart
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,11 +13,7 @@ import '../../../../teachers/teachers_features/assignments/services/assignment_s
 import '../../../../teachers/teachers_features/assignments/services/cloudinary_service.dart';
 import '../models/assignment_model.dart';
 
-/// Dedicated "Submit Assignment" screen matching the Figma upload flow:
-/// status card, dashed drop-zone file picker, an optional comment to
-/// the teacher, and a full-width submit button. On success shows a
-/// confirmation dialog matching the "Assignment Submitted Successfully"
-/// frame.
+/// Dedicated "Submit Assignment" screen matching the Figma upload flow.
 class SubmitAssignmentScreen extends StatefulWidget {
   const SubmitAssignmentScreen({
     super.key,
@@ -40,8 +36,6 @@ class _SubmitAssignmentScreenState extends State<SubmitAssignmentScreen> {
   final AssignmentSubmissionRepository _repository =
       AssignmentSubmissionRepository(AssignmentSubmissionService());
   final TextEditingController _commentsController = TextEditingController();
-
-  static const Color _accent = Color(0xFF4C4FE0);
 
   Map<String, dynamic>? _pickedFile;
   bool _uploading = false;
@@ -177,9 +171,6 @@ class _SubmitAssignmentScreenState extends State<SubmitAssignmentScreen> {
   }
 
   void _showSuccessDialog() {
-    // Captured before the dialog opens so "Back to Dashboard" / "View
-    // Submission" can pop *through* this screen and the detail screen
-    // beneath it, not just close the dialog itself.
     final navigator = Navigator.of(context);
 
     showDialog(
@@ -199,7 +190,7 @@ class _SubmitAssignmentScreenState extends State<SubmitAssignmentScreen> {
                   width: 72,
                   height: 72,
                   decoration: const BoxDecoration(
-                    color: _accent,
+                    color: AppTheme.primary,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -215,7 +206,7 @@ class _SubmitAssignmentScreenState extends State<SubmitAssignmentScreen> {
                   style: TextStyle(
                     fontSize: 19,
                     fontWeight: FontWeight.w800,
-                    color: _accent,
+                    color: AppTheme.primary,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -234,7 +225,7 @@ class _SubmitAssignmentScreenState extends State<SubmitAssignmentScreen> {
                       navigator.popUntil((route) => route.isFirst);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _accent,
+                      backgroundColor: AppTheme.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -257,8 +248,8 @@ class _SubmitAssignmentScreenState extends State<SubmitAssignmentScreen> {
                       navigator.pop(); // back to the Tasks list
                     },
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: _accent,
-                      side: const BorderSide(color: _accent),
+                      foregroundColor: AppTheme.primary,
+                      side: const BorderSide(color: AppTheme.primary),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -325,7 +316,7 @@ class _SubmitAssignmentScreenState extends State<SubmitAssignmentScreen> {
                                 vertical: 5,
                               ),
                               decoration: BoxDecoration(
-                                color: _accent.withValues(alpha: 0.15),
+                                color: AppTheme.primary.withValues(alpha:0.15),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
@@ -335,7 +326,7 @@ class _SubmitAssignmentScreenState extends State<SubmitAssignmentScreen> {
                                 style: const TextStyle(
                                   fontSize: 10.5,
                                   fontWeight: FontWeight.w800,
-                                  color: _accent,
+                                  color: AppTheme.primary,
                                 ),
                               ),
                             ),
@@ -412,7 +403,7 @@ class _SubmitAssignmentScreenState extends State<SubmitAssignmentScreen> {
                     isUploading: _uploading,
                     fileName: _pickedFile?['name'] as String?,
                     onBrowse: _uploading ? null : _pickFile,
-                    accent: _accent,
+                    accent: AppTheme.primary,
                     compact: isSmall,
                   ),
                   SizedBox(height: isSmall ? 18 : 24),
@@ -436,6 +427,13 @@ class _SubmitAssignmentScreenState extends State<SubmitAssignmentScreen> {
                         borderRadius: BorderRadius.circular(14),
                         borderSide: BorderSide.none,
                       ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(
+                          color: AppTheme.primary,
+                          width: 2,
+                        ),
+                      ),
                     ),
                   ),
                   SizedBox(height: isSmall ? 20 : 26),
@@ -444,7 +442,7 @@ class _SubmitAssignmentScreenState extends State<SubmitAssignmentScreen> {
                     child: ElevatedButton.icon(
                       onPressed: _submitting ? null : _submit,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _accent,
+                        backgroundColor: AppTheme.primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
@@ -455,7 +453,7 @@ class _SubmitAssignmentScreenState extends State<SubmitAssignmentScreen> {
                               width: 18,
                               height: 18,
                               child: CircularProgressIndicator(
-                                strokeWidth: 2,
+                                strokeWidth: 2.0,
                                 color: Colors.white,
                               ),
                             )
@@ -481,8 +479,6 @@ class _SubmitAssignmentScreenState extends State<SubmitAssignmentScreen> {
 }
 
 /// Dashed drop-zone from the Figma "Submission Details" section.
-/// Implemented with a small [CustomPainter] instead of a package,
-/// since your pubspec doesn't include a dotted-border dependency.
 class DottedUploadBox extends StatelessWidget {
   const DottedUploadBox({
     super.key,
@@ -502,9 +498,7 @@ class DottedUploadBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      foregroundPainter: _DashedBorderPainter(
-        color: accent.withValues(alpha: 0.5),
-      ),
+      foregroundPainter: _DashedBorderPainter(color: accent.withValues(alpha:0.5)),
       child: Container(
         width: double.infinity,
         padding: EdgeInsets.symmetric(
@@ -521,7 +515,7 @@ class DottedUploadBox extends StatelessWidget {
               width: compact ? 44 : 52,
               height: compact ? 44 : 52,
               decoration: BoxDecoration(
-                color: accent.withValues(alpha: 0.12),
+                color: accent.withValues(alpha:0.12),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -548,7 +542,7 @@ class DottedUploadBox extends StatelessWidget {
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(
-                          strokeWidth: 2,
+                          strokeWidth: 2.0,
                           color: Colors.white,
                         ),
                       )

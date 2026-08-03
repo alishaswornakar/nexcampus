@@ -1,5 +1,6 @@
 // lib/features/student/blocs/team_finder/widgets/team_post_card.dart
 import 'package:flutter/material.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import '../models/team_post_model.dart';
 import 'skill_tag_chip.dart';
@@ -20,33 +21,29 @@ class TeamPostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isOpen = post.isOpen;
+    final total = post.slotsTotal == 0 ? 1 : post.slotsTotal;
+    final progress = (post.slotsFilled / total).clamp(0.0, 1.0);
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.grey.shade200),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha:0.03),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          color: AppTheme.primary.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppTheme.primary.withValues(alpha: 0.12)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Text(
                     post.title,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 15,
@@ -61,14 +58,26 @@ class TeamPostCard extends StatelessWidget {
             const SizedBox(height: 6),
             Row(
               children: [
-                _MetaChip(icon: Icons.category_outlined, label: post.projectType),
-                const SizedBox(width: 8),
+                Icon(
+                  Icons.apartment_outlined,
+                  size: 14,
+                  color: Colors.grey.shade600,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  post.projectType,
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                ),
+                Text(
+                  '  •  ',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade400),
+                ),
                 Expanded(
                   child: Text(
                     '${post.department} • Sem ${post.semester}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
                   ),
                 ),
               ],
@@ -91,30 +100,68 @@ class TeamPostCard extends StatelessWidget {
                     .toList(),
               ),
             ],
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.people_outline, size: 15, color: Colors.grey.shade500),
-                const SizedBox(width: 4),
-                Text(
-                  '${post.slotsFilled}/${post.slotsTotal} filled',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                const Text(
+                  'Team filled',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                 ),
                 const Spacer(),
-                if (showOwner)
-                  Flexible(
-                    child: Text(
-                      post.ownerName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
+                Text(
+                  '${post.slotsFilled}/${post.slotsTotal}',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
                   ),
+                ),
               ],
+            ),
+            const SizedBox(height: 6),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: LinearProgressIndicator(
+                value: progress,
+                minHeight: 6,
+                backgroundColor: AppTheme.primary.withValues(alpha: 0.12),
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  AppTheme.primary,
+                ),
+              ),
+            ),
+            if (showOwner) ...[
+              const SizedBox(height: 6),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  'by ${post.ownerName}',
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ),
+            ],
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              height: 40,
+              child: ElevatedButton(
+                onPressed: onTap,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: AppTheme.primary,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text(
+                  'View Details',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
             ),
           ],
         ),
@@ -135,44 +182,16 @@ class _StatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withValues(alpha:0.1),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        label,
+        label.toUpperCase(),
         style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
+          fontSize: 10.5,
+          fontWeight: FontWeight.w700,
           color: color.shade700,
         ),
-      ),
-    );
-  }
-}
-
-class _MetaChip extends StatelessWidget {
-  const _MetaChip({required this.icon, required this.label});
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: Colors.blueGrey.withValues(alpha:0.08),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: Colors.blueGrey.shade600),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(fontSize: 11, color: Colors.blueGrey.shade700),
-          ),
-        ],
       ),
     );
   }

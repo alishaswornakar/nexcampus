@@ -197,7 +197,10 @@ class _MyReportsListViewState extends State<MyReportsListView>
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                       ),
-                      child: const Text('Submit a Report',style: TextStyle(color: Colors.white),),
+                      child: const Text(
+                        'Submit a Report',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ],
                 ],

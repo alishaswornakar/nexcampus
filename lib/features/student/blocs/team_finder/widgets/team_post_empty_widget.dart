@@ -1,5 +1,6 @@
 // lib/features/student/blocs/team_finder/widgets/team_post_empty_widget.dart
 import 'package:flutter/material.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 /// Generic empty-state placeholder reused across Browse / My Posts /
 /// My Applications tabs and the applicants list.
@@ -30,10 +31,14 @@ class TeamPostEmptyWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.blue.withValues(alpha: 0.08),
+                color: AppTheme.primary.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 40, color: Colors.blue.shade300),
+              child: Icon(
+                icon,
+                size: 40,
+                color: AppTheme.primary.withValues(alpha: 0.7),
+              ),
             ),
             const SizedBox(height: 16),
             Text(
@@ -55,16 +60,24 @@ class TeamPostEmptyWidget extends StatelessWidget {
             ],
             if (actionLabel != null && onAction != null) ...[
               const SizedBox(height: 20),
-              ElevatedButton(
+              OutlinedButton(
                 onPressed: onAction,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppTheme.primary,
+                  backgroundColor: Colors.white,
+                  side: const BorderSide(color: AppTheme.primary),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: Text(actionLabel!),
+                child: Text(
+                  actionLabel!,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
               ),
             ],
           ],

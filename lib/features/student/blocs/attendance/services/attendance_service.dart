@@ -46,7 +46,8 @@ class AttendanceService {
   }
 
   /// Adds this student to a session doc's `students` array. If the session
-  /// doc doesn't exist yet, it's created with just this one student.
+  /// doc doesn't exist yet, it's created with just this one student, plus
+  /// the subject-level metadata needed for subject-wise grouping.
   Future<void> addAttendance(String uid, AttendanceModel attendance) async {
     final docRef = _sessionsCollection.doc(attendance.id);
 
@@ -67,6 +68,10 @@ class AttendanceService {
           'createdAt': Timestamp.fromDate(attendance.createdAt),
           'department': attendance.department,
           'semester': attendance.semester,
+          'subjectId': attendance.subjectId,
+          'subjectName': attendance.subjectName,
+          'teacherName': attendance.teacherName,
+          'isHoliday': attendance.isHoliday,
           'students': [studentEntry],
         });
         return;

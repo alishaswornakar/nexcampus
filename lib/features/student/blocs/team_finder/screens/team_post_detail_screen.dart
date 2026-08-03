@@ -10,7 +10,6 @@ import '../models/team_application_model.dart';
 import '../models/team_post_model.dart';
 import '../repository/team_finder_repository.dart';
 import '../widgets/applicant_tile.dart';
-import '../widgets/skill_tag_chip.dart';
 import '../widgets/team_post_empty_widget.dart';
 
 /// Full detail view for a single post.
@@ -90,22 +89,47 @@ class _TeamPostDetailScreenState extends State<TeamPostDetailScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Apply to this post'),
-        content: TextField(
-          controller: messageController,
-          maxLines: 3,
-          decoration: const InputDecoration(
-            hintText: 'Optional message to the owner',
-            border: OutlineInputBorder(),
-          ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          'Apply to Join Team',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Optional message to owner',
+              style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: messageController,
+              maxLines: 4,
+              decoration: InputDecoration(
+                hintText: "Explain why you'd be a great fit...",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
             child: const Text('Apply'),
           ),
         ],
@@ -320,50 +344,119 @@ class _PostHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: post.isOpen
+                  ? Colors.green.withValues(alpha: 0.12)
+                  : Colors.grey.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              post.isOpen ? 'OPEN' : post.status.toUpperCase(),
+              style: TextStyle(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w700,
+                color: post.isOpen
+                    ? Colors.green.shade700
+                    : Colors.grey.shade700,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
           Text(
             post.title,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 4),
-          Text(
-            'by ${post.ownerName} • ${post.rollNumber}',
-            style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600),
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+          const SizedBox(height: 8),
+          Row(
             children: [
-              _InfoChip(icon: Icons.category_outlined, label: post.projectType),
-              _InfoChip(icon: Icons.school_outlined, label: post.department),
-              _InfoChip(
-                icon: Icons.calendar_month_outlined,
-                label: 'Sem ${post.semester}',
+              CircleAvatar(
+                radius: 12,
+                backgroundColor: AppTheme.primary,
+                child: Text(
+                  post.ownerName.isNotEmpty
+                      ? post.ownerName[0].toUpperCase()
+                      : '?',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ),
-              _InfoChip(
-                icon: Icons.people_outline,
-                label: '${post.slotsFilled}/${post.slotsTotal} filled',
+              const SizedBox(width: 8),
+              Text(
+                'by ${post.ownerName} • ${post.rollNumber}',
+                style: TextStyle(fontSize: 12.5, color: Colors.grey.shade600),
               ),
             ],
           ),
           const SizedBox(height: 14),
+          _InfoRow(icon: Icons.apartment_outlined, label: post.projectType),
+          const SizedBox(height: 8),
+          _InfoRow(icon: Icons.school_outlined, label: post.department),
+          const SizedBox(height: 8),
+          _InfoRow(
+            icon: Icons.calendar_month_outlined,
+            label: 'Sem ${post.semester}',
+          ),
+          const SizedBox(height: 8),
+          _InfoRow(
+            icon: Icons.people_outline,
+            label: '${post.slotsFilled}/${post.slotsTotal} filled',
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Description',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 6),
           Text(
             post.description,
-            style: const TextStyle(fontSize: 14, height: 1.4),
+            style: TextStyle(
+              fontSize: 13.5,
+              height: 1.4,
+              color: Colors.grey.shade800,
+            ),
           ),
           if (post.skillsNeeded.isNotEmpty) ...[
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
             const Text(
-              'Skills needed',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              'Position Needed',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: post.skillsNeeded
-                  .map((s) => SkillTagChip(label: s))
-                  .toList(),
+            ...post.skillsNeeded.map(
+              (s) => Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Container(
+                        width: 5,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade700,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        s,
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          color: Colors.grey.shade800,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ],
@@ -372,30 +465,22 @@ class _PostHeader extends StatelessWidget {
   }
 }
 
-class _InfoChip extends StatelessWidget {
-  const _InfoChip({required this.icon, required this.label});
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({required this.icon, required this.label});
   final IconData icon;
   final String label;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: Colors.blueGrey.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 13, color: Colors.blueGrey.shade600),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(fontSize: 12, color: Colors.blueGrey.shade700),
-          ),
-        ],
-      ),
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: AppTheme.primary),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: TextStyle(fontSize: 13, color: Colors.grey.shade800),
+        ),
+      ],
     );
   }
 }
@@ -444,9 +529,25 @@ class _ApplicantsSection extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Applicants (${state.postApplications.length})',
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Applicants (${state.postApplications.length})',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const Text(
+                  'VIEW ALL',
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.primary,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             ...state.postApplications.map(
@@ -532,14 +633,33 @@ class _ApplicantActionSection extends StatelessWidget {
           child: ElevatedButton(
             onPressed: canApply ? onApply : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
+              backgroundColor: AppTheme.primary,
               foregroundColor: Colors.white,
               disabledBackgroundColor: Colors.grey.shade300,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: Text(canApply ? 'Apply to join' : 'No slots available'),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  canApply ? 'Apply to join' : 'No slots available',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (canApply) ...[
+                  const SizedBox(width: 8),
+                  const Icon(
+                    Icons.arrow_forward,
+                    size: 18,
+                    color: Colors.white,
+                  ),
+                ],
+              ],
+            ),
           ),
         );
       },

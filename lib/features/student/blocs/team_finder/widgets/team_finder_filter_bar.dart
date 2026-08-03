@@ -1,6 +1,42 @@
 // lib/features/student/blocs/team_finder/widgets/team_finder_filter_bar.dart
 import 'package:flutter/material.dart';
 
+/// Search field for the Browse tab.
+/// Filters posts client-side by title/description as the user types.
+class TeamFinderSearchField extends StatelessWidget {
+  const TeamFinderSearchField({
+    super.key,
+    required this.controller,
+    required this.onChanged,
+  });
+
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: TextField(
+        controller: controller,
+        onChanged: onChanged,
+        style: const TextStyle(fontSize: 14),
+        decoration: InputDecoration(
+          hintText: 'Search projects or roles...',
+          hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+          prefixIcon: Icon(Icons.search, color: Colors.grey.shade500, size: 20),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 12),
+        ),
+      ),
+    );
+  }
+}
+
 /// Department / semester filter row for the Browse tab.
 /// Pass `null` for a value to mean "All".
 class TeamFinderFilterBar extends StatelessWidget {
@@ -79,15 +115,15 @@ class _FilterDropdown extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String?>(
           isExpanded: true,
           value: value,
           hint: Text(hint, style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
-          icon: const Icon(Icons.keyboard_arrow_down, size: 18),
+          icon: Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.grey.shade600),
           items: [
             DropdownMenuItem<String?>(
               value: null,

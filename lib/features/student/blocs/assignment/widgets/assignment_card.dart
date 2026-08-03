@@ -1,5 +1,6 @@
 // assignment/widgets/assignment_card.dart
 import 'package:flutter/material.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import '../models/assignment_model.dart';
 import 'assignment_status_chip.dart';
@@ -18,7 +19,6 @@ class AssignmentCard extends StatelessWidget {
   final VoidCallback onTap;
 
   static const Color _cardBg = Color(0xFFEEF0FB);
-  static const Color _linkColor = Color(0xFF4C4FE0);
 
   static const List<String> _months = [
     'Jan',
@@ -126,13 +126,23 @@ class AssignmentCard extends StatelessWidget {
                 const SizedBox(height: 12),
                 Divider(height: 1, color: Colors.grey.shade300),
                 const SizedBox(height: 10),
-                const Text(
-                  'View Details',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: _linkColor,
-                  ),
+                const Row(
+                  children: [
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 14,
+                      color: AppTheme.primary,
+                    ),
+                    SizedBox(width: 4),
+                    Text(
+                      'View Details',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.primary,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

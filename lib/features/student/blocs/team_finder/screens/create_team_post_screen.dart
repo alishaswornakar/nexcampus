@@ -1,6 +1,7 @@
 // lib/features/student/blocs/team_finder/screens/create_team_post_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 import '../bloc/team_finder_bloc.dart';
 import '../bloc/team_finder_event.dart';
@@ -118,9 +119,13 @@ class _CreateTeamPostScreenState extends State<CreateTeamPostScreen> {
       child: Scaffold(
         backgroundColor: const Color(0xFFF6F8FB),
         appBar: AppBar(
-          title: const Text('New Team Post'),
+          backgroundColor: AppTheme.primary,
+          title: const Text(
+            'New Team Post',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
@@ -189,7 +194,7 @@ class _CreateTeamPostScreenState extends State<CreateTeamPostScreen> {
                   ElevatedButton(
                     onPressed: _addSkill,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: AppTheme.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -239,14 +244,14 @@ class _CreateTeamPostScreenState extends State<CreateTeamPostScreen> {
                     const Spacer(),
                     IconButton(
                       icon: const Icon(Icons.remove_circle_outline),
-                      color: Colors.blue,
+                      color: AppTheme.primary,
                       onPressed: _slotsTotal > 1
                           ? () => setState(() => _slotsTotal--)
                           : null,
                     ),
                     IconButton(
                       icon: const Icon(Icons.add_circle_outline),
-                      color: Colors.blue,
+                      color: AppTheme.primary,
                       onPressed: () => setState(() => _slotsTotal++),
                     ),
                   ],
@@ -266,7 +271,7 @@ class _CreateTeamPostScreenState extends State<CreateTeamPostScreen> {
                     child: ElevatedButton(
                       onPressed: isSubmitting ? null : _submit,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: AppTheme.primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),

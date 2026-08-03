@@ -6,11 +6,7 @@ import '../models/assignment_model.dart';
 import '../../../screens/pdf_viewer_screen.dart';
 import 'submit_assignment_screen.dart';
 
-/// Detail view for a single student assignment, matching the Figma
-/// "Assignment Details" screen: one rounded card (title, instructor,
-/// due date, description, reference file, instructor row) followed by
-/// either a "Submit Assignment" button, the student's own submission,
-/// or the grade + submission.
+/// Detail view for a single student assignment.
 class AssignmentTasksDetailScreen extends StatelessWidget {
   const AssignmentTasksDetailScreen({
     super.key,
@@ -25,7 +21,6 @@ class AssignmentTasksDetailScreen extends StatelessWidget {
   final String studentName;
   final String roll;
 
-  static const Color _accent = Color(0xFF4C4FE0);
   static const Color _cardBg = Color(0xFFEEF0FB);
 
   static const List<String> _months = [
@@ -75,12 +70,6 @@ class AssignmentTasksDetailScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _messageInstructor(BuildContext context) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Messaging is coming soon.')));
   }
 
   @override
@@ -213,13 +202,13 @@ class AssignmentTasksDetailScreen extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: isSmall ? 20 : 22,
-                          backgroundColor: _accent.withValues(alpha: 0.15),
+                          backgroundColor: AppTheme.primary.withValues(alpha:0.15),
                           child: Text(
                             assignment.teacherName.isNotEmpty
                                 ? assignment.teacherName[0].toUpperCase()
                                 : 'T',
                             style: const TextStyle(
-                              color: _accent,
+                              color: AppTheme.primary,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
@@ -248,15 +237,7 @@ class AssignmentTasksDetailScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        TextButton.icon(
-                          onPressed: () => _messageInstructor(context),
-                          icon: const Icon(
-                            Icons.mail_outline_rounded,
-                            size: 17,
-                          ),
-                          label: const Text('Message'),
-                          style: TextButton.styleFrom(foregroundColor: _accent),
-                        ),
+                        // Removed Message button as requested
                       ],
                     ),
                     if (assignment.isGraded) ...[
@@ -284,7 +265,7 @@ class AssignmentTasksDetailScreen extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () => _openSubmitScreen(context),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: _accent,
+                            backgroundColor: AppTheme.primary,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
@@ -337,14 +318,16 @@ class _FileRow extends StatelessWidget {
               width: 34,
               height: 34,
               decoration: BoxDecoration(
-                color: _isPdf ? Colors.red.shade50 : Colors.blue.shade50,
+                color: _isPdf
+                    ? Colors.red.shade50
+                    : AppTheme.primary.withValues(alpha:0.08),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
                 _isPdf
                     ? Icons.picture_as_pdf_rounded
                     : Icons.insert_drive_file_rounded,
-                color: _isPdf ? Colors.red.shade400 : Colors.blue.shade400,
+                color: _isPdf ? Colors.red.shade400 : AppTheme.primary,
                 size: 18,
               ),
             ),
