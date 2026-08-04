@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'course_file_management_screen.dart';
 
 class CourseFilesScreen extends StatelessWidget {
   const CourseFilesScreen({super.key});
@@ -32,7 +33,12 @@ class CourseFilesScreen extends StatelessWidget {
             // 🎓 Teacher's Uploaded Notes Card
             InkWell(
               onTap: () {
-                // Notes List screen मा navigate गर्ने code
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CourseFileManagementScreen(),
+                  ),
+                );
               },
               borderRadius: BorderRadius.circular(16),
               child: Container(

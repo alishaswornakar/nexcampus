@@ -298,7 +298,7 @@ class _StudentListScreenState extends State<StudentListScreen> {
     final currentSemesters = _getSemesterList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F5FB),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: const Text(
           "Student Directory",
@@ -310,90 +310,103 @@ class _StudentListScreenState extends State<StudentListScreen> {
       ),
       body: Column(
         children: [
-          // Filter & Search Box Container
-          Container(
-            padding: const EdgeInsets.all(12.0),
-            color: Colors.white,
-            child: Column(
-              children: [
-                // 🔍 Search Bar
-                TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: "Search student by name or roll no...",
-                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear, color: Colors.grey),
-                            onPressed: () {
-                              setState(() {
-                                _searchController.clear();
-                                _searchQuery = "";
-                              });
-                            },
-                          )
-                        : null,
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
-                    ),
+          // Filter & Search Box Container (polished to look like mockup card)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: Container(
+              padding: const EdgeInsets.all(12.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value.trim().toLowerCase();
-                    });
-                  },
-                ),
-                const SizedBox(height: 10),
+                ],
+              ),
+              child: Column(
+                children: [
+                  // 🔍 Search Bar
+                  TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: "Search student name or roll no...",
+                      prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, color: Colors.grey),
+                              onPressed: () {
+                                setState(() {
+                                  _searchController.clear();
+                                  _searchQuery = "";
+                                });
+                              },
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value.trim().toLowerCase();
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 10),
 
-                // Dropdowns
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildDropdown(
-                        "Department",
-                        _selectedDepartment,
-                        _departments,
-                        (val) {
-                          setState(() {
-                            _selectedDepartment = val;
-                            if (val != 'Architecture' &&
-                                _selectedSemester != null &&
-                                int.parse(_selectedSemester!) > 8) {
-                              _selectedSemester = null;
-                            }
-                          });
-                        },
+                  // Dropdowns
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildDropdown(
+                          "Department",
+                          _selectedDepartment,
+                          _departments,
+                          (val) {
+                            setState(() {
+                              _selectedDepartment = val;
+                              if (val != 'Architecture' &&
+                                  _selectedSemester != null &&
+                                  int.parse(_selectedSemester!) > 8) {
+                                _selectedSemester = null;
+                              }
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _buildDropdown(
-                        "Semester",
-                        _selectedSemester,
-                        currentSemesters,
-                        (val) {
-                          setState(() => _selectedSemester = val);
-                        },
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _buildDropdown(
+                          "Semester",
+                          _selectedSemester,
+                          currentSemesters,
+                          (val) {
+                            setState(() => _selectedSemester = val);
+                          },
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _buildDropdown(
-                        "Section",
-                        _selectedSection,
-                        _sections,
-                        (val) {
-                          setState(() => _selectedSection = val);
-                        },
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _buildDropdown(
+                          "Section",
+                          _selectedSection,
+                          _sections,
+                          (val) {
+                            setState(() => _selectedSection = val);
+                          },
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
 

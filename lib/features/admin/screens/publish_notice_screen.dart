@@ -1,125 +1,124 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:nexcampus_app/features/admin/models/notice_model.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
+import '../services/cloudinary_service.dart'; // ✅ Cloudinary Service इम्पोर्ट गरिएको छ
 
-// मुख्य ड्यासबोर्ड वा Bottom Nav भएको स्क्रिन
-class MainDashboardScreen extends StatefulWidget {
-  const MainDashboardScreen({super.key, required NoticeModel existingNotice});
+class PublishNoticeScreen extends StatefulWidget {
+  const PublishNoticeScreen({super.key});
 
   @override
-  State<MainDashboardScreen> createState() => _MainDashboardScreenState();
+  State<PublishNoticeScreen> createState() => _PublishNoticeScreenState();
 }
 
-class _MainDashboardScreenState extends State<MainDashboardScreen> {
-  int _currentIndex = 0; // मानौं Oversight ट्याब Index 1 मा छ
+class _PublishNoticeScreenState extends State<PublishNoticeScreen> {
+  final _titleController = TextEditingController();
+  final _descController = TextEditingController();
+  String _selectedAudience = 'All';
+  bool _isPinned = false;
+  File? _attachmentFile;
+  String? _attachmentName;
+  bool _isLoading = false;
 
-  final List<Widget> _screens = [
-    const Center(child: Text("Home Screen")),
-    const OversightMenuScreen(), // यहाँ Oversight मेनु छ
-    const Center(child: Text("Profile Screen")),
-  ];
+  final ImagePicker _picker = ImagePicker();
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.security), label: "Oversight"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-        ],
+  Future<void> _pickAttachment() async {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-    );
-  }
-}
-
-// -----------------------------------------------------------------------------
-// 2. OVERSIGHT MENU SCREEN (जहाँ Attendance, Course Files, Reports हुन्छन्)
-// -----------------------------------------------------------------------------
-class OversightMenuScreen extends StatelessWidget {
-  const OversightMenuScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF8FAFC),
-        elevation: 0,
-        title: const Text(
-          'Oversight',
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Center(
+                child: Text("Attach Document or Image", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.image, color: Colors.blue),
+              title: const Text("Pick Image from Gallery"),
+              onTap: () async {
+                Navigator.pop(context);
+                final picked = await _picker.pickImage(source: ImageSource.gallery);
+                if (picked != null) {
+                  setState(() {
+                    _attachmentFile = File(picked.path);
+                    _attachmentName = picked.name;
+                  });
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.insert_drive_file, color: Colors.green),
+              title: const Text("Pick PDF / Document"),
+              onTap: () async {
+                Navigator.pop(context);
+                final result = await FilePicker.platform.pickFiles(
+                  type: FileType.custom,
+                  allowedExtensions: ['pdf', 'jpg', 'png', 'doc', 'docx', 'jpeg'],
+                );
+                if (result != null && result.files.single.path != null) {
+                  setState(() {
+                    _attachmentFile = File(result.files.single.path!);
+                    _attachmentName = result.files.single.name;
+                  });
+                }
+              },
+            ),
+          ],
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        children: [
-          _buildOversightCard(
-            title: 'Attendance',
-            subtitle: 'View and monitor student attendance records.',
-            icon: Icons.calendar_today_outlined,
-            onTap: () {
-              // Attendance पेजमा जाने (चाहिएमा रुट नेभिगेटर राख्न सकिन्छ)
-            },
-          ),
-          const SizedBox(height: 14),
-          _buildOversightCard(
-            title: 'Course Files',
-            subtitle: 'Review courses materials uploaded by administrators.',
-            icon: Icons.folder_open_outlined,
-            onTap: () {
-              // ⚠️ यो कोडले Bottom Nav Bar लाई लुकाएर सिधै फुल स्क्रिनमा Published Notes खोल्छ!
-              Navigator.of(context, rootNavigator: true).push(
-                MaterialPageRoute(
-                  builder: (context) => const PublishedNotesFullScreen(),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
     );
   }
 
-  Widget _buildOversightCard({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFEEF2FF),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        leading: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Icon(icon, color: const Color(0xFF3F51B5), size: 24),
-        ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
-        trailing: const Icon(Icons.chevron_right, color: Color(0xFF64748B)),
-        onTap: onTap,
-      ),
-    );
-  }
-}
+  Future<void> _publishNotice() async {
+    if (_titleController.text.trim().isEmpty || _descController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill in all required fields")),
+      );
+      return;
+    }
 
-// -----------------------------------------------------------------------------
-// 3. PUBLISHED NOTES FULL SCREEN (नेभिगेसन बार बिना खुल्ने फुल स्क्रिन)
-// -----------------------------------------------------------------------------
-class PublishedNotesFullScreen extends StatelessWidget {
-  const PublishedNotesFullScreen({super.key});
+    setState(() => _isLoading = true);
+
+    try {
+      String downloadUrl = '';
+
+      // ✅ यदि फाइल छ भने Cloudinary मा अपलोड गर्ने
+      if (_attachmentFile != null) {
+        final url = await CloudinaryService.uploadFile(_attachmentFile!);
+        if (url != null) {
+          downloadUrl = url;
+        } else {
+          throw "Failed to upload file to Cloudinary.";
+        }
+      }
+
+      // Firestore मा डाटा सेभ गर्ने
+      await FirebaseFirestore.instance.collection('notices').add({
+        'title': _titleController.text.trim(),
+        'description': _descController.text.trim(),
+        'audience': _selectedAudience,
+        'isPinned': _isPinned,
+        'fileName': _attachmentName ?? '',
+        'fileUrl': downloadUrl, // ✅ Cloudinary को वास्तविक URL यहाँ बस्छ
+        'date': "28/7/2026",
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      if (!mounted) return;
+      Navigator.pop(context);
+    } catch (e) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,149 +129,156 @@ class PublishedNotesFullScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black87),
-          onPressed: () => Navigator.pop(context), // पछाडि फर्किंदा फेरि Oversight मै जान्छ
+          onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Published Notes',
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
+          'Publish Notice',
+          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 20),
         ),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('notes')
-            .orderBy('createdAt', descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          final docs = snapshot.data?.docs ?? [];
-          int count = docs.length;
-
-          return ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            children: [
-              // 🟦 Top Blue Summary Banner
-              Container(
-                padding: const EdgeInsets.all(20),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Create New Broadcast",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              "Fill in the details below to notify the NexCampus community.",
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 20),
+            const Text("Notice Title", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+            const SizedBox(height: 6),
+            TextField(
+              controller: _titleController,
+              decoration: InputDecoration(
+                hintText: "e.g., Final Year Exam Schedule",
+                hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade300)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text("Description / Details", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+            const SizedBox(height: 6),
+            TextField(
+              controller: _descController,
+              maxLines: 4,
+              decoration: InputDecoration(
+                hintText: "Provide complete information about the notice...",
+                hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade300)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text("Target Audience", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+            const SizedBox(height: 6),
+            DropdownButtonFormField<String>(
+              value: _selectedAudience,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade300)),
+              ),
+              items: ['All', 'Computer', 'Civil', 'Architecture']
+                  .map((aud) => DropdownMenuItem(value: aud, child: Text(aud)))
+                  .toList(),
+              onChanged: (val) => setState(() => _selectedAudience = val!),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.push_pin_outlined, size: 20, color: Color(0xFF3B52D4)),
+                  const SizedBox(width: 12),
+                  const Expanded(child: Text("Pin to Top", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
+                  Switch(
+                    value: _isPinned,
+                    activeColor: const Color(0xFF3B52D4),
+                    onChanged: (val) => setState(() => _isPinned = val),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text("Attachment", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+            const SizedBox(height: 6),
+            InkWell(
+              onTap: _pickAttachment,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF3352E0),
-                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade400, style: BorderStyle.solid),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Icon(Icons.cloud_upload_outlined, size: 36, color: Color(0xFF3B52D4)),
+                    const SizedBox(height: 8),
                     Text(
-                      "Reviewing ${count > 0 ? count : 6} Published Notes",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
+                      _attachmentName ?? "Attach Photo or File",
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: _attachmentName == null ? const Color(0xFF1E293B) : Colors.green,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    const Text(
-                      "Faculty uploads pending audit.",
-                      style: TextStyle(color: Colors.white70, fontSize: 13),
+                    const SizedBox(height: 4),
+                    Text(
+                      "PDF, JPG, PNG up to 10MB",
+                      style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
-
-              // 📄 Notes Cards
-              if (docs.isEmpty) ...[
-                _buildNoteCard(title: "Math", author: "ranju", department: "General", url: ""),
-                _buildNoteCard(title: "chapter 1", author: "ranju", department: "General", url: ""),
-                _buildNoteCard(title: "C Programming", author: "ranju", department: "General", url: ""),
-                _buildNoteCard(title: "notes", author: "ranju", department: "General", url: ""),
-              ] else ...[
-                ...docs.map((doc) {
-                  final data = doc.data() as Map<String, dynamic>;
-                  return _buildNoteCard(
-                    title: data['title'] ?? 'Untitled Note',
-                    author: data['uploadedBy'] ?? data['author'] ?? 'Faculty',
-                    department: data['department'] ?? 'General',
-                    url: data['fileUrl'] ?? '',
-                  );
-                }),
-              ],
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildNoteCard({
-    required String title,
-    required String author,
-    required String department,
-    required String url,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEEF2FF),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFDBE2FE),
-              borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(
-              Icons.description_outlined,
-              color: Color(0xFF3F51B5),
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
-                  ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF3B52D4),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  "By $author",
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF475569),
-                  ),
-                ),
-              ],
+                onPressed: _isLoading ? null : _publishNotice,
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.send_outlined, color: Colors.white, size: 18),
+                          SizedBox(width: 8),
+                          Text("Publish Notice", style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+              ),
             ),
-          ),
-          IconButton(
-            icon: const Icon(
-              Icons.open_in_new_rounded,
-              color: Color(0xFF64748B),
-              size: 22,
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Cancel", style: TextStyle(color: Color(0xFF3B52D4), fontWeight: FontWeight.bold)),
+              ),
             ),
-            onPressed: () async {
-              if (url.isNotEmpty) {
-                final Uri uri = Uri.parse(url);
-                if (await canLaunchUrl(uri)) {
-                  await launchUrl(uri, mode: LaunchMode.externalApplication);
-                }
-              }
-            },
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

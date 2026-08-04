@@ -27,12 +27,15 @@ class _AdminFeedMonitoringScreenState extends State<AdminFeedMonitoringScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text('Student Feed Monitoring'),
-        backgroundColor: Colors.purple.shade700,
+        title: const Text('Student Feed Monitoring', style: TextStyle(color: Colors.black87)),
+        backgroundColor: const Color(0xFFF8FAFC),
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black87),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh, color: Colors.black54),
             onPressed: () => setState(() {}),
           ),
         ],
@@ -267,12 +270,10 @@ class _AdminFeedMonitoringScreenState extends State<AdminFeedMonitoringScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: _getCategoryColor(post.category).withValues(alpha: 0.1),
+                color: _getCategoryColor(post.category).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: _getCategoryColor(
-                    post.category,
-                  ).withValues(alpha: 0.3),
+                  color: _getCategoryColor(post.category).withOpacity(0.28),
                 ),
               ),
               child: Text(
@@ -327,8 +328,126 @@ class _AdminFeedMonitoringScreenState extends State<AdminFeedMonitoringScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 10),
+
+            // Moderation Actions
+            Row(
+              children: [
+                TextButton.icon(
+                  onPressed: () => _showPostDetailDialog(post),
+                  icon: const Icon(Icons.visibility_outlined, size: 18),
+                  label: const Text('View'),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton.icon(
+                  onPressed: () => _toggleResolved(post.id, post.isResolved),
+                  icon: Icon(
+                    post.isResolved ? Icons.undo : Icons.check_circle_outline,
+                    size: 18,
+                    color: post.isResolved ? Colors.black87 : Colors.white,
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: post.isResolved ? Colors.grey[200] : Colors.green,
+                    foregroundColor: post.isResolved ? Colors.black87 : Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                  label: Text(post.isResolved ? 'Unresolve' : 'Resolve'),
+                ),
+                const SizedBox(width: 8),
+                OutlinedButton.icon(
+                  onPressed: () => _confirmAndDeletePost(post.id),
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  label: const Text('Delete', style: TextStyle(color: Colors.red)),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.redAccent),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Future<void> _toggleResolved(String postId, bool currentlyResolved) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('anonymous_issue_posts')
+          .doc(postId)
+          .update({'isResolved': !currentlyResolved, 'updatedAt': FieldValue.serverTimestamp()});
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(currentlyResolved ? 'Marked unresolved' : 'Marked resolved')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update: $e')),
+      );
+    }
+  }
+
+  Future<void> _confirmAndDeletePost(String postId) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete post'),
+        content: const Text('This will permanently delete the post and its comments.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+
+    try {
+      final batch = FirebaseFirestore.instance.batch();
+      final postRef = FirebaseFirestore.instance.collection('anonymous_issue_posts').doc(postId);
+      final commentsSnap = await FirebaseFirestore.instance.collection('anonymous_issue_comments').where('postId', isEqualTo: postId).get();
+      for (final doc in commentsSnap.docs) {
+        batch.delete(doc.reference);
+      }
+      batch.delete(postRef);
+      await batch.commit();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Post deleted')));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Delete failed: $e')));
+    }
+  }
+
+  void _showPostDetailDialog(IssuePostModel post) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(post.title),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(post.body),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                children: [
+                  Chip(label: Text('Category: ${post.category}')),
+                  Chip(label: Text('Upvotes: ${post.upvoteCount}')),
+                  Chip(label: Text('Comments: ${post.commentsCount}')),
+                ],
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Close')),
+        ],
       ),
     );
   }

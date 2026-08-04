@@ -199,7 +199,7 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
     final primaryColor = AppTheme.primaryColor ?? Colors.blue;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F5FB),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: const Text(
           "Teacher Directory",
@@ -211,75 +211,88 @@ class _TeacherListScreenState extends State<TeacherListScreen> {
       ),
       body: Column(
         children: [
-          // Search & Filter Section
-          Container(
-            padding: const EdgeInsets.all(12.0),
-            color: Colors.white,
-            child: Column(
-              children: [
-                // 🔍 Search Bar
-                TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: "Search by name or Teacher ID...",
-                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear, color: Colors.grey),
-                            onPressed: () {
-                              setState(() {
-                                _searchController.clear();
-                                _searchQuery = "";
-                              });
-                            },
-                          )
-                        : null,
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
-                    ),
+          // Search & Filter Section (polished card)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: Container(
+              padding: const EdgeInsets.all(12.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value.trim().toLowerCase();
-                    });
-                  },
-                ),
-                const SizedBox(height: 10),
+                ],
+              ),
+              child: Column(
+                children: [
+                  // 🔍 Search Bar
+                  TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: "Search by name or Teacher ID...",
+                      prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, color: Colors.grey),
+                              onPressed: () {
+                                setState(() {
+                                  _searchController.clear();
+                                  _searchQuery = "";
+                                });
+                              },
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value.trim().toLowerCase();
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 10),
 
-                // Department Dropdown
-                DropdownButtonFormField<String>(
-                  initialValue: _selectedDepartment,
-                  hint: const Text("All Departments"),
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
+                  // Department Dropdown
+                  DropdownButtonFormField<String>(
+                    initialValue: _selectedDepartment,
+                    hint: const Text("All Departments"),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
-                    ),
+                    items: [
+                      const DropdownMenuItem<String>(
+                        value: null,
+                        child: Text("All Departments"),
+                      ),
+                      ..._departments.map((dept) {
+                        return DropdownMenuItem(value: dept, child: Text(dept));
+                      }),
+                    ],
+                    onChanged: (val) {
+                      setState(() => _selectedDepartment = val);
+                    },
                   ),
-                  items: [
-                    const DropdownMenuItem<String>(
-                      value: null,
-                      child: Text("All Departments"),
-                    ),
-                    ..._departments.map((dept) {
-                      return DropdownMenuItem(value: dept, child: Text(dept));
-                    }),
-                  ],
-                  onChanged: (val) {
-                    setState(() => _selectedDepartment = val);
-                  },
-                ),
-              ],
+                ],
+              ),
             ),
           ),
 

@@ -13,7 +13,7 @@ import 'submission_detail_screen.dart';
 /// `assignment_submissions` collection filtered by assignmentId — the same
 /// collection the student module writes into, so this now reflects real
 /// submissions instead of an empty/mismatched collection.
-class AdminSubmissionsListScreen extends StatelessWidget {
+class AdminSubmissionsListScreen extends StatefulWidget {
   final String assignmentId;
   final String assignmentTitle;
 
@@ -24,21 +24,26 @@ class AdminSubmissionsListScreen extends StatelessWidget {
   });
 
   @override
+  State<AdminSubmissionsListScreen> createState() => _AdminSubmissionsListScreenState();
+}
+
+class _AdminSubmissionsListScreenState extends State<AdminSubmissionsListScreen> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F5FB),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: Text(
-          "Submissions · $assignmentTitle",
-          style: const TextStyle(color: Colors.black, fontSize: 16),
+          "Submissions · ${widget.assignmentTitle}",
+          style: const TextStyle(color: Colors.black87, fontSize: 16),
           overflow: TextOverflow.ellipsis,
         ),
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: const Color(0xFFF8FAFC),
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black87),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: AdminAssignmentService.getSubmissionsForAssignment(assignmentId),
+        stream: AdminAssignmentService.getSubmissionsForAssignment(widget.assignmentId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -47,8 +52,42 @@ class AdminSubmissionsListScreen extends StatelessWidget {
             return Center(child: Text("Error: ${snapshot.error}"));
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(
-              child: Text("No students have submitted this assignment yet."),
+            return Center(
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 28.0, vertical: 36),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.inbox, size: 72, color: Colors.grey[300]),
+                      const SizedBox(height: 18),
+                      Text(
+                        "No submissions yet",
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Colors.grey[700],
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Students will appear here once they submit the assignment.",
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton.icon(
+                        onPressed: () => setState(() {}),
+                        icon: const Icon(Icons.refresh),
+                        label: const Text("Refresh"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF3B52D4),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             );
           }
 
@@ -71,46 +110,56 @@ class AdminSubmissionsListScreen extends StatelessWidget {
                 'MMM dd, yyyy - hh:mm a',
               ).format(item.submittedAt);
 
-              return Card(
-                margin: const EdgeInsets.only(bottom: 10),
-                shape: RoundedRectangleBorder(
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 6, offset: const Offset(0, 2)),
+                  ],
                 ),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   leading: CircleAvatar(
-                    backgroundColor: item.isGraded
-                        ? Colors.green.shade100
-                        : Colors.orange.shade100,
+                    radius: 24,
+                    backgroundColor: item.isGraded ? Colors.green.shade50 : Colors.orange.shade50,
                     child: Icon(
                       item.isGraded ? Icons.grading : Icons.hourglass_top,
                       color: item.isGraded ? Colors.green : Colors.orange,
                     ),
                   ),
-                  title: Text(
-                    "${item.studentName} (${item.roll})",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  title: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "${item.studentName} (${item.roll})",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      if (item.isGraded)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            item.grade,
+                            style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                    ],
                   ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text("Submitted: $submitTimeStr"),
-                      if (item.isGraded)
-                        Text(
-                          "Grade: ${item.grade}",
-                          style: const TextStyle(
-                            color: Colors.green,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        )
-                      else
-                        const Text(
-                          "Not graded yet",
-                          style: TextStyle(color: Colors.orange),
-                        ),
+                      const SizedBox(height: 6),
+                      Text(
+                        item.isGraded ? "Graded" : "Not graded yet",
+                        style: TextStyle(color: item.isGraded ? Colors.green : Colors.orange),
+                      ),
                     ],
                   ),
                   trailing: PopupMenuButton<String>(
@@ -121,7 +170,7 @@ class AdminSubmissionsListScreen extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (context) => SubmissionDetailScreen(
                               submission: item,
-                              assignmentTitle: assignmentTitle,
+                              assignmentTitle: widget.assignmentTitle,
                             ),
                           ),
                         );
@@ -158,7 +207,7 @@ class AdminSubmissionsListScreen extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => SubmissionDetailScreen(
                           submission: item,
-                          assignmentTitle: assignmentTitle,
+                          assignmentTitle: widget.assignmentTitle,
                         ),
                       ),
                     );

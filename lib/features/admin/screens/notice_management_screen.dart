@@ -1,171 +1,93 @@
 import 'package:flutter/material.dart';
-import 'package:nexcampus_app/core/constants/app_theme.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../models/notice_model.dart';
-import '../services/admin_notice_service.dart';
 import 'publish_notice_screen.dart';
+import 'edit_notice_screen.dart'; // यदि यो फाइल बनाउनु भएको छ भने
 
-class NoticeManagementScreen extends StatefulWidget {
+class NoticeManagementScreen extends StatelessWidget {
   const NoticeManagementScreen({super.key});
 
   @override
-  State<NoticeManagementScreen> createState() => _NoticeManagementScreenState();
-}
-
-class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
-  // 👁️ Attachment View
-  Future<void> _viewAttachment(String urlString) async {
-    if (urlString.isEmpty) return;
-    final String cleanUrl = urlString.replaceAll('/fl_attachment/', '/');
-    final bool isImage =
-        cleanUrl.endsWith('.jpg') ||
-        cleanUrl.endsWith('.jpeg') ||
-        cleanUrl.endsWith('.png') ||
-        cleanUrl.endsWith('.webp');
-
-    final String finalUrlToOpen = isImage
-        ? cleanUrl
-        : "https://docs.google.com/gview?embedded=true&url=${Uri.encodeComponent(cleanUrl)}";
-
-    try {
-      await launchUrl(Uri.parse(finalUrlToOpen), mode: LaunchMode.inAppBrowserView);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error opening attachment: $e")),
-        );
-      }
-    }
-  }
-
-  // 📥 Attachment Download
-  Future<void> _downloadAttachment(String urlString) async {
-    if (urlString.isEmpty) return;
-    final String cleanUrl = urlString.replaceAll('/fl_attachment/', '/');
-    try {
-      await launchUrl(Uri.parse(cleanUrl), mode: LaunchMode.externalApplication);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error downloading file: $e")),
-        );
-      }
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final primaryColor = AppTheme.primaryColor ?? const Color(0xFF3F51B5);
-
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
+        backgroundColor: const Color(0xFFF8FAFC),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          onPressed: () => Navigator.maybePop(context),
+        ),
         title: const Text(
-          "Manage Notices",
+          'Manage Notices',
           style: TextStyle(
             color: Colors.black87,
             fontWeight: FontWeight.bold,
-            fontSize: 22,
+            fontSize: 20,
           ),
         ),
-        backgroundColor: const Color(0xFFF8FAFC),
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black87),
       ),
-
-      // ➕ Floating Action Button (अघिल्लो screenshot २ खोल्न)
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: primaryColor,
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: const Color(0xFF3B52D4),
         onPressed: () {
-          Navigator.push(
-            context,
+          Navigator.of(context, rootNavigator: true).push(
             MaterialPageRoute(
-              builder: (context) => NoticeManagementScreen(),
+              builder: (context) => const PublishNoticeScreen(),
             ),
           );
         },
-        icon: const Icon(Icons.add, color: Colors.white, size: 22),
+        icon: const Icon(Icons.add, color: Colors.white),
         label: const Text(
           "Add Notice",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
-
-      body: StreamBuilder<List<NoticeModel>>(
-        stream: AdminNoticeService.getAdminNotices(),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('notices')
+            .orderBy('createdAt', descending: true)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text(
-                "No notices published yet.",
-                style: TextStyle(color: Colors.grey, fontSize: 16),
-              ),
-            );
-          }
-
-          final allNotices = snapshot.data!;
-          final pinnedNotices = allNotices.where((n) => n.isPinned).toList();
-          final recentNotices = allNotices.where((n) => !n.isPinned).toList();
+          final docs = snapshot.data?.docs ?? [];
 
           return ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.all(16),
             children: [
-              // 📌 Pinned Notices
-              if (pinnedNotices.isNotEmpty) ...[
-                Row(
-                  children: [
-                    Icon(Icons.push_pin, size: 18, color: primaryColor),
-                    const SizedBox(width: 6),
-                    const Text(
-                      "Pinned Notices",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF475569),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                ...pinnedNotices.map((notice) => _buildNoticeCard(notice)),
-                const SizedBox(height: 20),
-              ],
-
-              // 📢 All Recent Updates
               const Text(
                 "All Recent Updates",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF475569),
+                  color: Color(0xFF1E293B),
                 ),
               ),
               const SizedBox(height: 12),
-
-              if (recentNotices.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Center(
-                    child: Text(
-                      "No other notices available.",
-                      style: TextStyle(color: Colors.grey),
-                    ),
+              if (docs.isEmpty) ...[
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: Text("No notices found. Click 'Add Notice' to create one."),
                   ),
-                )
-              else
-                ...recentNotices.map((notice) => _buildNoticeCard(notice)),
-
-              const SizedBox(height: 80),
+                ),
+              ] else ...[
+                ...docs.map((doc) {
+                  final data = doc.data() as Map<String, dynamic>;
+                  return _buildNoticeCard(
+                    context: context,
+                    docId: doc.id,
+                    title: data['title'] ?? '',
+                    subtitle: data['description'] ?? '',
+                    date: data['date'] ?? '28/7/2026',
+                    audience: data['audience'] ?? 'All',
+                    fileUrl: data['fileUrl'] ?? '',
+                    fileName: data['fileName'] ?? '',
+                  );
+                }),
+              ],
             ],
           );
         },
@@ -173,12 +95,16 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
     );
   }
 
-  // 🎨 Custom UI Card
-  Widget _buildNoticeCard(NoticeModel notice) {
-    final bool hasAttachment =
-        notice.attachmentUrl != null && notice.attachmentUrl!.isNotEmpty;
-    final primaryColor = AppTheme.primaryColor ?? const Color(0xFF3F51B5);
-
+  Widget _buildNoticeCard({
+    required BuildContext context,
+    required String docId,
+    required String title,
+    required String subtitle,
+    required String date,
+    required String audience,
+    required String fileUrl,
+    required String fileName,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -190,175 +116,183 @@ class _NoticeManagementScreenState extends State<NoticeManagementScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: notice.isPinned ? primaryColor : const Color(0xFFDCE4FF),
-                  shape: BoxShape.circle,
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
-                  notice.isPinned
-                      ? Icons.campaign_rounded
-                      : Icons.notifications_none_rounded,
-                  color: notice.isPinned ? Colors.white : primaryColor,
-                  size: 22,
-                ),
+                child: const Icon(Icons.notifications_outlined, color: Color(0xFF3B52D4)),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            notice.title,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1E293B),
-                            ),
-                          ),
-                        ),
-                        if (notice.isPinned) ...[
-                          const SizedBox(width: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: primaryColor,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: const [
-                                Icon(Icons.push_pin, size: 10, color: Colors.white),
-                                SizedBox(width: 3),
-                                Text(
-                                  "PINNED",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 9,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      notice.description,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF475569),
-                        height: 1.3,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1E293B),
+                  ),
                 ),
               ),
               PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert, color: Color(0xFF64748B)),
-                onSelected: (val) async {
-                  if (val == 'view' && hasAttachment) {
-                    _viewAttachment(notice.attachmentUrl!);
-                  } else if (val == 'download' && hasAttachment) {
-                    _downloadAttachment(notice.attachmentUrl!);
-                  } else if (val == 'pin') {
-                    await AdminNoticeService.togglePinNotice(notice.id, notice.isPinned);
-                  } else if (val == 'edit') {
+                icon: const Icon(Icons.more_vert, color: Colors.grey),
+                onSelected: (value) async {
+                  if (value == 'view') {
+                    // =================== VIEW DIALOG ===================
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: Text(title),
+                        content: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text("Description:", style: TextStyle(fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 4),
+                              Text(subtitle.isEmpty ? "No description available." : subtitle),
+                              const SizedBox(height: 16),
+                              
+                              // ✅ फाइल छ भने नाम र लिङ्क देखाउने भाग
+                              if (fileName.isNotEmpty) ...[
+                                const Text("Attachment:", style: TextStyle(fontWeight: FontWeight.bold)),
+                                const SizedBox(height: 8),
+                                InkWell(
+                                  onTap: () async {
+                                    if (fileUrl.isNotEmpty) {
+                                      final Uri uri = Uri.parse(fileUrl);
+                                      if (await canLaunchUrl(uri)) {
+                                        await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                      }
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.shade50,
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(color: Colors.blue.shade200),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.insert_drive_file, color: Colors.blue),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            fileName,
+                                            style: const TextStyle(
+                                              color: Colors.blue, 
+                                              decoration: TextDecoration.underline,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ] else ...[
+                                const Text("No attachment for this notice.", style: TextStyle(color: Colors.grey, fontSize: 12)),
+                              ],
+                            ],
+                          ),
+                        ),
+                        actions: [
+                          if (fileUrl.isNotEmpty)
+                            TextButton(
+                              onPressed: () async {
+                                final Uri uri = Uri.parse(fileUrl);
+                                if (await canLaunchUrl(uri)) {
+                                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                }
+                              },
+                              child: const Text("Open File"),
+                            ),
+                          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Close")),
+                        ],
+                      ),
+                    );
+                  } else if (value == 'edit') {
+                    // =================== EDIT SCREEN REDIRECT ===================
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => MainDashboardScreen(existingNotice: notice),
+                        builder: (context) => EditNoticeScreen(
+                          docId: docId,
+                          currentTitle: title,
+                          currentDesc: subtitle,
+                          currentAudience: audience,
+                          currentFileUrl: fileUrl,
+                          currentFileName: fileName,
+                        ),
                       ),
                     );
-                  } else if (val == 'delete') {
-                    await AdminNoticeService.deleteNotice(notice.id);
+                  } else if (value == 'delete') {
+                    // =================== DELETE FUNCTION ===================
+                    if (docId.isNotEmpty) {
+                      try {
+                        await FirebaseFirestore.instance.collection('notices').doc(docId).delete();
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Notice deleted successfully")),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Error deleting: $e")),
+                          );
+                        }
+                      }
+                    }
                   }
                 },
                 itemBuilder: (context) => [
-                  PopupMenuItem(
+                  const PopupMenuItem(
                     value: 'view',
-                    child: Row(
-                      children: [
-                        Icon(Icons.visibility_outlined, color: hasAttachment ? primaryColor : Colors.grey, size: 20),
-                        const SizedBox(width: 8),
-                        Text("View Attachment", style: TextStyle(color: hasAttachment ? Colors.black : Colors.grey)),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'download',
-                    child: Row(
-                      children: [
-                        Icon(Icons.file_download_outlined, color: hasAttachment ? Colors.green : Colors.grey, size: 20),
-                        const SizedBox(width: 8),
-                        Text("Download File", style: TextStyle(color: hasAttachment ? Colors.black : Colors.grey)),
-                      ],
-                    ),
-                  ),
-                  const PopupMenuDivider(),
-                  PopupMenuItem(
-                    value: 'pin',
-                    child: Row(
-                      children: [
-                        Icon(notice.isPinned ? Icons.push_pin_outlined : Icons.push_pin, color: Colors.orange, size: 20),
-                        const SizedBox(width: 8),
-                        Text(notice.isPinned ? "Unpin Notice" : "Pin to Top"),
-                      ],
-                    ),
+                    child: Row(children: [Icon(Icons.visibility, size: 18), SizedBox(width: 8), Text("View")]),
                   ),
                   const PopupMenuItem(
                     value: 'edit',
-                    child: Row(
-                      children: [
-                        Icon(Icons.edit_outlined, color: Colors.amber, size: 20),
-                        SizedBox(width: 8),
-                        Text("Edit Details"),
-                      ],
-                    ),
+                    child: Row(children: [Icon(Icons.edit, color: Colors.orange, size: 18), SizedBox(width: 8), Text("Edit")]),
                   ),
                   const PopupMenuItem(
                     value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                        SizedBox(width: 8),
-                        Text("Delete"),
-                      ],
-                    ),
+                    child: Row(children: [Icon(Icons.delete, color: Colors.red, size: 18), SizedBox(width: 8), Text("Delete", style: TextStyle(color: Colors.red))]),
                   ),
                 ],
               ),
             ],
           ),
+          const SizedBox(height: 8),
+          Text(
+            subtitle,
+            style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
+          ),
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.calendar_today_outlined, size: 13, color: Color(0xFF64748B)),
-              const SizedBox(width: 5),
-              Text(
-                "${notice.createdAt.day}/${notice.createdAt.month}/${notice.createdAt.year}",
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B)),
-              ),
+              Icon(Icons.calendar_today_outlined, size: 14, color: Colors.grey.shade600),
+              const SizedBox(width: 4),
+              Text(date, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
               const SizedBox(width: 12),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(6)),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Text(
-                  "Audience: ${notice.targetAudience}",
-                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF64748B)),
+                  "Audience: $audience",
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: Color(0xFF3B52D4)),
                 ),
               ),
+              if (fileUrl.isNotEmpty) ...[
+                const SizedBox(width: 8),
+                const Icon(Icons.attach_file, size: 16, color: Colors.blue),
+              ]
             ],
           ),
         ],

@@ -1,48 +1,38 @@
 import 'package:flutter/material.dart';
-//import 'package:nexcampus_app/core/constants/app_theme.dart';
-import 'add_student_screen.dart';
 import 'student_list_screen.dart';
+import 'add_student_screen.dart';
 
 class StudentManagementScreen extends StatelessWidget {
   const StudentManagementScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    //final primaryColor = AppTheme.primaryColor ?? Colors.blue;
-
-    return Scaffold(
-      backgroundColor: const Color(0xFFF6F5FB),
-      appBar: AppBar(
-        title: const Text(
-          "Student Management",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
+    // Material widget le wrap garepaxi InkWell ko error fix huncha
+    return Material(
+      color: const Color(0xFFF4F6FB), // Background color yeta rakhne
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Select an Option",
+              "Student Management",
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: Color(0xFF1E2938),
               ),
             ),
             const SizedBox(height: 16),
 
-            // 1. View Student Details Option
-            _buildOptionCard(
+            // Student Directory Card
+            _buildSelectionCard(
               context: context,
-              title: "View Student Details",
-              subtitle: "Filter & view students by Department, Semester, and Section",
-              icon: Icons.badge_outlined,
-              color: Colors.blue,
+              title: "Student Directory",
+              subtitle: "Browse and manage registered students.",
+              icon: Icons.group_outlined,
+              iconBgColor: const Color(0xFFE0F2FE),
+              iconColor: const Color(0xFF0284C7),
               onTap: () {
                 Navigator.push(
                   context,
@@ -52,16 +42,16 @@ class StudentManagementScreen extends StatelessWidget {
                 );
               },
             ),
+            const SizedBox(height: 14),
 
-            const SizedBox(height: 16),
-
-            // 2. Add New Student Option
-            _buildOptionCard(
+            // Add New Student Card
+            _buildSelectionCard(
               context: context,
               title: "Add New Student",
-              subtitle: "Register a new student into the system",
-              icon: Icons.person_add_alt_1_outlined,
-              color: Colors.pink,
+              subtitle: "Register a new student account.",
+              icon: Icons.person_add_outlined,
+              iconBgColor: const Color(0xFFFEF3C7),
+              iconColor: const Color(0xFFD97706),
               onTap: () {
                 Navigator.push(
                   context,
@@ -77,72 +67,71 @@ class StudentManagementScreen extends StatelessWidget {
     );
   }
 
-  // Card Builder Helper
-  Widget _buildOptionCard({
+  Widget _buildSelectionCard({
     required BuildContext context,
     required String title,
     required String subtitle,
     required IconData icon,
-    required Color color,
+    required Color iconBgColor,
+    required Color iconColor,
     required VoidCallback onTap,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha:0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha:0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon, color: color, size: 30),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Icon(Icons.arrow_forward_ios_rounded, size: 18, color: Colors.grey),
-              ],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-          ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: iconBgColor,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(icon, color: iconColor, size: 28),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E2938),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF64748B),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: Color(0xFF94A3B8),
+              size: 24,
+            ),
+          ],
         ),
       ),
     );
