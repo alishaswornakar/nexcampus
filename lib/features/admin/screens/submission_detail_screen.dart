@@ -94,15 +94,15 @@ class _SubmissionDetailScreenState extends State<SubmissionDetailScreen> {
     ).format(submission.submittedAt);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F5FB),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: const Text(
           "Submission Details",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black87),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: const Color(0xFFF8FAFC),
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black87),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_outline, color: Colors.red),
@@ -156,14 +156,20 @@ class _SubmissionDetailScreenState extends State<SubmissionDetailScreen> {
             if (submission.pdfUrl.isNotEmpty)
               SizedBox(
                 width: double.infinity,
-                child: OutlinedButton.icon(
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: const Color(0xFF3B52D4),
+                    elevation: 0,
+                    side: const BorderSide(color: Color(0xFF3B52D4)),
+                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                  ),
                   onPressed: () => _openPdf(submission.pdfUrl),
                   icon: const Icon(Icons.picture_as_pdf_outlined),
                   label: Text(
-                    submission.pdfName.isNotEmpty
-                        ? submission.pdfName
-                        : "View Submitted PDF",
+                    submission.pdfName.isNotEmpty ? submission.pdfName : "View Submitted PDF",
                     overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -227,6 +233,10 @@ class _SubmissionDetailScreenState extends State<SubmissionDetailScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF3B52D4),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
                         onPressed: _saving ? null : _saveGrade,
                         child: _saving
                             ? const SizedBox(

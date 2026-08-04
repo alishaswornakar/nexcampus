@@ -70,7 +70,6 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
         );
 
       case OversightView.list:
-      default:
         return Scaffold(
           backgroundColor: const Color(0xFFF8FAFC),
           appBar: AppBar(

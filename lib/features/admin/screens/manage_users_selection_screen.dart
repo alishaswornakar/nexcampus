@@ -1,56 +1,71 @@
 import 'package:flutter/material.dart';
-import 'add_teacher_screen.dart';
-import 'teacher_list_screen.dart';
+import 'student_management_screen.dart';
+import 'teacher_management_screen.dart';
 
-class TeacherManagementScreen extends StatelessWidget {
-  const TeacherManagementScreen({super.key});
+class ManageUsersSelectionScreen extends StatelessWidget {
+  const ManageUsersSelectionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F6FB),
+      backgroundColor: const Color(0xFFF4F6FB), // Second image jastai background
       appBar: AppBar(
         title: const Text(
-          "Teacher Management",
-          style: TextStyle(
-            color: Color(0xFF1E2938),
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
+          "Manage Users",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: const Color(0xFFF4F6FB),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1E2938)),
-          onPressed: () => Navigator.pop(context),
-        ),
+        backgroundColor: Colors.white,
+        elevation: 0.5,
+        automaticallyImplyLeading: false, // Tab vitra hune bhayera back button hatauna ramro
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildOptionCard(
+            const Text(
+              "Select User Type",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF64748B),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Students Card (Second image ko jastai light container color)
+            _buildSelectionCard(
               context: context,
-              title: "Teacher Directory",
-              subtitle: "Browse and manage registered teachers.",
-              icon: Icons.badge_outlined,
+              title: "Students",
+              subtitle: "Add, view, edit, and manage student accounts.",
+              icon: Icons.school_outlined,
+              iconBgColor: const Color(0xFFE0F2FE),
+              iconColor: const Color(0xFF0284C7),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const TeacherListScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const StudentManagementScreen(),
+                  ),
                 );
               },
             ),
             const SizedBox(height: 14),
-            _buildOptionCard(
+
+            // Teachers Card
+            _buildSelectionCard(
               context: context,
-              title: "Add New Teacher",
-              subtitle: "Register a new teacher account.",
-              icon: Icons.person_add_alt_1_outlined,
+              title: "Teachers",
+              subtitle: "Add, view, edit, and manage teacher accounts.",
+              icon: Icons.person_outline_rounded,
+              iconBgColor: const Color(0xFFFEF3C7),
+              iconColor: const Color(0xFFD97706),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const AddTeacherScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const TeacherManagementScreen(),
+                  ),
                 );
               },
             ),
@@ -60,11 +75,13 @@ class TeacherManagementScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOptionCard({
+  Widget _buildSelectionCard({
     required BuildContext context,
     required String title,
     required String subtitle,
     required IconData icon,
+    required Color iconBgColor,
+    required Color iconColor,
     required VoidCallback onTap,
   }) {
     return InkWell(
@@ -88,10 +105,10 @@ class TeacherManagementScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: const Color(0xFFFEF3C7),
+                color: iconBgColor,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(icon, color: const Color(0xFFD97706), size: 28),
+              child: Icon(icon, color: iconColor, size: 28),
             ),
             const SizedBox(width: 16),
             Expanded(

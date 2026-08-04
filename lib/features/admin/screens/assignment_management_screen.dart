@@ -186,7 +186,7 @@ class _AssignmentManagementScreenState extends State<AssignmentManagementScreen>
     final currentSemesters = _getAvailableSemesters();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F5FB),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: const Text(
           "Assignment Management",

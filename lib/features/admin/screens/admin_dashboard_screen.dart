@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:nexcampus_app/core/constants/app_theme.dart';
+import 'package:nexcampus_app/features/admin/widgets/stat_card.dart';
+import 'package:nexcampus_app/features/admin/widgets/activity_item.dart';
 import 'package:nexcampus_app/features/admin/screens/assignment_management_screen.dart';
 import 'notice_management_screen.dart';
 import 'report_monitoring_screen.dart';
@@ -11,6 +12,7 @@ import 'admin_attendance_view_screen.dart';
 import 'admin_team_management_screen.dart';
 import 'admin_queue_management_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'admin_preview_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -21,6 +23,7 @@ class AdminDashboardScreen extends StatefulWidget {
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   int _selectedIndex = 0;
+  int managementStep = 0; 
   OversightView _oversightInitialView = OversightView.mainMenu;
 
   void _onBottomNavTapped(int index) {
@@ -37,9 +40,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       _buildHomeContent(context),
-      ManagementScreenContent(
-        onBackToHome: () => setState(() => _selectedIndex = 0),
-      ),
+      // ManagementScreenContent(
+      //   onBackToHome: () => setState(() => _selectedIndex = 0),
+      // ),
+      const ManagementScreenContent(),
       OversightScreenContent(
         key: ValueKey(_oversightInitialView),
         initialView: _oversightInitialView,
@@ -210,6 +214,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
       },
       {
+        'title': 'Preview',
+        'icon': Icons.visibility_outlined,
+        'onTap': () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AdminPreviewScreen(),
+              ),
+            ),
+      },
+      {
         'title': 'Student Reports',
         'icon': Icons.report_problem_outlined,
         'onTap': () => Navigator.push(
@@ -333,10 +347,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 ),
                 const SizedBox(height: 20),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 18,
-                    horizontal: 16,
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
@@ -349,63 +360,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     ],
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "12",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF1E3A8A),
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              "Pending Reports",
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade700,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
+                        child: StatCard(value: '12', label: 'Pending Reports'),
                       ),
-                      Container(
-                        height: 35,
-                        width: 1,
-                        color: Colors.grey.shade300,
-                      ),
+                      Container(width: 12),
+                      Container(height: 48, width: 1, color: Colors.grey.shade200),
+                      Container(width: 12),
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "08",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1E3A8A),
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                "Active Queues",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade700,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        child: StatCard(value: '08', label: 'Active Queues'),
                       ),
                     ],
                   ),
@@ -547,252 +510,283 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     required String subtitle,
     required String time,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEEF2FF),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: const Color(0xFFC7D2FE).withOpacity(0.5),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: const Color(0xFF3F51B5), size: 22),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1F2937),
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      time,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey.shade600,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    return ActivityItem(icon: icon, title: title, subtitle: subtitle, time: time);
   }
 }
 
 // 📄 MANAGEMENT SCREEN CONTENT
+// class ManagementScreenContent extends StatelessWidget {
+//   final VoidCallback onBackToHome;
+
+//   const ManagementScreenContent({super.key, required this.onBackToHome});
+
+//   void _showUserTypeSelectionModal(BuildContext context) {
+//     showModalBottomSheet(
+//       context: context,
+//       shape: const RoundedRectangleBorder(
+//         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+//       ),
+//       builder: (context) {
+//         return Padding(
+//           padding: const EdgeInsets.symmetric(vertical: 20),
+//           child: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             children: [
+//               const Text(
+//                 "Select User Type",
+//                 style: TextStyle(
+//                   fontSize: 18,
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               ),
+//               const SizedBox(height: 15),
+//               ListTile(
+//                 leading: const Icon(Icons.school, color: Color(0xFF3F51B5)),
+//                 title: const Text("Student Management"),
+//                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+//                 onTap: () {
+//                   Navigator.pop(context);
+//                   Navigator.push(
+//                     context,
+//                     MaterialPageRoute(
+//                       builder: (context) => const StudentManagementScreen(),
+//                     ),
+//                   );
+//                 },
+//               ),
+//               ListTile(
+//                 leading: const Icon(Icons.person, color: Color(0xFF3F51B5)),
+//                 title: const Text("Teacher Management"),
+//                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+//                 onTap: () {
+//                   Navigator.pop(context);
+//                   Navigator.push(
+//                     context,
+//                     MaterialPageRoute(
+//                       builder: (context) => const TeacherManagementScreen(),
+//                     ),
+//                   );
+//                 },
+//               ),
+//             ],
+//           ),
+//         );
+//       },
+//     );
+//   }
+
+// MANAGEMENT SCREEN CONTENT (Yo code le aafno purano ManagementScreenContent lai replace garnus)
 class ManagementScreenContent extends StatelessWidget {
-  final VoidCallback onBackToHome;
-
-  const ManagementScreenContent({super.key, required this.onBackToHome});
-
-  void _showUserTypeSelectionModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "Select User Type",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 15),
-              ListTile(
-                leading: const Icon(Icons.school, color: Color(0xFF3F51B5)),
-                title: const Text("Student Management"),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const StudentManagementScreen(),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.person, color: Color(0xFF3F51B5)),
-                title: const Text("Teacher Management"),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const TeacherManagementScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  const ManagementScreenContent({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> managementItems = [
-      {
-        'title': 'Manage Users',
-        'subtitle': 'Add, edit, and manage student and teacher accounts.',
-        'icon': Icons.group_outlined,
-        'onTap': () => _showUserTypeSelectionModal(context),
-      },
-      {
-        'title': 'Queue Management',
-        'subtitle': 'Configure service counters and manage digital queues.',
-        'icon': Icons.add_box_outlined,
-        'onTap': () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AdminQueueManagementScreen(),
-              ),
-            ),
-      },
-      {
-        'title': 'Project Teams',
-        'subtitle': 'Review, moderate, and manage student project teams.',
-        'icon': Icons.hub_outlined,
-        'onTap': () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AdminTeamManagementScreen(),
-              ),
-            ),
-      },
-      {
-        'title': 'Notice Board',
-        'subtitle': 'Publish and manage campus-wide announcements.',
-        'icon': Icons.campaign_outlined,
-        'onTap': () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const NoticeManagementScreen(),
-              ),
-            ),
-      },
-    ];
-
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF8FAFC),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
-          onPressed: onBackToHome,
-        ),
-        title: const Text(
-          'Management',
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-        ),
-      ),
-      body: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        itemCount: managementItems.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 14),
-        itemBuilder: (context, index) {
-          final item = managementItems[index];
-          return Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFFEEF2FF),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 10,
-              ),
-              leading: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  item['icon'],
-                  color: const Color(0xFF3F51B5),
-                  size: 24,
-                ),
-              ),
-              title: Text(
-                item['title'],
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E293B),
-                ),
-              ),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  item['subtitle'],
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header matching mockup
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Manage Users",
                   style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                    height: 1.3,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1E2938),
                   ),
                 ),
-              ),
-              trailing: const Icon(
-                Icons.chevron_right,
-                color: Color(0xFF64748B),
-                size: 22,
-              ),
-              onTap: item['onTap'],
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Colors.white,
+                  backgroundImage: NetworkImage(
+                    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+                  ),
+                ),
+              ],
             ),
-          );
-        },
+            const SizedBox(height: 18),
+
+            // Info subtitle
+            const Text(
+              "Add, view, and manage student and teacher accounts.",
+              style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+            ),
+            const SizedBox(height: 16),
+
+            // Students Card
+            _buildSelectionCard(
+              context: context,
+              title: "Students",
+              subtitle: "Add, view, edit, and manage student accounts.",
+              icon: Icons.school_outlined,
+              iconBgColor: const Color(0xFFE0F2FE),
+              iconColor: const Color(0xFF0284C7),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const StudentManagementScreen(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 14),
+
+            // Teachers Card
+            _buildSelectionCard(
+              context: context,
+              title: "Teachers",
+              subtitle: "Add, view, edit, and manage teacher accounts.",
+              icon: Icons.person_outline_rounded,
+              iconBgColor: const Color(0xFFFEF3C7),
+              iconColor: const Color(0xFFD97706),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const TeacherManagementScreen(),
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 20),
+
+            // Additional management shortcuts to match mockup
+            _buildSelectionCard(
+              context: context,
+              title: "Queue Management",
+              subtitle: "Configure service counters and manage digital queues.",
+              icon: Icons.add_box_outlined,
+              iconBgColor: const Color(0xFFEFF6FF),
+              iconColor: const Color(0xFF3F51B5),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AdminQueueManagementScreen(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 14),
+
+            _buildSelectionCard(
+              context: context,
+              title: "Project Teams",
+              subtitle: "Review and manage student project teams.",
+              icon: Icons.hub_outlined,
+              iconBgColor: const Color(0xFFEFF6FF),
+              iconColor: const Color(0xFF3F51B5),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AdminTeamManagementScreen(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 14),
+
+            _buildSelectionCard(
+              context: context,
+              title: "Notice Board",
+              subtitle: "Publish and manage campus-wide announcements.",
+              icon: Icons.campaign_outlined,
+              iconBgColor: const Color(0xFFFFF5EE),
+              iconColor: const Color(0xFFFB923C),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NoticeManagementScreen(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 40),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSelectionCard({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color iconBgColor,
+    required Color iconColor,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: iconBgColor,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(icon, color: iconColor, size: 28),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E2938),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF64748B),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: Color(0xFF94A3B8),
+              size: 24,
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
 
 class UserListView extends StatelessWidget {
   final String role;
@@ -1068,7 +1062,6 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
 
       // 👁️ Main Oversight Screen (Matches Screenshot Exact UI)
       case OversightView.mainMenu:
-      default:
         return Scaffold(
           backgroundColor: const Color(0xFFF8FAFC),
           appBar: AppBar(
