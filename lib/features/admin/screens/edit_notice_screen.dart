@@ -89,7 +89,7 @@ class _EditNoticeScreenState extends State<EditNoticeScreen> {
             TextField(controller: _descController, maxLines: 4, decoration: const InputDecoration(labelText: "Description")),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              value: _selectedAudience,
+              initialValue: _selectedAudience,
               items: ['All', 'Computer', 'Civil', 'Architecture']
                   .map((aud) => DropdownMenuItem(value: aud, child: Text(aud)))
                   .toList(),

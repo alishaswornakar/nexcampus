@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import '../bloc/user_profile_bloc.dart';
 import '../bloc/user_profile_event.dart';
 import '../bloc/user_profile_state.dart';
@@ -69,15 +70,12 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
               ),
               const SizedBox(height: 12),
               ListTile(
-                leading: const Icon(Icons.camera_alt, color: Colors.lightBlue),
+                leading: const Icon(Icons.camera_alt, color: AppTheme.primary),
                 title: const Text('Camera'),
                 onTap: () => Navigator.of(sheetContext).pop(ImageSource.camera),
               ),
               ListTile(
-                leading: const Icon(
-                  Icons.photo_library,
-                  color: Colors.lightBlue,
-                ),
+                leading: const Icon(Icons.photo_library, color: AppTheme.primary),
                 title: const Text('Gallery'),
                 onTap: () =>
                     Navigator.of(sheetContext).pop(ImageSource.gallery),
@@ -172,7 +170,7 @@ class _ProfileAvatarState extends State<ProfileAvatar> {
                       child: Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: Colors.lightBlue,
+                          color: AppTheme.primary,
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: theme.colorScheme.surface,

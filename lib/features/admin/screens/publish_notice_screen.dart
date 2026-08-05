@@ -181,7 +181,7 @@ class _PublishNoticeScreenState extends State<PublishNoticeScreen> {
             const Text("Target Audience", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
             const SizedBox(height: 6),
             DropdownButtonFormField<String>(
-              value: _selectedAudience,
+              initialValue: _selectedAudience,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
@@ -207,7 +207,7 @@ class _PublishNoticeScreenState extends State<PublishNoticeScreen> {
                   const Expanded(child: Text("Pin to Top", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
                   Switch(
                     value: _isPinned,
-                    activeColor: const Color(0xFF3B52D4),
+                    activeThumbColor: const Color(0xFF3B52D4),
                     onChanged: (val) => setState(() => _isPinned = val),
                   ),
                 ],

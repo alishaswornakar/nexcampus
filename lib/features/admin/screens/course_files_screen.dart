@@ -65,10 +65,10 @@ class CourseFilesScreen extends StatelessWidget {
                     const SizedBox(width: 16),
 
                     // Title & Subtitle
-                    Expanded(
+                    const Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
                             "Teacher's Uploaded Notes",
                             style: TextStyle(

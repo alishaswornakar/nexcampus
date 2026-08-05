@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import '../bloc/user_profile_bloc.dart';
 import '../bloc/user_profile_event.dart';
 import '../bloc/user_profile_state.dart';
@@ -62,8 +63,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  static const Color _skyBlue = Color(0xFF1E88E5);
-
   @override
   void initState() {
     super.initState();
@@ -112,7 +111,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(
               context,
-            ).colorScheme.copyWith(primary: _skyBlue),
+            ).colorScheme.copyWith(primary: AppTheme.primary),
           ),
           child: child!,
         );
@@ -173,7 +172,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   InputDecoration _decoration(String label, {IconData? icon}) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: icon != null ? Icon(icon, color: _skyBlue) : null,
+      prefixIcon: icon != null ? Icon(icon, color: AppTheme.primary) : null,
       filled: true,
       fillColor: Colors.grey.shade50,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -187,7 +186,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: _skyBlue, width: 2),
+        borderSide: const BorderSide(color: AppTheme.primary, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
@@ -207,7 +206,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Profile updated successfully'),
-              backgroundColor: _skyBlue,
+              backgroundColor: AppTheme.primary,
             ),
           );
           Navigator.of(context).pop();
@@ -225,7 +224,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         // ...unchanged, everything below this line stays exactly the same
         backgroundColor: Colors.grey.shade100,
         appBar: AppBar(
-          backgroundColor: _skyBlue,
+          backgroundColor: AppTheme.primary,
           foregroundColor: Colors.white,
           title: const Text('Edit Profile'),
         ),
@@ -237,14 +236,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               padding: const EdgeInsets.all(20),
               children: [
                 Center(
-                  child: Hero(
-                    tag: 'profile-avatar-${widget.profile.uid}',
-                    child: ProfileAvatar(
-                      uid: widget.profile.uid,
-                      photoUrl: widget.profile.photoUrl,
-                      fullName: widget.profile.fullName,
-                      radius: 56,
-                    ),
+                  child: ProfileAvatar(
+                    uid: widget.profile.uid,
+                    photoUrl: widget.profile.photoUrl,
+                    fullName: widget.profile.fullName,
+                    radius: 56,
                   ),
                 ),
                 const SizedBox(height: 28),
@@ -305,7 +301,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   'Academic Information',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: _skyBlue,
+                    color: AppTheme.primary,
                   ),
                 ),
                 const SizedBox(height: 14),
@@ -385,7 +381,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   'Guardian & Health Information',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: _skyBlue,
+                    color: AppTheme.primary,
                   ),
                 ),
                 const SizedBox(height: 14),
@@ -438,7 +434,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: ElevatedButton(
                         onPressed: _isSaving ? null : _onSavePressed,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _skyBlue,
+                          backgroundColor: AppTheme.primary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(

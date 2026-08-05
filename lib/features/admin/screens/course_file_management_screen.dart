@@ -63,7 +63,8 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
             title: const Text("Attendance View"),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
-              onPressed: () => setState(() => _currentView = OversightView.list),
+              onPressed: () =>
+                  setState(() => _currentView = OversightView.list),
             ),
           ),
           body: const Center(child: Text("Attendance Screen Content")),
@@ -95,12 +96,14 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                 title: 'Attendance',
                 subtitle: 'View and monitor student attendance records.',
                 icon: Icons.calendar_today_outlined,
-                onTap: () => setState(() => _currentView = OversightView.attendance),
+                onTap: () =>
+                    setState(() => _currentView = OversightView.attendance),
               ),
               const SizedBox(height: 14),
               _buildOversightCard(
                 title: 'Course Files',
-                subtitle: 'Review courses materials uploaded by administrators and teachers.',
+                subtitle:
+                    'Review courses materials uploaded by administrators and teachers.',
                 icon: Icons.folder_open_outlined,
                 onTap: () {
                   // सिधै Published Notes खुल्नेछ
@@ -143,7 +146,10 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.folder_shared_outlined, color: Color(0xFF3F51B5)),
+            icon: const Icon(
+              Icons.folder_shared_outlined,
+              color: Color(0xFF3F51B5),
+            ),
             tooltip: "My Course Files",
             onPressed: () {
               setState(() {
@@ -185,16 +191,16 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                     const SizedBox(height: 6),
                     const Text(
                       "Faculty uploads pending audit.",
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 13,
-                      ),
+                      style: TextStyle(color: Colors.white70, fontSize: 13),
                     ),
                     const SizedBox(height: 16),
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20),
@@ -210,7 +216,10 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                         ),
                         const SizedBox(width: 10),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20),
@@ -231,12 +240,42 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
               ),
               const SizedBox(height: 16),
               if (docs.isEmpty) ...[
-                _buildNoteCard(title: "Math", author: "ranju", department: "General", url: ""),
-                _buildNoteCard(title: "chapter 1", author: "ranju", department: "General", url: ""),
-                _buildNoteCard(title: "C Programming", author: "ranju", department: "General", url: ""),
-                _buildNoteCard(title: "notes", author: "ranju", department: "General", url: ""),
-                _buildNoteCard(title: "unit 1", author: "ranju", department: "General", url: ""),
-                _buildNoteCard(title: "edc notes", author: "ranju", department: "General", url: ""),
+                _buildNoteCard(
+                  title: "Math",
+                  author: "ranju",
+                  department: "General",
+                  url: "",
+                ),
+                _buildNoteCard(
+                  title: "chapter 1",
+                  author: "ranju",
+                  department: "General",
+                  url: "",
+                ),
+                _buildNoteCard(
+                  title: "C Programming",
+                  author: "ranju",
+                  department: "General",
+                  url: "",
+                ),
+                _buildNoteCard(
+                  title: "notes",
+                  author: "ranju",
+                  department: "General",
+                  url: "",
+                ),
+                _buildNoteCard(
+                  title: "unit 1",
+                  author: "ranju",
+                  department: "General",
+                  url: "",
+                ),
+                _buildNoteCard(
+                  title: "edc notes",
+                  author: "ranju",
+                  department: "General",
+                  url: "",
+                ),
               ] else ...[
                 ...docs.map((doc) {
                   final data = doc.data() as Map<String, dynamic>;
@@ -357,11 +396,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(14),
           ),
-          child: Icon(
-            icon,
-            color: const Color(0xFF3F51B5),
-            size: 24,
-          ),
+          child: Icon(icon, color: const Color(0xFF3F51B5), size: 24),
         ),
         title: Text(
           title,
@@ -414,10 +449,26 @@ class _CourseFileManagementScreenState
 
   final List<String> _departments = ['Computer', 'Civil', 'Architecture'];
   final List<String> _semesters8 = [
-    '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th',
+    '1st',
+    '2nd',
+    '3rd',
+    '4th',
+    '5th',
+    '6th',
+    '7th',
+    '8th',
   ];
   final List<String> _semesters10 = [
-    '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th',
+    '1st',
+    '2nd',
+    '3rd',
+    '4th',
+    '5th',
+    '6th',
+    '7th',
+    '8th',
+    '9th',
+    '10th',
   ];
   final List<String> _sections = ['A', 'B', 'C', 'D', 'E'];
 
@@ -440,9 +491,9 @@ class _CourseFileManagementScreenState
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error opening file: $e")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Error opening file: $e")));
       }
     }
   }
@@ -510,12 +561,20 @@ class _CourseFileManagementScreenState
                   title: const Text("Browse Document (PDF, DOC, PPT...)"),
                   onTap: () async {
                     Navigator.pop(bottomSheetContext);
-                    FilePickerResult? result = await FilePicker.platform.pickFiles(
-                      type: FileType.custom,
-                      allowedExtensions: [
-                        'pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx', 'ppt', 'pptx',
-                      ],
-                    );
+                    FilePickerResult? result = await FilePicker.platform
+                        .pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: [
+                            'pdf',
+                            'jpg',
+                            'jpeg',
+                            'png',
+                            'doc',
+                            'docx',
+                            'ppt',
+                            'pptx',
+                          ],
+                        );
                     if (result != null && result.files.single.path != null) {
                       onFilePicked(
                         File(result.files.single.path!),
@@ -533,8 +592,12 @@ class _CourseFileManagementScreenState
   }
 
   void _showAddOrEditDialog({CourseFileModel? existingFile}) {
-    final titleController = TextEditingController(text: existingFile?.title ?? '');
-    final subjectController = TextEditingController(text: existingFile?.subject ?? '');
+    final titleController = TextEditingController(
+      text: existingFile?.title ?? '',
+    );
+    final subjectController = TextEditingController(
+      text: existingFile?.subject ?? '',
+    );
 
     File? selectedFile;
     String? selectedFileName;
@@ -551,8 +614,13 @@ class _CourseFileManagementScreenState
                 borderRadius: BorderRadius.circular(16),
               ),
               title: Text(
-                existingFile == null ? "Add Course File / Note" : "Edit File Details",
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                existingFile == null
+                    ? "Add Course File / Note"
+                    : "Edit File Details",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
               content: SingleChildScrollView(
                 child: Column(
@@ -578,7 +646,10 @@ class _CourseFileManagementScreenState
                     if (existingFile == null) ...[
                       const Text(
                         "Attach Note / Document:",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
                       ),
                       const SizedBox(height: 6),
                       InkWell(
@@ -603,11 +674,15 @@ class _CourseFileManagementScreenState
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.add_a_photo_outlined, color: Colors.blue),
+                              const Icon(
+                                Icons.add_a_photo_outlined,
+                                color: Colors.blue,
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  selectedFileName ?? "Tap to capture photo or pick PDF/File...",
+                                  selectedFileName ??
+                                      "Tap to capture photo or pick PDF/File...",
                                   style: TextStyle(
                                     color: selectedFileName == null
                                         ? Colors.grey.shade700
@@ -632,7 +707,10 @@ class _CourseFileManagementScreenState
                           children: [
                             CircularProgressIndicator(),
                             SizedBox(height: 8),
-                            Text("Uploading file, please wait...", style: TextStyle(fontSize: 12)),
+                            Text(
+                              "Uploading file, please wait...",
+                              style: TextStyle(fontSize: 12),
+                            ),
                           ],
                         ),
                       ),
@@ -651,14 +729,20 @@ class _CourseFileManagementScreenState
                       : () async {
                           if (titleController.text.trim().isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Please enter a file title")),
+                              const SnackBar(
+                                content: Text("Please enter a file title"),
+                              ),
                             );
                             return;
                           }
 
                           if (existingFile == null && selectedFile == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Please attach a file or capture photo first")),
+                              const SnackBar(
+                                content: Text(
+                                  "Please attach a file or capture photo first",
+                                ),
+                              ),
                             );
                             return;
                           }
@@ -667,10 +751,11 @@ class _CourseFileManagementScreenState
 
                           try {
                             if (existingFile == null) {
-                              String downloadUrl = await AdminCourseFileService.uploadFileToStorage(
-                                selectedFile!,
-                                selectedFileName!,
-                              );
+                              String downloadUrl =
+                                  await AdminCourseFileService.uploadFileToStorage(
+                                    selectedFile!,
+                                    selectedFileName!,
+                                  );
 
                               final newFile = CourseFileModel(
                                 id: '',
@@ -683,7 +768,9 @@ class _CourseFileManagementScreenState
                                 uploadedBy: 'Admin',
                                 createdAt: DateTime.now(),
                               );
-                              await AdminCourseFileService.addCourseFile(newFile);
+                              await AdminCourseFileService.addCourseFile(
+                                newFile,
+                              );
                             } else {
                               await AdminCourseFileService.updateCourseFile(
                                 existingFile.id,
@@ -701,7 +788,9 @@ class _CourseFileManagementScreenState
                             );
                           }
                         },
-                  child: Text(existingFile == null ? "Upload & Save" : "Save Changes"),
+                  child: Text(
+                    existingFile == null ? "Upload & Save" : "Save Changes",
+                  ),
                 ),
               ],
             );
@@ -718,7 +807,11 @@ class _CourseFileManagementScreenState
       appBar: AppBar(
         title: const Text(
           "My Course Files",
-          style: TextStyle(color: Colors.black87, fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.black87,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         backgroundColor: const Color(0xFFF8FAFC),
         elevation: 0,
@@ -749,21 +842,31 @@ class _CourseFileManagementScreenState
                 Expanded(
                   flex: 3,
                   child: DropdownButtonFormField<String>(
-                    value: _selectedDepartment,
+                    initialValue: _selectedDepartment,
                     isExpanded: true,
                     style: const TextStyle(fontSize: 12, color: Colors.black),
                     decoration: const InputDecoration(
                       labelText: "Dept",
                       labelStyle: TextStyle(fontSize: 12),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 8,
+                      ),
                     ),
                     items: _departments
-                        .map((d) => DropdownMenuItem(value: d, child: Text(d, overflow: TextOverflow.ellipsis)))
+                        .map(
+                          (d) => DropdownMenuItem(
+                            value: d,
+                            child: Text(d, overflow: TextOverflow.ellipsis),
+                          ),
+                        )
                         .toList(),
                     onChanged: (val) {
                       setState(() {
                         _selectedDepartment = val!;
-                        if (!_getAvailableSemesters().contains(_selectedSemester)) {
+                        if (!_getAvailableSemesters().contains(
+                          _selectedSemester,
+                        )) {
                           _selectedSemester = '1st';
                         }
                       });
@@ -774,34 +877,51 @@ class _CourseFileManagementScreenState
                 Expanded(
                   flex: 2,
                   child: DropdownButtonFormField<String>(
-                    value: _selectedSemester,
+                    initialValue: _selectedSemester,
                     isExpanded: true,
                     style: const TextStyle(fontSize: 12, color: Colors.black),
                     decoration: const InputDecoration(
                       labelText: "Sem",
                       labelStyle: TextStyle(fontSize: 12),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 8,
+                      ),
                     ),
                     items: _getAvailableSemesters()
-                        .map((s) => DropdownMenuItem(value: s, child: Text(s, overflow: TextOverflow.ellipsis)))
+                        .map(
+                          (s) => DropdownMenuItem(
+                            value: s,
+                            child: Text(s, overflow: TextOverflow.ellipsis),
+                          ),
+                        )
                         .toList(),
-                    onChanged: (val) => setState(() => _selectedSemester = val!),
+                    onChanged: (val) =>
+                        setState(() => _selectedSemester = val!),
                   ),
                 ),
                 const SizedBox(width: 6),
                 Expanded(
                   flex: 2,
                   child: DropdownButtonFormField<String>(
-                    value: _selectedSection,
+                    initialValue: _selectedSection,
                     isExpanded: true,
                     style: const TextStyle(fontSize: 12, color: Colors.black),
                     decoration: const InputDecoration(
                       labelText: "Sec",
                       labelStyle: TextStyle(fontSize: 12),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 8,
+                      ),
                     ),
                     items: _sections
-                        .map((sec) => DropdownMenuItem(value: sec, child: Text(sec, overflow: TextOverflow.ellipsis)))
+                        .map(
+                          (sec) => DropdownMenuItem(
+                            value: sec,
+                            child: Text(sec, overflow: TextOverflow.ellipsis),
+                          ),
+                        )
                         .toList(),
                     onChanged: (val) => setState(() => _selectedSection = val!),
                   ),
@@ -864,7 +984,10 @@ class _CourseFileManagementScreenState
                         ),
                         subtitle: Text(
                           "Subject: ${file.subject}\nBy: ${file.uploadedBy}",
-                          style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 12,
+                          ),
                         ),
                         isThreeLine: true,
                         trailing: PopupMenuButton<String>(
@@ -875,19 +998,39 @@ class _CourseFileManagementScreenState
                               _showAddOrEditDialog(existingFile: file);
                             } else if (value == 'share') {
                               if (file.fileUrl.isNotEmpty) {
-                                await Share.share(
-                                  "Check out this course file: ${file.title}\nLink: ${file.fileUrl}",
+                                await SharePlus.instance.share(
+                                  ShareParams(
+                                    text:
+                                        "Check out this course file: ${file.title}\nLink: ${file.fileUrl}",
+                                  ),
                                 );
                               }
                             } else if (value == 'delete') {
-                              await AdminCourseFileService.deleteCourseFile(file.id);
+                              await AdminCourseFileService.deleteCourseFile(
+                                file.id,
+                              );
                             }
                           },
                           itemBuilder: (context) => [
-                            const PopupMenuItem(value: 'view', child: Text("View/Open")),
-                            const PopupMenuItem(value: 'edit', child: Text("Edit")),
-                            const PopupMenuItem(value: 'share', child: Text("Share")),
-                            const PopupMenuItem(value: 'delete', child: Text("Delete", style: TextStyle(color: Colors.red))),
+                            const PopupMenuItem(
+                              value: 'view',
+                              child: Text("View/Open"),
+                            ),
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: Text("Edit"),
+                            ),
+                            const PopupMenuItem(
+                              value: 'share',
+                              child: Text("Share"),
+                            ),
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: Text(
+                                "Delete",
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
                           ],
                         ),
                       ),

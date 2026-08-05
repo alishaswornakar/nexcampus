@@ -23,7 +23,7 @@ class AdminDashboardScreen extends StatefulWidget {
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   int _selectedIndex = 0;
-  int managementStep = 0; 
+  int managementStep = 0;
   OversightView _oversightInitialView = OversightView.mainMenu;
 
   void _onBottomNavTapped(int index) {
@@ -54,17 +54,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6FA),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: pages,
-      ),
+      body: IndexedStack(index: _selectedIndex, children: pages),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -176,21 +173,21 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         'title': 'Attendance',
         'icon': Icons.fact_check_outlined,
         'onTap': () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AdminAttendanceViewScreen(),
-              ),
-            ),
+          context,
+          MaterialPageRoute(
+            builder: (context) => const AdminAttendanceViewScreen(),
+          ),
+        ),
       },
       {
         'title': 'Notice',
         'icon': Icons.campaign_outlined,
         'onTap': () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const NoticeManagementScreen(),
-              ),
-            ),
+          context,
+          MaterialPageRoute(
+            builder: (context) => const NoticeManagementScreen(),
+          ),
+        ),
       },
       {
         'title': 'Course',
@@ -207,41 +204,39 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         'title': 'Assignment',
         'icon': Icons.assignment_outlined,
         'onTap': () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AssignmentManagementScreen(),
-              ),
-            ),
+          context,
+          MaterialPageRoute(
+            builder: (context) => const AssignmentManagementScreen(),
+          ),
+        ),
       },
       {
         'title': 'Preview',
         'icon': Icons.visibility_outlined,
         'onTap': () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AdminPreviewScreen(),
-              ),
-            ),
+          context,
+          MaterialPageRoute(builder: (context) => const AdminPreviewScreen()),
+        ),
       },
       {
         'title': 'Student Reports',
         'icon': Icons.report_problem_outlined,
         'onTap': () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ReportMonitoringScreen(),
-              ),
-            ),
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ReportMonitoringScreen(),
+          ),
+        ),
       },
       {
         'title': 'Digital Queue',
         'icon': Icons.confirmation_number_outlined,
         'onTap': () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AdminQueueManagementScreen(),
-              ),
-            ),
+          context,
+          MaterialPageRoute(
+            builder: (context) => const AdminQueueManagementScreen(),
+          ),
+        ),
       },
       {
         'title': 'Add Student',
@@ -257,11 +252,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         'title': 'Project Teams',
         'icon': Icons.groups_outlined,
         'onTap': () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AdminTeamManagementScreen(),
-              ),
-            ),
+          context,
+          MaterialPageRoute(
+            builder: (context) => const AdminTeamManagementScreen(),
+          ),
+        ),
       },
     ];
 
@@ -281,7 +276,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               ),
             ),
             padding: EdgeInsets.fromLTRB(
-                20, MediaQuery.of(context).padding.top + 16, 20, 30),
+              20,
+              MediaQuery.of(context).padding.top + 16,
+              20,
+              30,
+            ),
             child: Column(
               children: [
                 Row(
@@ -292,10 +291,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       children: [
                         Text(
                           "Namaste,",
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 15,
-                          ),
+                          style: TextStyle(color: Colors.white70, fontSize: 15),
                         ),
                         SizedBox(height: 2),
                         Text(
@@ -312,7 +308,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.15),
+                            color: Colors.white.withValues(alpha: 0.15),
                             shape: BoxShape.circle,
                           ),
                           child: IconButton(
@@ -347,13 +343,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 ),
                 const SizedBox(height: 20),
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 18,
+                    horizontal: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
+                        color: Colors.black.withValues(alpha: 0.08),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -361,13 +360,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   ),
                   child: Row(
                     children: [
-                      Expanded(
+                      const Expanded(
                         child: StatCard(value: '12', label: 'Pending Reports'),
                       ),
                       Container(width: 12),
-                      Container(height: 48, width: 1, color: Colors.grey.shade200),
+                      Container(
+                        height: 48,
+                        width: 1,
+                        color: Colors.grey.shade200,
+                      ),
                       Container(width: 12),
-                      Expanded(
+                      const Expanded(
                         child: StatCard(value: '08', label: 'Active Queues'),
                       ),
                     ],
@@ -510,7 +513,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     required String subtitle,
     required String time,
   }) {
-    return ActivityItem(icon: icon, title: title, subtitle: subtitle, time: time);
+    return ActivityItem(
+      icon: icon,
+      title: title,
+      subtitle: subtitle,
+      time: time,
+    );
   }
 }
 
@@ -588,10 +596,10 @@ class ManagementScreenContent extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header matching mockup
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   "Manage Users",
                   style: TextStyle(
                     fontSize: 22,
@@ -735,7 +743,7 @@ class ManagementScreenContent extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -786,7 +794,6 @@ class ManagementScreenContent extends StatelessWidget {
     );
   }
 }
-
 
 class UserListView extends StatelessWidget {
   final String role;
@@ -858,7 +865,9 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
             elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.black87),
-              onPressed: () => setState(() => _currentView = OversightView.courseFilesOptions),
+              onPressed: () => setState(
+                () => _currentView = OversightView.courseFilesOptions,
+              ),
             ),
             title: const Text(
               'Published Notes',
@@ -879,7 +888,10 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
               int count = docs.length;
 
               return ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 children: [
                   Container(
                     padding: const EdgeInsets.all(20),
@@ -901,16 +913,16 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                         const SizedBox(height: 6),
                         const Text(
                           "Faculty uploads pending audit.",
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 13,
-                          ),
+                          style: TextStyle(color: Colors.white70, fontSize: 13),
                         ),
                         const SizedBox(height: 16),
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 8,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(20),
@@ -926,7 +938,10 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                             ),
                             const SizedBox(width: 10),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 8,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(20),
@@ -947,18 +962,49 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                   ),
                   const SizedBox(height: 16),
                   if (docs.isEmpty) ...[
-                    _buildNoteCard(title: "Math", author: "ranju", department: "General", url: ""),
-                    _buildNoteCard(title: "chapter 1", author: "ranju", department: "General", url: ""),
-                    _buildNoteCard(title: "C Programming", author: "ranju", department: "General", url: ""),
-                    _buildNoteCard(title: "notes", author: "ranju", department: "General", url: ""),
-                    _buildNoteCard(title: "unit 1", author: "ranju", department: "General", url: ""),
-                    _buildNoteCard(title: "edc notes", author: "ranju", department: "General", url: ""),
+                    _buildNoteCard(
+                      title: "Math",
+                      author: "ranju",
+                      department: "General",
+                      url: "",
+                    ),
+                    _buildNoteCard(
+                      title: "chapter 1",
+                      author: "ranju",
+                      department: "General",
+                      url: "",
+                    ),
+                    _buildNoteCard(
+                      title: "C Programming",
+                      author: "ranju",
+                      department: "General",
+                      url: "",
+                    ),
+                    _buildNoteCard(
+                      title: "notes",
+                      author: "ranju",
+                      department: "General",
+                      url: "",
+                    ),
+                    _buildNoteCard(
+                      title: "unit 1",
+                      author: "ranju",
+                      department: "General",
+                      url: "",
+                    ),
+                    _buildNoteCard(
+                      title: "edc notes",
+                      author: "ranju",
+                      department: "General",
+                      url: "",
+                    ),
                   ] else ...[
                     ...docs.map((doc) {
                       final data = doc.data() as Map<String, dynamic>;
                       return _buildNoteCard(
                         title: data['title'] ?? 'Untitled Note',
-                        author: data['uploadedBy'] ?? data['author'] ?? 'Faculty',
+                        author:
+                            data['uploadedBy'] ?? data['author'] ?? 'Faculty',
                         department: data['department'] ?? 'General',
                         url: data['fileUrl'] ?? '',
                       );
@@ -980,7 +1026,8 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
             elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.black87),
-              onPressed: () => setState(() => _currentView = OversightView.mainMenu),
+              onPressed: () =>
+                  setState(() => _currentView = OversightView.mainMenu),
             ),
             title: const Text(
               'Course Files',
@@ -1023,10 +1070,10 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                           ),
                         ),
                         const SizedBox(width: 16),
-                        Expanded(
+                        const Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
+                            children: [
                               Text(
                                 "Teacher's Uploaded Notes",
                                 style: TextStyle(
@@ -1103,7 +1150,8 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
               _buildOversightMenuCard(
                 icon: Icons.folder_open_outlined,
                 title: "Course Files",
-                subtitle: "Review courses materials uploaded by administrators and teachers.",
+                subtitle:
+                    "Review courses materials uploaded by administrators and teachers.",
                 onTap: () {
                   setState(() {
                     _currentView = OversightView.courseFilesOptions;
@@ -1157,11 +1205,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(
-                  icon,
-                  color: const Color(0xFF3F51B5),
-                  size: 26,
-                ),
+                child: Icon(icon, color: const Color(0xFF3F51B5), size: 26),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -1280,9 +1324,6 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
     );
   }
 }
-
-
-
 
 // import 'package:flutter/material.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';

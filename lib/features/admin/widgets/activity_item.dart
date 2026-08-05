@@ -21,7 +21,7 @@ class ActivityItem extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFFC7D2FE).withOpacity(0.5),
+              color: const Color(0xFFC7D2FE).withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: const Color(0xFF3F51B5), size: 22),

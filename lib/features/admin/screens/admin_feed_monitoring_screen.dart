@@ -270,10 +270,10 @@ class _AdminFeedMonitoringScreenState extends State<AdminFeedMonitoringScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: _getCategoryColor(post.category).withOpacity(0.1),
+                color: _getCategoryColor(post.category).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: _getCategoryColor(post.category).withOpacity(0.28),
+                  color: _getCategoryColor(post.category).withValues(alpha: 0.28),
                 ),
               ),
               child: Text(

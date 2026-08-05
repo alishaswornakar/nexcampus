@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import '../model/user_profile_model.dart';
 import 'profile_avatar.dart';
 
@@ -26,11 +27,7 @@ class ProfileHeader extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.only(top: 32, bottom: 24, left: 20, right: 20),
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF4FC3F7), Color(0xFF1E88E5)],
-        ),
+        color: AppTheme.primary,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(28),
           bottomRight: Radius.circular(28),
