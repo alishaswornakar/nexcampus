@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/features/admin/screens/admin_dashboard_screen.dart';
-import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 class AdminQueueManagementScreen extends StatefulWidget {
   const AdminQueueManagementScreen({super.key});
@@ -13,7 +12,7 @@ class AdminQueueManagementScreen extends StatefulWidget {
 
 class _AdminQueueManagementScreenState
     extends State<AdminQueueManagementScreen> {
-  final int _selectedIndex = 1;
+  int _selectedIndex = 1;
 
   void _onItemTapped(int index) {
     switch (index) {
@@ -25,7 +24,6 @@ class _AdminQueueManagementScreenState
           ),
         );
         break;
-
       case 1:
         Navigator.pushReplacement(
           context,
@@ -34,7 +32,6 @@ class _AdminQueueManagementScreenState
           ),
         );
         break;
-
       case 2:
         Navigator.pushReplacement(
           context,
@@ -43,7 +40,6 @@ class _AdminQueueManagementScreenState
           ),
         );
         break;
-
       case 3:
         Navigator.pushReplacement(
           context,
@@ -55,11 +51,10 @@ class _AdminQueueManagementScreenState
     }
   }
 
-  // DB को serviceName सँग हुबहु मिल्ने लिस्ट
   final List<Map<String, String>> services = [
-    {'name': 'College Bank', 'counter': 'Counter 3'},
     {'name': 'Exam Section', 'counter': 'Counter 1'},
     {'name': 'Accounts Section', 'counter': 'Counter 2'},
+    {'name': 'College Bank', 'counter': 'Counter 3'},
     {'name': 'Certificate Section', 'counter': 'Counter 4'},
     {'name': 'Library Clearance', 'counter': 'Counter 5'},
   ];
@@ -77,16 +72,14 @@ class _AdminQueueManagementScreenState
 
   void _onServiceChanged(String? newService) {
     if (newService == null) return;
-    final match = services.firstWhere(
-      (element) => element['name'] == newService,
-    );
+    final match =
+        services.firstWhere((element) => element['name'] == newService);
     setState(() {
       selectedService = newService;
       selectedCounter = match['counter']!;
     });
   }
 
-  // Token status update logic
   Future<void> _updateTokenStatus(String docId, String status) async {
     Map<String, dynamic> updateData = {'status': status};
 
@@ -94,23 +87,23 @@ class _AdminQueueManagementScreenState
       updateData['calledAt'] = FieldValue.serverTimestamp();
     } else if (status == 'Completed') {
       updateData['completedAt'] = FieldValue.serverTimestamp();
-    } else if (status == 'Skipped') {
+    } else if (status == 'Skipped' || status == 'Hold') {
       updateData['cancelledAt'] = FieldValue.serverTimestamp();
     }
 
     await FirebaseFirestore.instance
-        .collection('queue_tokens') // 👈 exact Collection Name
+        .collection('queue_tokens')
         .doc(docId)
         .update(updateData);
   }
 
-  // 📄 विद्यार्थीको पूरा Details देखाउने BottomSheet Dialog
   void _showStudentDetails(Map<String, dynamic> data) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
         return Padding(
@@ -138,7 +131,7 @@ class _AdminQueueManagementScreenState
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF6B4EFF),
+                      color: Color(0xFF4F46E5),
                     ),
                   ),
                   Chip(
@@ -152,77 +145,36 @@ class _AdminQueueManagementScreenState
                     ),
                     backgroundColor: data['status'] == 'Serving'
                         ? Colors.green
-                        : Colors.orange,
-                  ),
+                        : const Color(0xFF4F46E5),
+                  )
                 ],
               ),
               const Divider(height: 24),
-
-              // Full Student Details List
-              _buildDetailRow(
-                Icons.person,
-                "Student Name",
-                data['studentName'],
-              ),
-              _buildDetailRow(
-                Icons.badge_outlined,
-                "Roll Number",
-                data['rollNumber'],
-              ),
-              _buildDetailRow(
-                Icons.school_outlined,
-                "Department",
-                data['department'],
-              ),
-              _buildDetailRow(
-                Icons.class_outlined,
-                "Semester",
-                data['semester'],
-              ),
-              _buildDetailRow(
-                Icons.email_outlined,
-                "Email",
-                data['studentEmail'],
-              ),
-              _buildDetailRow(
-                Icons.account_balance_outlined,
-                "Service",
-                data['serviceName'],
-              ),
-              _buildDetailRow(
-                Icons.door_sliding_outlined,
-                "Counter",
-                data['counterName'],
-              ),
-              _buildDetailRow(
-                Icons.date_range,
-                "Queue Date",
-                data['queueDate'],
-              ),
-              _buildDetailRow(
-                Icons.timer_outlined,
-                "Est. Wait Time",
-                "${data['estimatedWaitMinutes'] ?? 0} mins",
-              ),
-
+              _buildDetailRow(Icons.person, "Student Name", data['studentName']),
+              _buildDetailRow(Icons.badge_outlined, "Roll Number", data['rollNumber']),
+              _buildDetailRow(Icons.school_outlined, "Department", data['department']),
+              _buildDetailRow(Icons.class_outlined, "Semester", data['semester']),
+              _buildDetailRow(Icons.email_outlined, "Email", data['studentEmail']),
+              _buildDetailRow(Icons.account_balance_outlined, "Service", data['serviceName']),
+              _buildDetailRow(Icons.door_sliding_outlined, "Counter", data['counterName']),
+              _buildDetailRow(Icons.date_range, "Queue Date", data['queueDate']),
+              _buildDetailRow(Icons.timer_outlined, "Est. Wait Time", "${data['estimatedWaitMinutes'] ?? 0} mins"),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00569E),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    backgroundColor: const Color(0xFF4F46E5),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    "Close",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                  child: const Text("Close",
+                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
-              ),
+              )
             ],
           ),
         );
@@ -235,21 +187,18 @@ class _AdminQueueManagementScreenState
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: Colors.grey.shade600),
+          Icon(icon, size: 20, color: const Color(0xFF64748B)),
           const SizedBox(width: 12),
           Text(
             "$label: ",
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              color: Colors.black54,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF64748B)),
           ),
           Expanded(
             child: Text(
               value?.toString() ?? 'N/A',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: Color(0xFF1E293B),
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -261,62 +210,64 @@ class _AdminQueueManagementScreenState
 
   @override
   Widget build(BuildContext context) {
-    const primaryBlue = Color(0xFF00569E);
-    const purpleTheme = Color(0xFF6B4EFF);
+    const indigoTheme = Color(0xFF4F46E5);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F5FB),
+      backgroundColor: const Color(0xFFF4F6FB),
       appBar: AppBar(
-        backgroundColor: primaryBlue,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
-          "Queue Counter Console",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          "Queue Management",
+          style: TextStyle(color: Color(0xFF1E293B), fontWeight: FontWeight.bold, fontSize: 20),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF1E293B)),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Column(
-        children: [
-          // 1. Top Section: Counter & Status Selection
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 4,
-                  offset: Offset(0, 2),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('queue_tokens')
+            .where('serviceName', isEqualTo: selectedService)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final docs = snapshot.hasData ? snapshot.data!.docs : [];
+
+          final servingDoc = docs
+              .where((d) => (d.data() as Map<String, dynamic>)['status'] == 'Serving')
+              .toList();
+          final waitingDocs = docs
+              .where((d) => (d.data() as Map<String, dynamic>)['status'] == 'waiting')
+              .toList();
+
+          return ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            children: [
+              // 1. Active Service Dropdown Card
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEBF1F6),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      "Active Service:",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
+                      "Active Service Queue",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF64748B)),
                     ),
                     const SizedBox(height: 8),
                     Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 2,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.grey.shade300),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(14),
                       ),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
@@ -326,12 +277,11 @@ class _AdminQueueManagementScreenState
                             return DropdownMenuItem(
                               value: s['name'],
                               child: Text(
-                                "${s['name']} (${s['counter']})",
-                                overflow: TextOverflow.ellipsis,
+                                s['name']!,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: AppTheme.primary,
-                                  fontSize: 13,
+                                  color: Color(0xFF1E293B),
+                                  fontSize: 15,
                                 ),
                               ),
                             );
@@ -342,372 +292,424 @@ class _AdminQueueManagementScreenState
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Counter Status ($selectedCounter):",
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
-                        fontSize: 13,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          isCounterOpen ? "OPEN" : "CLOSED",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: isCounterOpen ? Colors.green : Colors.red,
-                            fontSize: 12,
-                          ),
-                        ),
-                        Switch(
-                          value: isCounterOpen,
-                          activeThumbColor: Colors.green,
-                          onChanged: (val) {
-                            setState(() {
-                              isCounterOpen = val;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
+              ),
+              const SizedBox(height: 16),
+
+              // 2. Counter Status Card
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEBF1F6),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-              ],
-            ),
-          ),
-
-          // 2. Realtime Stream from Firestore
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('queue_tokens') // 👈 DB collection name
-                  .where(
-                    'serviceName',
-                    isEqualTo: selectedService,
-                  ) // 👈 DB field name
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.people_outline,
-                          size: 60,
-                          color: Colors.grey.shade400,
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          "No active tokens for $selectedService.",
-                          style: TextStyle(color: Colors.grey.shade600),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                final docs = snapshot.data!.docs;
-
-                // Status अनुसार Sorting (waiting, Serving)
-                final servingDoc = docs
-                    .where(
-                      (d) =>
-                          (d.data() as Map<String, dynamic>)['status'] ==
-                          'Serving',
-                    )
-                    .toList();
-                final waitingDocs = docs
-                    .where(
-                      (d) =>
-                          (d.data() as Map<String, dynamic>)['status'] ==
-                          'waiting',
-                    )
-                    .toList();
-
-                return ListView(
-                  padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // A. NOW SERVING SECTION
-                    if (servingDoc.isNotEmpty) ...[
-                      const Text(
-                        "NOW SERVING AT COUNTER",
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      _buildServingCard(servingDoc.first, purpleTheme),
-                      const SizedBox(height: 20),
-                    ],
-
-                    // B. WAITING QUEUE SECTION
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          "WAITING LINE",
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
-                            letterSpacing: 1,
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              selectedService,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: Color(0xFF1E293B),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                const Icon(Icons.meeting_room_outlined, size: 14, color: Color(0xFF64748B)),
+                                const SizedBox(width: 4),
+                                Text(
+                                  selectedCounter,
+                                  style: const TextStyle(color: Color(0xFF64748B), fontSize: 13),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: purpleTheme.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(10),
+                            color: indigoTheme.withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
                             "${waitingDocs.length} Waiting",
                             style: const TextStyle(
-                              fontSize: 11,
-                              color: purpleTheme,
+                              fontSize: 12,
+                              color: indigoTheme,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-
-                    if (waitingDocs.isEmpty && servingDoc.isEmpty)
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        alignment: Alignment.center,
-                        child: const Text(
-                          "No active tokens right now.",
-                          style: TextStyle(color: Colors.grey, fontSize: 13),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12.0),
+                      child: Divider(color: Color(0xFFCBD5E1), height: 1),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Queue Status",
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF1E293B)),
                         ),
-                      )
-                    else
-                      ...waitingDocs.map(
-                        (doc) => _buildWaitingCard(doc, purpleTheme),
-                      ),
+                        Row(
+                          children: [
+                            Text(
+                              isCounterOpen ? "OPEN" : "CLOSED",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: isCounterOpen ? Colors.green : Colors.red,
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Switch(
+                              value: isCounterOpen,
+                              activeColor: Colors.white,
+                              activeTrackColor: indigoTheme,
+                              onChanged: (val) {
+                                setState(() {
+                                  isCounterOpen = val;
+                                });
+                              },
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
                   ],
-                );
-              },
-            ),
-          ),
-        ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // 3. Currently Serving Card (Blue Theme)
+              if (servingDoc.isNotEmpty) ...[
+                _buildServingCard(servingDoc.first, indigoTheme),
+                const SizedBox(height: 24),
+              ],
+
+              // 4. Up Next Section Title
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Up Next",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E293B),
+                    ),
+                  ),
+                  Text(
+                    "Estimated wait time: ${waitingDocs.length * 5} mins",
+                    style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Waiting Queue List Cards
+              if (waitingDocs.isEmpty && servingDoc.isEmpty)
+                Container(
+                  padding: const EdgeInsets.all(30),
+                  alignment: Alignment.center,
+                  child: const Text(
+                    "No active tokens right now.",
+                    style: TextStyle(color: Color(0xFF64748B), fontSize: 14),
+                  ),
+                )
+              else
+                ...waitingDocs.map((doc) => _buildWaitingCard(doc, indigoTheme)),
+
+              const SizedBox(height: 20),
+              Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.horizontal_rule, color: Colors.grey.shade400),
+                    const SizedBox(width: 8),
+                    Text(
+                      "End of Queue",
+                      style: TextStyle(color: Colors.grey.shade500, fontWeight: FontWeight.w500, fontSize: 13),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(Icons.horizontal_rule, color: Colors.grey.shade400),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          );
+        },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF3F51B5),
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.manage_accounts_outlined),
-            label: 'Management',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.insert_chart_outlined_rounded),
-            label: 'Oversight',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline_rounded),
-            label: 'Profile',
-          ),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          selectedItemColor: const Color(0xFF4F46E5),
+          unselectedItemColor: const Color(0xFF94A3B8),
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 12),
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.admin_panel_settings_outlined),
+              activeIcon: Icon(Icons.admin_panel_settings),
+              label: 'Management',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart_outlined),
+              activeIcon: Icon(Icons.bar_chart),
+              label: 'Oversight',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // Serving Card
+  // Serving Card Matching Image Design
   Widget _buildServingCard(DocumentSnapshot doc, Color themeColor) {
     final data = doc.data() as Map<String, dynamic>;
     final tokenNo = data['tokenNumber'] ?? '#';
     final studentName = data['studentName'] ?? 'Student';
     final rollNumber = data['rollNumber'] ?? '';
+    final serviceName = data['serviceName'] ?? '';
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.green, width: 2),
+        color: const Color(0xFF3B44B8), // Deep Indigo/Blue background matching image
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.green.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF3B44B8).withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Serving Token",
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                  Text(
-                    "#$tokenNo",
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                    ),
-                  ),
-                ],
-              ),
-              IconButton(
-                icon: const Icon(Icons.info_outline, color: Colors.blue),
-                onPressed: () => _showStudentDetails(data),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "$studentName ${rollNumber.isNotEmpty ? '($rollNumber)' : ''}",
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          const Text(
+            "CURRENTLY SERVING",
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: Colors.white70,
+              letterSpacing: 1.2,
             ),
           ),
-          const Divider(height: 24),
+          const SizedBox(height: 6),
+          Text(
+            "#$tokenNo",
+            style: const TextStyle(
+              fontSize: 34,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            studentName,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            "Roll No: $rollNumber • Query: $serviceName",
+            style: const TextStyle(color: Colors.white70, fontSize: 12),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 18),
           Row(
             children: [
               Expanded(
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.white,
+                    foregroundColor: const Color(0xFF3B44B8),
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  icon: const Icon(
-                    Icons.check_circle_outline,
-                    color: Colors.white,
-                    size: 18,
-                  ),
+                  icon: const Icon(Icons.check_circle_outline, size: 18),
                   label: const Text(
                     "Complete",
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
                   onPressed: () => _updateTokenStatus(doc.id, 'Completed'),
                 ),
               ),
-              const SizedBox(width: 8),
-              OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.orange,
-                  side: const BorderSide(color: Colors.orange),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+              const SizedBox(width: 10),
+              Expanded(
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.white54, width: 1),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
+                  icon: const Icon(Icons.pause_circle_outline, size: 18),
+                  label: const Text(
+                    "Hold",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  onPressed: () => _updateTokenStatus(doc.id, 'Hold'),
                 ),
-                icon: const Icon(Icons.skip_next_outlined, size: 18),
-                label: const Text("Skip"),
-                onPressed: () => _updateTokenStatus(doc.id, 'Skipped'),
               ),
             ],
-          ),
+          )
         ],
       ),
     );
   }
 
-  // Waiting Card Widget
+  // Up Next Waiting Card Matching Image Design
   Widget _buildWaitingCard(DocumentSnapshot doc, Color themeColor) {
     final data = doc.data() as Map<String, dynamic>;
     final tokenNo = data['tokenNumber'] ?? '#';
     final studentName = data['studentName'] ?? 'Student';
     final rollNumber = data['rollNumber'] ?? '';
+    final serviceName = data['serviceName'] ?? '';
+    final isFirstInLine = data['status'] == 'waiting'; // Can customize wait badge logic if needed
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.shade200),
+        color: const Color(0xFFEBF1F6), // Soft greyish blue card background
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: themeColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              "#$tokenNo",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: themeColor,
-                fontSize: 16,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "#$tokenNo",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4F46E5),
+                  fontSize: 18,
+                ),
               ),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: InkWell(
-              onTap: () =>
-                  _showStudentDetails(data), // 👈 Click गर्दा Full Detail खुल्छ
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              const Row(
                 children: [
+                  Icon(Icons.access_time, size: 14, color: Color(0xFF64748B)),
+                  SizedBox(width: 4),
                   Text(
-                    studentName,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  Text(
-                    "Roll: $rollNumber • ${data['department'] ?? ''}",
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
+                    "5m",
+                    style: TextStyle(color: Color(0xFF64748B), fontSize: 12),
                   ),
                 ],
               ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          InkWell(
+            onTap: () => _showStudentDetails(data),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  studentName,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Color(0xFF1E293B),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  "Roll No: $rollNumber",
+                  style: const TextStyle(color: Color(0xFF64748B), fontSize: 12),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  serviceName,
+                  style: const TextStyle(color: Color(0xFF64748B), fontSize: 12),
+                ),
+              ],
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.info_outline, color: Colors.grey, size: 20),
-            onPressed: () => _showStudentDetails(data),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: themeColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            ),
-            child: const Text(
-              "Call Next",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            onPressed: () => _updateTokenStatus(doc.id, 'Serving'),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: isFirstInLine
+                ? ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4F46E5),
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Call Next",
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                        ),
+                        SizedBox(width: 4),
+                        Icon(Icons.arrow_forward, color: Colors.white, size: 16),
+                      ],
+                    ),
+                    onPressed: () => _updateTokenStatus(doc.id, 'Serving'),
+                  )
+                : OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xFFCBD5E1)),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      "In Queue",
+                      style: TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.bold, fontSize: 13),
+                    ),
+                    onPressed: () {},
+                  ),
           ),
         ],
       ),
