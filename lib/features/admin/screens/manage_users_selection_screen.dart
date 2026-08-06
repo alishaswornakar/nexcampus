@@ -29,28 +29,16 @@ class ManageUsersSelectionScreen extends StatelessWidget {
             false, // Tab vitra hune bhayera back button hatauna ramro
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Select User Type",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF64748B),
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Students Card (Second image ko jastai light container color)
+            // Students Card (Image 2 ko card design anusar)
             _buildSelectionCard(
               context: context,
               title: "Students",
               subtitle: "Add, view, edit, and manage student accounts.",
               icon: Icons.school_outlined,
-              iconBgColor: const Color(0xFFE0F2FE),
-              iconColor: const Color(0xFF0284C7),
               onTap: () {
                 Navigator.push(
                   context,
@@ -60,7 +48,7 @@ class ManageUsersSelectionScreen extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
 
             // Teachers Card
             _buildSelectionCard(
@@ -68,8 +56,6 @@ class ManageUsersSelectionScreen extends StatelessWidget {
               title: "Teachers",
               subtitle: "Add, view, edit, and manage teacher accounts.",
               icon: Icons.person_outline_rounded,
-              iconBgColor: const Color(0xFFFEF3C7),
-              iconColor: const Color(0xFFD97706),
               onTap: () {
                 Navigator.push(
                   context,
@@ -90,8 +76,6 @@ class ManageUsersSelectionScreen extends StatelessWidget {
     required String title,
     required String subtitle,
     required IconData icon,
-    required Color iconBgColor,
-    required Color iconColor,
     required VoidCallback onTap,
   }) {
     return InkWell(
@@ -100,7 +84,8 @@ class ManageUsersSelectionScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: Colors.white,
+          // Image 2 ko jastai card ko soft light greyish-blue background
+          color: const Color(0xFFEBF1F6), 
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -111,14 +96,19 @@ class ManageUsersSelectionScreen extends StatelessWidget {
           ],
         ),
         child: Row(
-          children: [
+          children: [  
+            // Icon kolagi White Container Box
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: iconBgColor,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(icon, color: iconColor, size: 28),
+              child: Icon(
+                icon, 
+                color: const Color(0xFF4F46E5), // Professional Blue/Indigo Shade
+                size: 28,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -130,7 +120,7 @@ class ManageUsersSelectionScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E2938),
+                      color: Color(0xFF1E293B),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -146,7 +136,7 @@ class ManageUsersSelectionScreen extends StatelessWidget {
             ),
             const Icon(
               Icons.chevron_right_rounded,
-              color: Color(0xFF94A3B8),
+              color: Color(0xFF64748B),
               size: 24,
             ),
           ],
