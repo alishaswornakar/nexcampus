@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import '../models/attendance_model.dart';
 import '../models/admin_subject_model.dart';
 import '../services/admin_attendance_service.dart';
@@ -12,8 +13,7 @@ class AdminAttendanceViewScreen extends StatefulWidget {
       _AdminAttendanceViewScreenState();
 }
 
-class _AdminAttendanceViewScreenState
-    extends State<AdminAttendanceViewScreen> {
+class _AdminAttendanceViewScreenState extends State<AdminAttendanceViewScreen> {
   // Filters State
   String? _selectedDepartment = 'Computer Engineering';
   String? _selectedSemester = '1';
@@ -70,16 +70,16 @@ class _AdminAttendanceViewScreenState
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: AppTheme.primary,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.maybePop(context),
         ),
         title: const Text(
           'Attendance View',
           style: TextStyle(
-            color: Colors.black87,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
@@ -104,7 +104,10 @@ class _AdminAttendanceViewScreenState
                 child: DropdownButton<String>(
                   value: _selectedDepartment,
                   isExpanded: true,
-                  icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Colors.grey,
+                  ),
                   style: const TextStyle(
                     color: Color(0xFF1F2937),
                     fontSize: 14,
@@ -122,7 +125,9 @@ class _AdminAttendanceViewScreenState
                     setState(() {
                       _selectedDepartment = val;
                       if (_selectedSemester != null &&
-                          !_getAvailableSemesters().contains(_selectedSemester)) {
+                          !_getAvailableSemesters().contains(
+                            _selectedSemester,
+                          )) {
                         _selectedSemester = '1';
                       }
                       _selectedSubjectId = null;
@@ -364,19 +369,17 @@ class _AdminAttendanceViewScreenState
                       r.date.day == _selectedDate.day;
                 }).toList();
 
-                int presentCount =
-                    dateRecords.where((r) => r.isPresent).length;
+                int presentCount = dateRecords.where((r) => r.isPresent).length;
                 int absentCount = dateRecords.where((r) => !r.isPresent).length;
                 int totalCount = dateRecords.length;
 
                 // Filter logic for search & chip buttons
                 final filteredRecords = dateRecords.where((r) {
-                  final matchesSearch = r.fullName
-                          .toLowerCase()
-                          .contains(_searchQuery.toLowerCase()) ||
-                      r.roll
-                          .toLowerCase()
-                          .contains(_searchQuery.toLowerCase());
+                  final matchesSearch =
+                      r.fullName.toLowerCase().contains(
+                        _searchQuery.toLowerCase(),
+                      ) ||
+                      r.roll.toLowerCase().contains(_searchQuery.toLowerCase());
 
                   if (_selectedFilterIndex == 1) {
                     return matchesSearch && r.isPresent;
@@ -394,7 +397,7 @@ class _AdminAttendanceViewScreenState
                       width: double.infinity,
                       padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF3B52D4),
+                        color: AppTheme.primary,
                         borderRadius: BorderRadius.circular(18),
                       ),
                       child: Column(
@@ -446,8 +449,10 @@ class _AdminAttendanceViewScreenState
                         onChanged: (val) => setState(() => _searchQuery = val),
                         decoration: const InputDecoration(
                           hintText: "Search student name or roll no...",
-                          hintStyle:
-                              TextStyle(color: Colors.grey, fontSize: 14),
+                          hintStyle: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
                           prefixIcon: Icon(Icons.search, color: Colors.grey),
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(vertical: 12),
@@ -520,15 +525,15 @@ class _AdminAttendanceViewScreenState
                                     CircleAvatar(
                                       radius: 22,
                                       backgroundColor: Colors.grey.shade300,
-                                      backgroundImage: record
-                                              .photoUrl.isNotEmpty
+                                      backgroundImage:
+                                          record.photoUrl.isNotEmpty
                                           ? NetworkImage(record.photoUrl)
                                           : null,
                                       child: record.photoUrl.isEmpty
                                           ? Text(
                                               record.fullName.isNotEmpty
                                                   ? record.fullName[0]
-                                                      .toUpperCase()
+                                                        .toUpperCase()
                                                   : 'S',
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
@@ -573,8 +578,7 @@ class _AdminAttendanceViewScreenState
                                         color: isPresent
                                             ? const Color(0xFFBBF7D0)
                                             : const Color(0xFFFECDD3),
-                                        borderRadius:
-                                            BorderRadius.circular(20),
+                                        borderRadius: BorderRadius.circular(20),
                                       ),
                                       child: Text(
                                         isPresent ? "PRESENT" : "ABSENT",
@@ -622,7 +626,7 @@ class _AdminAttendanceViewScreenState
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.18),
+          color: AppTheme.primary.withValues(alpha: 0.18),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -657,9 +661,7 @@ class _AdminAttendanceViewScreenState
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFF3B52D4)
-              : const Color(0xFFE5E7EB),
+          color: isSelected ? AppTheme.primary : const Color(0xFFE5E7EB),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -674,4 +676,3 @@ class _AdminAttendanceViewScreenState
     );
   }
 }
-
