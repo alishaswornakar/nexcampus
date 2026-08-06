@@ -32,7 +32,7 @@ class AdminProfileScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
+                    color: Colors.black.withValues(alpha:0.03),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
@@ -48,7 +48,7 @@ class AdminProfileScreen extends StatelessWidget {
                         height: 85,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFF2140A7).withOpacity(0.1),
+                          color: const Color(0xFF2140A7).withValues(alpha:0.1),
                           border: Border.all(color: const Color(0xFF2140A7), width: 2),
                         ),
                         child: const Icon(
@@ -125,7 +125,7 @@ class AdminProfileScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
+                    color: Colors.black.withValues(alpha:0.03),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),

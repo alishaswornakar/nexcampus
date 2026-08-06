@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:nexcampus_app/features/admin/screens/admin_dashboard_screen.dart';
 
 class AdminQueueManagementScreen extends StatefulWidget {
   const AdminQueueManagementScreen({super.key});
@@ -11,6 +12,48 @@ class AdminQueueManagementScreen extends StatefulWidget {
 
 class _AdminQueueManagementScreenState
     extends State<AdminQueueManagementScreen> {
+  final int _selectedIndex = 1;
+
+  void _onItemTapped(int index) {
+    switch (index) {
+      case 0:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const AdminDashboardScreen(initialIndex: 0),
+          ),
+        );
+        break;
+
+      case 1:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const AdminDashboardScreen(initialIndex: 1),
+          ),
+        );
+        break;
+
+      case 2:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const AdminDashboardScreen(initialIndex: 2),
+          ),
+        );
+        break;
+
+      case 3:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const AdminDashboardScreen(initialIndex: 3),
+          ),
+        );
+        break;
+    }
+  }
+
   // DB को serviceName सँग हुबहु मिल्ने लिस्ट
   final List<Map<String, String>> services = [
     {'name': 'College Bank', 'counter': 'Counter 3'},
@@ -33,8 +76,9 @@ class _AdminQueueManagementScreenState
 
   void _onServiceChanged(String? newService) {
     if (newService == null) return;
-    final match =
-        services.firstWhere((element) => element['name'] == newService);
+    final match = services.firstWhere(
+      (element) => element['name'] == newService,
+    );
     setState(() {
       selectedService = newService;
       selectedCounter = match['counter']!;
@@ -108,28 +152,57 @@ class _AdminQueueManagementScreenState
                     backgroundColor: data['status'] == 'Serving'
                         ? Colors.green
                         : Colors.orange,
-                  )
+                  ),
                 ],
               ),
               const Divider(height: 24),
 
               // Full Student Details List
-              _buildDetailRow(Icons.person, "Student Name", data['studentName']),
               _buildDetailRow(
-                  Icons.badge_outlined, "Roll Number", data['rollNumber']),
+                Icons.person,
+                "Student Name",
+                data['studentName'],
+              ),
               _buildDetailRow(
-                  Icons.school_outlined, "Department", data['department']),
+                Icons.badge_outlined,
+                "Roll Number",
+                data['rollNumber'],
+              ),
               _buildDetailRow(
-                  Icons.class_outlined, "Semester", data['semester']),
-              _buildDetailRow(Icons.email_outlined, "Email", data['studentEmail']),
-              _buildDetailRow(Icons.account_balance_outlined, "Service",
-                  data['serviceName']),
+                Icons.school_outlined,
+                "Department",
+                data['department'],
+              ),
               _buildDetailRow(
-                  Icons.door_sliding_outlined, "Counter", data['counterName']),
+                Icons.class_outlined,
+                "Semester",
+                data['semester'],
+              ),
               _buildDetailRow(
-                  Icons.date_range, "Queue Date", data['queueDate']),
-              _buildDetailRow(Icons.timer_outlined, "Est. Wait Time",
-                  "${data['estimatedWaitMinutes'] ?? 0} mins"),
+                Icons.email_outlined,
+                "Email",
+                data['studentEmail'],
+              ),
+              _buildDetailRow(
+                Icons.account_balance_outlined,
+                "Service",
+                data['serviceName'],
+              ),
+              _buildDetailRow(
+                Icons.door_sliding_outlined,
+                "Counter",
+                data['counterName'],
+              ),
+              _buildDetailRow(
+                Icons.date_range,
+                "Queue Date",
+                data['queueDate'],
+              ),
+              _buildDetailRow(
+                Icons.timer_outlined,
+                "Est. Wait Time",
+                "${data['estimatedWaitMinutes'] ?? 0} mins",
+              ),
 
               const SizedBox(height: 20),
               SizedBox(
@@ -143,10 +216,12 @@ class _AdminQueueManagementScreenState
                     ),
                   ),
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("Close",
-                      style: TextStyle(color: Colors.white, fontSize: 16)),
+                  child: const Text(
+                    "Close",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
                 ),
-              )
+              ),
             ],
           ),
         );
@@ -164,7 +239,9 @@ class _AdminQueueManagementScreenState
           Text(
             "$label: ",
             style: const TextStyle(
-                fontWeight: FontWeight.w600, color: Colors.black54),
+              fontWeight: FontWeight.w600,
+              color: Colors.black54,
+            ),
           ),
           Expanded(
             child: Text(
@@ -210,7 +287,10 @@ class _AdminQueueManagementScreenState
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
               boxShadow: [
                 BoxShadow(
-                    color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+                  color: Colors.black12,
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                ),
               ],
             ),
             child: Column(
@@ -220,12 +300,16 @@ class _AdminQueueManagementScreenState
                   children: [
                     const Text(
                       "Active Service:",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 2),
+                        horizontal: 12,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade100,
                         borderRadius: BorderRadius.circular(10),
@@ -259,8 +343,10 @@ class _AdminQueueManagementScreenState
                   children: [
                     Text(
                       "Counter Status ($selectedCounter):",
-                      style:
-                          TextStyle(color: Colors.grey.shade700, fontSize: 13),
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontSize: 13,
+                      ),
                     ),
                     Row(
                       children: [
@@ -282,7 +368,7 @@ class _AdminQueueManagementScreenState
                           },
                         ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ],
@@ -294,7 +380,10 @@ class _AdminQueueManagementScreenState
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('queue_tokens') // 👈 DB collection name
-                  .where('serviceName', isEqualTo: selectedService) // 👈 DB field name
+                  .where(
+                    'serviceName',
+                    isEqualTo: selectedService,
+                  ) // 👈 DB field name
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -306,8 +395,11 @@ class _AdminQueueManagementScreenState
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.people_outline,
-                            size: 60, color: Colors.grey.shade400),
+                        Icon(
+                          Icons.people_outline,
+                          size: 60,
+                          color: Colors.grey.shade400,
+                        ),
                         const SizedBox(height: 10),
                         Text(
                           "No active tokens for $selectedService.",
@@ -322,14 +414,18 @@ class _AdminQueueManagementScreenState
 
                 // Status अनुसार Sorting (waiting, Serving)
                 final servingDoc = docs
-                    .where((d) =>
-                        (d.data() as Map<String, dynamic>)['status'] ==
-                        'Serving')
+                    .where(
+                      (d) =>
+                          (d.data() as Map<String, dynamic>)['status'] ==
+                          'Serving',
+                    )
                     .toList();
                 final waitingDocs = docs
-                    .where((d) =>
-                        (d.data() as Map<String, dynamic>)['status'] ==
-                        'waiting')
+                    .where(
+                      (d) =>
+                          (d.data() as Map<String, dynamic>)['status'] ==
+                          'waiting',
+                    )
                     .toList();
 
                 return ListView(
@@ -366,9 +462,11 @@ class _AdminQueueManagementScreenState
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: purpleTheme.withValues(alpha:0.1),
+                            color: purpleTheme.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
@@ -394,12 +492,35 @@ class _AdminQueueManagementScreenState
                         ),
                       )
                     else
-                      ...waitingDocs
-                          .map((doc) => _buildWaitingCard(doc, purpleTheme)),
+                      ...waitingDocs.map(
+                        (doc) => _buildWaitingCard(doc, purpleTheme),
+                      ),
                   ],
                 );
               },
             ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: const Color(0xFF3F51B5),
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.manage_accounts_outlined),
+            label: 'Management',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.insert_chart_outlined_rounded),
+            label: 'Oversight',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline_rounded),
+            label: 'Profile',
           ),
         ],
       ),
@@ -421,7 +542,7 @@ class _AdminQueueManagementScreenState
         border: Border.all(color: Colors.green, width: 2),
         boxShadow: [
           BoxShadow(
-            color: Colors.green.withValues(alpha:0.1),
+            color: Colors.green.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -435,8 +556,10 @@ class _AdminQueueManagementScreenState
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Serving Token",
-                      style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  const Text(
+                    "Serving Token",
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
                   Text(
                     "#$tokenNo",
                     style: const TextStyle(
@@ -450,7 +573,7 @@ class _AdminQueueManagementScreenState
               IconButton(
                 icon: const Icon(Icons.info_outline, color: Colors.blue),
                 onPressed: () => _showStudentDetails(data),
-              )
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -469,12 +592,18 @@ class _AdminQueueManagementScreenState
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
-                  icon: const Icon(Icons.check_circle_outline,
-                      color: Colors.white, size: 18),
-                  label:
-                      const Text("Complete", style: TextStyle(color: Colors.white)),
+                  icon: const Icon(
+                    Icons.check_circle_outline,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                  label: const Text(
+                    "Complete",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   onPressed: () => _updateTokenStatus(doc.id, 'Completed'),
                 ),
               ),
@@ -484,14 +613,15 @@ class _AdminQueueManagementScreenState
                   foregroundColor: Colors.orange,
                   side: const BorderSide(color: Colors.orange),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
                 icon: const Icon(Icons.skip_next_outlined, size: 18),
                 label: const Text("Skip"),
                 onPressed: () => _updateTokenStatus(doc.id, 'Skipped'),
               ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -517,7 +647,7 @@ class _AdminQueueManagementScreenState
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: themeColor.withValues(alpha:0.1),
+              color: themeColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
@@ -532,14 +662,17 @@ class _AdminQueueManagementScreenState
           const SizedBox(width: 14),
           Expanded(
             child: InkWell(
-              onTap: () => _showStudentDetails(data), // 👈 Click गर्दा Full Detail खुल्छ
+              onTap: () =>
+                  _showStudentDetails(data), // 👈 Click गर्दा Full Detail खुल्छ
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     studentName,
                     style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 14),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
                   ),
                   Text(
                     "Roll: $rollNumber • ${data['department'] ?? ''}",
@@ -564,7 +697,10 @@ class _AdminQueueManagementScreenState
             child: const Text(
               "Call Next",
               style: TextStyle(
-                  color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             onPressed: () => _updateTokenStatus(doc.id, 'Serving'),
           ),
