@@ -7,6 +7,8 @@ class ManageUsersSelectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("ManageUsersSelectionScreen Opened");
+
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6FB), // Second image jastai background
       appBar: AppBar(
