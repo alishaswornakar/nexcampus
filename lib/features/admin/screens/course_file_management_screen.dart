@@ -134,13 +134,13 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
         backgroundColor: AppTheme.primary,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => setState(() => _currentView = OversightView.list),
         ),
         title: const Text(
           'Published Notes',
           style: TextStyle(
-            color: Colors.black87,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
@@ -149,7 +149,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
           IconButton(
             icon: const Icon(
               Icons.folder_shared_outlined,
-              color: Color(0xFF3F51B5),
+              color: AppTheme.primary,
             ),
             tooltip: "My Course Files",
             onPressed: () {
@@ -175,7 +175,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF3352E0),
+                  color: AppTheme.primary,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(

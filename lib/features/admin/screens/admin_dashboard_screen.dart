@@ -81,7 +81,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Colors.white.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -166,7 +166,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.visibility, color: Colors.blue),
+                leading: const Icon(Icons.visibility, color: AppTheme.primary),
                 title: Text("View Registered ${type}s"),
                 onTap: () {
                   Navigator.pop(context);
@@ -368,7 +368,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
+                        color: Colors.white.withValues(alpha: 0.08),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -443,7 +443,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   child: const Text(
                     "View All",
                     style: TextStyle(
-                      color: Color(0xFF2563EB),
+                      color: AppTheme.primary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -501,11 +501,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 color: Colors.white,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                item['icon'],
-                color: const Color(0xFF3F51B5),
-                size: 22,
-              ),
+              child: Icon(item['icon'], color: AppTheme.primary, size: 22),
             ),
             const SizedBox(height: 10),
             Text(
@@ -551,25 +547,32 @@ class ManagementScreenContent extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  icon: const Icon(Icons.arrow_back, color: Color(0xFF1E293B)),
-                  onPressed: onBack,
-                ),
-
-                const SizedBox(width: 12),
-                const Text(
-                  "Management",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+              decoration: BoxDecoration(
+                color: AppTheme.primary,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: [
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: onBack,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 12),
+                  const Text(
+                    "Management",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
 
             const SizedBox(height: 18),
@@ -580,7 +583,7 @@ class ManagementScreenContent extends StatelessWidget {
               subtitle: "Add, edit, and manage student and teacher accounts.",
               icon: Icons.group_outlined,
               iconBgColor: const Color(0xFFEFF6FF),
-              iconColor: const Color(0xFF3F51B5),
+              iconColor: AppTheme.primary,
               onTap: () {
                 Navigator.push(
                   context,
@@ -598,7 +601,7 @@ class ManagementScreenContent extends StatelessWidget {
               subtitle: "Configure service counters and manage digital queues.",
               icon: Icons.add_box_outlined,
               iconBgColor: const Color(0xFFEFF6FF),
-              iconColor: const Color(0xFF3F51B5),
+              iconColor: AppTheme.primary,
               onTap: () {
                 Navigator.push(
                   context,
@@ -616,7 +619,7 @@ class ManagementScreenContent extends StatelessWidget {
               subtitle: "Review and manage student project teams.",
               icon: Icons.hub_outlined,
               iconBgColor: const Color(0xFFEFF6FF),
-              iconColor: const Color(0xFF3F51B5),
+              iconColor: AppTheme.primary,
               onTap: () {
                 Navigator.push(
                   context,
@@ -870,7 +873,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
             title: const Text(
               'Published Notes',
               style: TextStyle(
-                color: Colors.black87,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),
@@ -894,7 +897,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF3352E0),
+                      color: AppTheme.primary,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Column(
@@ -928,7 +931,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                               child: const Text(
                                 "12 New Today",
                                 style: TextStyle(
-                                  color: Color(0xFF3352E0),
+                                  color: AppTheme.primary,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -947,7 +950,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                               child: const Text(
                                 "3 Departments",
                                 style: TextStyle(
-                                  color: Color(0xFF3352E0),
+                                  color: AppTheme.primary,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -1030,7 +1033,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
             title: const Text(
               'Course Files',
               style: TextStyle(
-                color: Colors.white,
+                color: Colors.black,
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),
@@ -1063,7 +1066,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                           ),
                           child: const Icon(
                             Icons.school_outlined,
-                            color: Color(0xFF3F51B5),
+                            color: AppTheme.primary,
                             size: 26,
                           ),
                         ),
@@ -1203,7 +1206,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(icon, color: const Color(0xFF3F51B5), size: 26),
+                child: Icon(icon, color: AppTheme.primary, size: 26),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -1215,7 +1218,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF1E293B),
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -1266,7 +1269,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
             ),
             child: const Icon(
               Icons.description_outlined,
-              color: Color(0xFF3F51B5),
+              color: AppTheme.primary,
               size: 24,
             ),
           ),
@@ -1278,7 +1281,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 15,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF1E293B),
                   ),

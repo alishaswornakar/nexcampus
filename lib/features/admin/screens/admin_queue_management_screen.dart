@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/features/admin/screens/admin_dashboard_screen.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 class AdminQueueManagementScreen extends StatefulWidget {
   const AdminQueueManagementScreen({super.key});
@@ -295,8 +296,8 @@ class _AdminQueueManagementScreenState
             ),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       "Active Service:",
@@ -305,7 +306,9 @@ class _AdminQueueManagementScreenState
                         fontSize: 14,
                       ),
                     ),
+                    const SizedBox(height: 8),
                     Container(
+                      width: double.infinity,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 2,
@@ -318,14 +321,16 @@ class _AdminQueueManagementScreenState
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           value: selectedService,
+                          isExpanded: true,
                           items: services.map((s) {
                             return DropdownMenuItem(
                               value: s['name'],
                               child: Text(
                                 "${s['name']} (${s['counter']})",
+                                overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: purpleTheme,
+                                  color: AppTheme.primary,
                                   fontSize: 13,
                                 ),
                               ),
