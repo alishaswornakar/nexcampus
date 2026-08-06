@@ -129,27 +129,19 @@ class NoticeScreen extends StatelessWidget {
               onPressed:() async {
 
 
-                await Navigator.push(
+               await Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (_) => BlocProvider.value(
+      value: context.read<NoticeBloc>(),
+      child: const AddNoticeScreen(),
+    ),
+  ),
+);
 
-                  context,
-
-                  MaterialPageRoute(
-
-                    builder:(_)=>
-
-                    BlocProvider.value(
-
-                      value:
-                          context.read<NoticeBloc>(),
-
-
-                      child:
-                          const AddNoticeScreen(),
-                    ),
-                  ),
-                );
-
-
+context.read<NoticeBloc>().add(
+  LoadNoticesEvent(),
+);
               },
 
             );

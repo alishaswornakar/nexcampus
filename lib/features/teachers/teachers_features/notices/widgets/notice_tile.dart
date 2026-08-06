@@ -64,99 +64,74 @@ class NoticeTile extends StatelessWidget {
 
             children: [
 
-              /// TOP ACTION ROW
-              Wrap(
-                alignment: WrapAlignment.spaceBetween,
-                crossAxisAlignment:
-                    WrapCrossAlignment.center,
-
-                children: [
-
-                  if (notice.isPinned)
-                    Container(
-                      padding:
-                          const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
-                          ),
-
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade100,
-                        borderRadius:
-                            BorderRadius.circular(20),
-                      ),
-
-                      child: const Row(
-                        mainAxisSize:
-                            MainAxisSize.min,
-
-                        children: [
-
-                          Icon(
-                            Icons.push_pin,
-                            color: AppTheme.primary,
-                            size: 16,
-                          ),
-
-                          SizedBox(width:5),
-
-                          Text(
-                            "Pinned",
-                            style: TextStyle(
-                              fontWeight:
-                                  FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-
-                  PopupMenuButton<String>(
-
-                    onSelected:(value){
-
-                      if(value=="edit"){
-                        onEdit();
-                      }
-
-                      else if(value=="delete"){
-                        onDelete();
-                      }
-
-                      else if(value=="pin"){
-                        onPin();
-                      }
-
-                    },
-
-                    itemBuilder:(_)=>[
-
-                      const PopupMenuItem(
-                        value:"edit",
-                        child:
-                        Text("Edit"),
-                      ),
-
-                      PopupMenuItem(
-                        value:"pin",
-                        child:Text(
-                          notice.isPinned
-                              ?"Unpin"
-                              :"Pin",
-                        ),
-                      ),
-
-                      const PopupMenuItem(
-                        value:"delete",
-                        child:
-                        Text("Delete"),
-                      ),
-                    ],
-                  )
-
-                ],
+            /// TOP ACTION ROW
+Row(
+  children: [
+    if (notice.isPinned)
+      Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 5,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.blue.shade100,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.push_pin,
+              color: AppTheme.primary,
+              size: 16,
+            ),
+            SizedBox(width: 5),
+            Text(
+              "Pinned",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
               ),
+            ),
+          ],
+        ),
+      ),
+
+    const Spacer(),
+
+    PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert),
+      onSelected: (value) {
+        switch (value) {
+          case "edit":
+            onEdit();
+            break;
+          case "pin":
+            onPin();
+            break;
+          case "delete":
+            onDelete();
+            break;
+        }
+      },
+      itemBuilder: (_) => [
+        const PopupMenuItem(
+          value: "edit",
+          child: Text("Edit"),
+        ),
+        PopupMenuItem(
+          value: "pin",
+          child: Text(
+            notice.isPinned ? "Unpin" : "Pin",
+          ),
+        ),
+        const PopupMenuItem(
+          value: "delete",
+          child: Text("Delete"),
+        ),
+      ],
+    ),
+  ],
+),
 
 
               SizedBox(
