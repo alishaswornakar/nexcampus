@@ -1,14 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// The kind of notification, used to pick an icon/colour and let the
-/// teacher side categorise what it's sending.
-enum NotificationType { course, assignment, notice, note, general }
+/// sender side categorise what it's sending.
+///
+/// `submission` is new: fired when a student submits an assignment, so
+/// the owning teacher gets notified.
+enum NotificationType { course, assignment, notice, note, submission, general }
 
 /// Who a notification is meant for.
 /// - all      -> every student
 /// - course   -> every student enrolled in [targetId] (a courseId)
 /// - student  -> a single student, [targetId] is the studentId
-enum NotificationTargetType { all, course, student }
+/// - teacher  -> a single teacher, [targetId] is the teacherId
+///   (new: used for "assignment submitted" alerts)
+enum NotificationTargetType { all, course, student, teacher }
 
 class NotificationModel {
   final String id;
@@ -39,7 +44,7 @@ class NotificationModel {
     this.readBy = const [],
   });
 
-  bool isReadBy(String studentId) => readBy.contains(studentId);
+  bool isReadBy(String userId) => readBy.contains(userId);
 
   factory NotificationModel.fromMap(String id, Map<String, dynamic> map) {
     return NotificationModel(
@@ -52,7 +57,7 @@ class NotificationModel {
       courseId: map['courseId'] as String?,
       courseName: map['courseName'] as String?,
       senderId: (map['senderId'] ?? '') as String,
-      senderName: (map['senderName'] ?? 'Teacher') as String,
+      senderName: (map['senderName'] ?? 'NexCampus') as String,
       createdAt:
           (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       readBy: List<String>.from(map['readBy'] ?? const []),

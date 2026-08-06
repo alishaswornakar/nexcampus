@@ -24,10 +24,8 @@ class DashboardBottomNav extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(radius),
-        ),
+        color: AppTheme.primary,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(radius)),
         boxShadow: const [
           BoxShadow(
             color: Color(0x14000000),
@@ -112,9 +110,7 @@ class DashboardBottomNav extends StatelessWidget {
           duration: const Duration(milliseconds: 250),
           padding: EdgeInsets.symmetric(vertical: padding),
           decoration: BoxDecoration(
-            color: selected
-                ? AppTheme.primary.withValues(alpha: .10)
-                : Colors.transparent,
+            color: selected ? Colors.white24 : Colors.transparent,
             borderRadius: BorderRadius.circular(radius),
           ),
           child: Column(
@@ -124,7 +120,7 @@ class DashboardBottomNav extends StatelessWidget {
                 child: Icon(
                   icon,
                   size: iconSize.clamp(22.0, 30.0),
-                  color: selected ? AppTheme.primary : Colors.black,
+                  color: selected ? Colors.white : Colors.white60,
                 ),
               ),
               SizedBox(height: padding * 0.4),
@@ -136,9 +132,7 @@ class DashboardBottomNav extends StatelessWidget {
                   style: TextStyle(
                     fontSize: fontSize.clamp(10.0, 14.0),
                     fontWeight: FontWeight.w600,
-                    color: selected
-                        ? AppTheme.primary
-                        : Colors.black,
+                    color: selected ? Colors.white : Colors.white60,
                   ),
                 ),
               ),

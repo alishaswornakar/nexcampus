@@ -25,6 +25,8 @@ class NotificationTile extends StatelessWidget {
         return Icons.campaign_outlined;
       case NotificationType.note:
         return Icons.description_outlined;
+      case NotificationType.submission:
+        return Icons.assignment_turned_in_outlined;
       case NotificationType.general:
         return Icons.notifications_outlined;
     }
@@ -40,6 +42,8 @@ class NotificationTile extends StatelessWidget {
         return Colors.purple;
       case NotificationType.note:
         return Colors.teal;
+      case NotificationType.submission:
+        return Colors.deepOrange;
       case NotificationType.general:
         return Colors.grey;
     }
