@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/admin/screens/admin_profile_screen.dart';
 import 'package:nexcampus_app/features/admin/screens/manage_users_selection_screen.dart';
 import 'package:nexcampus_app/features/admin/widgets/stat_card.dart';
@@ -16,14 +17,10 @@ import 'admin_queue_management_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 //import 'admin_preview_screen.dart';
 
-
 class AdminDashboardScreen extends StatefulWidget {
   final int initialIndex;
 
-  const AdminDashboardScreen({
-    super.key,
-    this.initialIndex = 0,
-  });
+  const AdminDashboardScreen({super.key, this.initialIndex = 0});
 
   @override
   State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
@@ -31,56 +28,55 @@ class AdminDashboardScreen extends StatefulWidget {
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   @override
-void initState() {
-  super.initState();
-  _selectedIndex = widget.initialIndex;
-}
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+  }
+
   int _selectedIndex = 0;
   int managementStep = 0;
   OversightView _oversightInitialView = OversightView.mainMenu;
 
   void _onBottomNavTapped(int index) {
-  setState(() {
-    _selectedIndex = index;
+    setState(() {
+      _selectedIndex = index;
 
-    if (index == 2) {
-      _oversightInitialView = OversightView.mainMenu;
-    }
-  });
-}
+      if (index == 2) {
+        _oversightInitialView = OversightView.mainMenu;
+      }
+    });
+  }
 
-
-void _openPage(int index) {
-  setState(() {
-    _selectedIndex = index;
-  });
-}
+  void _openPage(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-
     final List<Widget> pages = [
-  _buildHomeContent(context),
-  //const ManagementScreenContent(),
-  ManagementScreenContent(
-  onBack: () {
-    _openPage(0);
-  },
-),
-  OversightScreenContent(
-    key: ValueKey(_oversightInitialView),
-    initialView: _oversightInitialView,
-    onBackToHome: () => setState(() => _selectedIndex = 0),
-  ),
-  const AdminProfileScreen(),
-];
-    
+      _buildHomeContent(context),
+      //const ManagementScreenContent(),
+      ManagementScreenContent(
+        onBack: () {
+          _openPage(0);
+        },
+      ),
+      OversightScreenContent(
+        key: ValueKey(_oversightInitialView),
+        initialView: _oversightInitialView,
+        onBackToHome: () => setState(() => _selectedIndex = 0),
+      ),
+      const AdminProfileScreen(),
+    ];
+
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6FA),
       body: IndexedStack(index: _selectedIndex, children: pages),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.primary,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           boxShadow: [
             BoxShadow(
@@ -95,8 +91,8 @@ void _openPage(int index) {
           child: BottomNavigationBar(
             currentIndex: _selectedIndex,
             onTap: _onBottomNavTapped,
-            selectedItemColor: const Color(0xFF3F51B5),
-            unselectedItemColor: const Color(0xFF9CA3AF),
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.white70,
             selectedLabelStyle: const TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.bold,
@@ -105,7 +101,7 @@ void _openPage(int index) {
               fontSize: 11,
               fontWeight: FontWeight.w500,
             ),
-            backgroundColor: Colors.white,
+            backgroundColor: AppTheme.primary,
             type: BottomNavigationBarType.fixed,
             elevation: 0,
             items: const [
@@ -233,7 +229,7 @@ void _openPage(int index) {
           ),
         ),
       },
-      
+
       {
         'title': 'Student Reports',
         'icon': Icons.report_problem_outlined,
@@ -282,7 +278,7 @@ void _openPage(int index) {
           child: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF2140A7), Color(0xFF283984)],
+                colors: [AppTheme.primary, AppTheme.primary],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -337,33 +333,35 @@ void _openPage(int index) {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        
 
                         InkWell(
-  borderRadius: BorderRadius.circular(25),
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const AdminProfileScreen(),
-      ),
-    );
-  },
-  child: const CircleAvatar(
-    radius: 22,
-    backgroundImage: NetworkImage(
-     // "https://i.pravatar.cc/300",
-     'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-    ),
-  ),
-),
+                          borderRadius: BorderRadius.circular(25),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const AdminProfileScreen(),
+                              ),
+                            );
+                          },
+                          child: const CircleAvatar(
+                            radius: 22,
+                            backgroundImage: NetworkImage(
+                              // "https://i.pravatar.cc/300",
+                              'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 0.2, horizontal: 1),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 0.2,
+                    horizontal: 1,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
@@ -381,7 +379,11 @@ void _openPage(int index) {
                         child: StatCard(value: '12', label: 'Pending Reports'),
                       ),
                       Container(width: 12),
-                      Container(height: 36, width: 1, color: Colors.grey.shade200),
+                      Container(
+                        height: 36,
+                        width: 1,
+                        color: Colors.grey.shade200,
+                      ),
                       Container(width: 12),
                       const Expanded(
                         child: StatCard(value: '08', label: 'Active Queues'),
@@ -535,19 +537,13 @@ void _openPage(int index) {
   }
 }
 
-
 class ManagementScreenContent extends StatelessWidget {
-
   final VoidCallback onBack;
 
-  const ManagementScreenContent({
-    super.key,
-    required this.onBack,
-  });
+  const ManagementScreenContent({super.key, required this.onBack});
 
   @override
   Widget build(BuildContext context) {
-    
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -555,52 +551,46 @@ class ManagementScreenContent extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-  children: [
-    IconButton(
-  padding: EdgeInsets.zero,
-  constraints: const BoxConstraints(),
-  icon: const Icon(
-    Icons.arrow_back,
-    color: Color(0xFF1E293B),
-  ),
-  onPressed: onBack,
-),
-    
-    const SizedBox(width: 12),
-    const Text(
-      "Management",
-      style: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: Color(0xFF1E293B),
-      ),
-    ),
-  ],
-),
-            
+              children: [
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  icon: const Icon(Icons.arrow_back, color: Color(0xFF1E293B)),
+                  onPressed: onBack,
+                ),
+
+                const SizedBox(width: 12),
+                const Text(
+                  "Management",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1E293B),
+                  ),
+                ),
+              ],
+            ),
+
             const SizedBox(height: 18),
 
-            
             _buildSelectionCard(
-  context: context,
-  title: "Manage Users",
-  subtitle:
-      "Add, edit, and manage student and teacher accounts.",
-  icon: Icons.group_outlined,
-  iconBgColor: const Color(0xFFEFF6FF),
-  iconColor: const Color(0xFF3F51B5),
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const ManageUsersSelectionScreen(),
-      ),
-    );
-  },
-),
-const SizedBox(height: 20),
+              context: context,
+              title: "Manage Users",
+              subtitle: "Add, edit, and manage student and teacher accounts.",
+              icon: Icons.group_outlined,
+              iconBgColor: const Color(0xFFEFF6FF),
+              iconColor: const Color(0xFF3F51B5),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ManageUsersSelectionScreen(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
 
-            
             _buildSelectionCard(
               context: context,
               title: "Queue Management",
@@ -675,11 +665,11 @@ const SizedBox(height: 20),
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-  color: const Color.fromARGB(255, 224, 228, 241),
-        // decoration: BoxDecoration(
-        //   color: Colors.white,
+          color: const Color.fromARGB(255, 224, 228, 241),
+          // decoration: BoxDecoration(
+          //   color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-         // borderRadius: BorderRadius.circular(20),
+          // borderRadius: BorderRadius.circular(20),
           // boxShadow: [
           //   BoxShadow(
           //     color: Colors.black.withOpacity(0.04),
@@ -737,58 +727,48 @@ const SizedBox(height: 20),
 class UserListView extends StatelessWidget {
   final String role;
 
-  const UserListView({
-    super.key,
-    required this.role,
-  });
+  const UserListView({super.key, required this.role});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Registered ${role.toUpperCase()}s"),
+        backgroundColor: AppTheme.primary,
+        title: Text(
+          "Registered ${role.toUpperCase()}s",
+          style: const TextStyle(color: Colors.white),
+        ),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-    .collection('users')
-    .where('role', isEqualTo: role)
-   // .orderBy('createdAt', descending: true)
-    .snapshots(),
+            .collection('users')
+            .where('role', isEqualTo: role)
+            // .orderBy('createdAt', descending: true)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(
-              child: Text(snapshot.error.toString()),
-            );
+            return Center(child: Text(snapshot.error.toString()));
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           final docs = snapshot.data?.docs ?? [];
 
           if (docs.isEmpty) {
-            return Center(
-              child: Text("No $role found"),
-            );
+            return Center(child: Text("No $role found"));
           }
 
           return ListView.builder(
             itemCount: docs.length,
             itemBuilder: (context, index) {
-              final data =
-                  docs[index].data() as Map<String, dynamic>;
+              final data = docs[index].data() as Map<String, dynamic>;
 
-              final fullName =
-                  data['fullName']?.toString() ?? "Unknown";
+              final fullName = data['fullName']?.toString() ?? "Unknown";
 
               return Card(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
+                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: ListTile(
                   // leading: CircleAvatar(
                   //   child: Text(
@@ -799,22 +779,22 @@ class UserListView extends StatelessWidget {
                   // ),
                   title: Text(fullName),
                   subtitle: Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    Text(data['email']?.toString() ?? ''),
-    Text(data['department']?.toString() ?? ''),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(data['email']?.toString() ?? ''),
+                      Text(data['department']?.toString() ?? ''),
 
-    if (role == "student") ...[
-      Text("Semester : ${data['semester'] ?? ''}"),
-      Text("Roll : ${data['roll'] ?? ''}"),
-    ],
+                      if (role == "student") ...[
+                        Text("Semester : ${data['semester'] ?? ''}"),
+                        Text("Roll : ${data['roll'] ?? ''}"),
+                      ],
 
-    if (role == "teacher") ...[
-      Text("Qualification : ${data['qualification'] ?? ''}"),
-      Text("Experience : ${data['experience'] ?? ''}"),
-    ],
-  ],
-),
+                      if (role == "teacher") ...[
+                        Text("Qualification : ${data['qualification'] ?? ''}"),
+                        Text("Experience : ${data['experience'] ?? ''}"),
+                      ],
+                    ],
+                  ),
                 ),
               );
             },
@@ -878,10 +858,10 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
         return Scaffold(
           backgroundColor: const Color(0xFFF8FAFC),
           appBar: AppBar(
-            backgroundColor: const Color(0xFFF8FAFC),
+            backgroundColor: AppTheme.primary,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black87),
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () => setState(
                 () => _currentView = OversightView.courseFilesOptions,
               ),
@@ -1039,17 +1019,17 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
         return Scaffold(
           backgroundColor: const Color(0xFFF8FAFC),
           appBar: AppBar(
-            backgroundColor: const Color(0xFFF8FAFC),
+            backgroundColor: AppTheme.primary,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black87),
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () =>
                   setState(() => _currentView = OversightView.mainMenu),
             ),
             title: const Text(
               'Course Files',
               style: TextStyle(
-                color: Colors.black87,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),
@@ -1129,16 +1109,16 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
         return Scaffold(
           backgroundColor: const Color(0xFFF8FAFC),
           appBar: AppBar(
-            backgroundColor: const Color(0xFFF8FAFC),
+            backgroundColor: AppTheme.primary,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black87),
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: widget.onBackToHome,
             ),
             title: const Text(
               'Oversight',
               style: TextStyle(
-                color: Colors.black87,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),

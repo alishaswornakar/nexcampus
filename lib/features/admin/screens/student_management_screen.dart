@@ -1,70 +1,76 @@
 import 'package:flutter/material.dart';
 import 'student_list_screen.dart';
 import 'add_student_screen.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 class StudentManagementScreen extends StatelessWidget {
   const StudentManagementScreen({super.key});
 
   @override
+  @override
   Widget build(BuildContext context) {
-    // Material widget le wrap garepaxi InkWell ko error fix huncha
-    return Material(
-      color: const Color(0xFFF4F6FB), // Background color yeta rakhne
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Student Management",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1E2938),
-              ),
-            ),
-            const SizedBox(height: 16),
+    return Scaffold(
+      backgroundColor: AppTheme.background,
+      appBar: AppBar(
+        backgroundColor: AppTheme.primary,
+        foregroundColor: Colors.white, // Back button + title color
+        elevation: 0,
+        centerTitle: false,
+        title: const Text("Student Management"),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Student Directory Card
+                _buildSelectionCard(
+                  context: context,
+                  title: "Student Directory",
+                  subtitle: "Browse and manage registered students.",
+                  icon: Icons.group_outlined,
+                  iconBgColor: const Color(0xFFE0F2FE),
+                  iconColor: const Color(0xFF0284C7),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const StudentListScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 14),
 
-            // Student Directory Card
-            _buildSelectionCard(
-              context: context,
-              title: "Student Directory",
-              subtitle: "Browse and manage registered students.",
-              icon: Icons.group_outlined,
-              iconBgColor: const Color(0xFFE0F2FE),
-              iconColor: const Color(0xFF0284C7),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const StudentListScreen(),
-                  ),
-                );
-              },
+                // Add New Student Card
+                _buildSelectionCard(
+                  context: context,
+                  title: "Add New Student",
+                  subtitle: "Register a new student account.",
+                  icon: Icons.person_add_outlined,
+                  iconBgColor: const Color(0xFFFEF3C7),
+                  iconColor: const Color(0xFFD97706),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AddStudentScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: 14),
-
-            // Add New Student Card
-            _buildSelectionCard(
-              context: context,
-              title: "Add New Student",
-              subtitle: "Register a new student account.",
-              icon: Icons.person_add_outlined,
-              iconBgColor: const Color(0xFFFEF3C7),
-              iconColor: const Color(0xFFD97706),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AddStudentScreen(),
-                  ),
-                );
-              },
-            ),
-          ],
+          ),
         ),
       ),
     );
+    //return Material(
+    //   color: AppTheme.background, // Background color yeta rakhne
+
+    // );
   }
 
   Widget _buildSelectionCard({

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/features/admin/screens/admin_dashboard_screen.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 class AdminQueueManagementScreen extends StatefulWidget {
   const AdminQueueManagementScreen({super.key});
@@ -209,7 +210,7 @@ class _AdminQueueManagementScreenState
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00569E),
+                    backgroundColor: AppTheme.primary,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -260,13 +261,12 @@ class _AdminQueueManagementScreenState
 
   @override
   Widget build(BuildContext context) {
-    const primaryBlue = Color(0xFF00569E);
     const purpleTheme = Color(0xFF6B4EFF);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F5FB),
       appBar: AppBar(
-        backgroundColor: primaryBlue,
+        backgroundColor: AppTheme.primary,
         elevation: 0,
         title: const Text(
           "Queue Counter Console",
@@ -506,7 +506,7 @@ class _AdminQueueManagementScreenState
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF3F51B5),
+        selectedItemColor: AppTheme.primary,
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),

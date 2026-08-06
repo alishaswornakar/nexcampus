@@ -380,7 +380,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
       if (_selectedDepartment == null || _selectedSemester == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Please complete department and semester selections!'),
+            content: Text(
+              'Please complete department and semester selections!',
+            ),
           ),
         );
         return;
@@ -445,13 +447,13 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F5FB),
       appBar: AppBar(
+        backgroundColor: AppTheme.primary,
         title: const Text(
           "Add New Student",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.white,
         elevation: 0.5,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -491,9 +493,11 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
               const SizedBox(height: 8),
               DropdownButtonFormField<int>(
                 initialValue: _selectedSemester,
-                hint: Text(_selectedDepartment == null
-                    ? "First select a department"
-                    : "Choose Semester (1 - $maxSemester)"),
+                hint: Text(
+                  _selectedDepartment == null
+                      ? "First select a department"
+                      : "Choose Semester (1 - $maxSemester)",
+                ),
                 decoration: _inputDecoration(),
                 items: _selectedDepartment == null
                     ? []

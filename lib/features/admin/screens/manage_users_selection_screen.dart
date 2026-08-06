@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'student_management_screen.dart';
 import 'teacher_management_screen.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 class ManageUsersSelectionScreen extends StatelessWidget {
   const ManageUsersSelectionScreen({super.key});
@@ -10,15 +11,22 @@ class ManageUsersSelectionScreen extends StatelessWidget {
     debugPrint("ManageUsersSelectionScreen Opened");
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F6FB), // Second image jastai background
+      backgroundColor: const Color(
+        0xFFF4F6FB,
+      ), // Second image jastai background
       appBar: AppBar(
+        backgroundColor: AppTheme.primary,
         title: const Text(
           "Manage Users",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
         elevation: 0.5,
-        automaticallyImplyLeading: false, // Tab vitra hune bhayera back button hatauna ramro
+        automaticallyImplyLeading:
+            false, // Tab vitra hune bhayera back button hatauna ramro
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

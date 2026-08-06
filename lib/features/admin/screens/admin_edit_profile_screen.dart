@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 class AdminEditProfileScreen extends StatefulWidget {
   const AdminEditProfileScreen({super.key});
@@ -11,21 +12,35 @@ class _AdminEditProfileScreenState extends State<AdminEditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
 
   // Controllers pre-filled with existing admin data
-  final TextEditingController _nameController = TextEditingController(text: 'Sandhya Patel');
-  final TextEditingController _emailController = TextEditingController(text: 'admin@nexcampus.com');
-  final TextEditingController _phoneController = TextEditingController(text: '+977 98XXXXXXXX');
-  final TextEditingController _departmentController = TextEditingController(text: 'Administration');
-  final TextEditingController _designationController = TextEditingController(text: 'Super Administrator');
+  final TextEditingController _nameController = TextEditingController(
+    text: 'Sandhya Patel',
+  );
+  final TextEditingController _emailController = TextEditingController(
+    text: 'admin@nexcampus.com',
+  );
+  final TextEditingController _phoneController = TextEditingController(
+    text: '+977 98XXXXXXXX',
+  );
+  final TextEditingController _departmentController = TextEditingController(
+    text: 'Administration',
+  );
+  final TextEditingController _designationController = TextEditingController(
+    text: 'Super Administrator',
+  );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6FA),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF2140A7),
+        backgroundColor: AppTheme.primary,
         title: const Text(
           'Edit Profile',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
@@ -46,13 +61,13 @@ class _AdminEditProfileScreenState extends State<AdminEditProfileScreen> {
                       height: 80,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: const Color(0xFF2140A7).withValues(alpha:0.1),
-                        border: Border.all(color: const Color(0xFF2140A7), width: 2),
+                        color: AppTheme.primary.withValues(alpha: 0.1),
+                        border: Border.all(color: AppTheme.primary, width: 2),
                       ),
                       child: const Icon(
                         Icons.person,
                         size: 45,
-                        color: Color(0xFF2140A7),
+                        color: AppTheme.primary,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -60,13 +75,17 @@ class _AdminEditProfileScreenState extends State<AdminEditProfileScreen> {
                       onPressed: () {
                         // Handle change photo logic here
                       },
-                      icon: const Icon(Icons.camera_alt_outlined, size: 16, color: Color(0xFF2140A7)),
+                      icon: const Icon(
+                        Icons.camera_alt_outlined,
+                        size: 16,
+                        color: AppTheme.primary,
+                      ),
                       label: const Text(
                         'Change Photo',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2140A7),
+                          color: AppTheme.primary,
                         ),
                       ),
                     ),
@@ -83,7 +102,7 @@ class _AdminEditProfileScreenState extends State<AdminEditProfileScreen> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha:0.03),
+                      color: Colors.black.withValues(alpha: 0.03),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -94,27 +113,47 @@ class _AdminEditProfileScreenState extends State<AdminEditProfileScreen> {
                   children: [
                     _buildFieldLabel('Full Name'),
                     const SizedBox(height: 6),
-                    _buildTextField(_nameController, 'Enter full name', Icons.person_outline),
+                    _buildTextField(
+                      _nameController,
+                      'Enter full name',
+                      Icons.person_outline,
+                    ),
                     const SizedBox(height: 16),
 
                     _buildFieldLabel('Email'),
                     const SizedBox(height: 6),
-                    _buildTextField(_emailController, 'Enter email', Icons.email_outlined),
+                    _buildTextField(
+                      _emailController,
+                      'Enter email',
+                      Icons.email_outlined,
+                    ),
                     const SizedBox(height: 16),
 
                     _buildFieldLabel('Phone'),
                     const SizedBox(height: 6),
-                    _buildTextField(_phoneController, 'Enter phone number', Icons.phone_outlined),
+                    _buildTextField(
+                      _phoneController,
+                      'Enter phone number',
+                      Icons.phone_outlined,
+                    ),
                     const SizedBox(height: 16),
 
                     _buildFieldLabel('Department'),
                     const SizedBox(height: 6),
-                    _buildTextField(_departmentController, 'Enter department', Icons.business_outlined),
+                    _buildTextField(
+                      _departmentController,
+                      'Enter department',
+                      Icons.business_outlined,
+                    ),
                     const SizedBox(height: 16),
 
                     _buildFieldLabel('Designation'),
                     const SizedBox(height: 6),
-                    _buildTextField(_designationController, 'Enter designation', Icons.badge_outlined),
+                    _buildTextField(
+                      _designationController,
+                      'Enter designation',
+                      Icons.badge_outlined,
+                    ),
                   ],
                 ),
               ),
@@ -126,7 +165,7 @@ class _AdminEditProfileScreenState extends State<AdminEditProfileScreen> {
                 height: 48,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2140A7),
+                    backgroundColor: AppTheme.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -145,7 +184,11 @@ class _AdminEditProfileScreenState extends State<AdminEditProfileScreen> {
                   },
                   child: const Text(
                     'Save Changes',
-                    style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -168,16 +211,23 @@ class _AdminEditProfileScreenState extends State<AdminEditProfileScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hint, IconData icon) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String hint,
+    IconData icon,
+  ) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: const TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
-        prefixIcon: Icon(icon, color: const Color(0xFF2140A7), size: 20),
+        prefixIcon: Icon(icon, color: AppTheme.primary, size: 20),
         filled: true,
         fillColor: const Color(0xFFF8FAFC),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,
@@ -188,7 +238,7 @@ class _AdminEditProfileScreenState extends State<AdminEditProfileScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFF2140A7), width: 1.5),
+          borderSide: const BorderSide(color: AppTheme.primary, width: 1.5),
         ),
       ),
       validator: (value) {

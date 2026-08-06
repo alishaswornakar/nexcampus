@@ -300,13 +300,13 @@ class _StudentListScreenState extends State<StudentListScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
+        backgroundColor: AppTheme.primary,
         title: const Text(
           "Student Directory",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.white,
         elevation: 0.5,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Column(
         children: [
@@ -539,9 +539,9 @@ class _StudentListScreenState extends State<StudentListScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: primaryColor.withValues(alpha:0.08),
+              color: primaryColor.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: primaryColor.withValues(alpha:0.2)),
+              border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -623,7 +623,9 @@ class _StudentListScreenState extends State<StudentListScreen> {
                           children: [
                             CircleAvatar(
                               radius: 24,
-                              backgroundColor: primaryColor.withValues(alpha:0.1),
+                              backgroundColor: primaryColor.withValues(
+                                alpha: 0.1,
+                              ),
                               child: Text(
                                 name.isNotEmpty ? name[0].toUpperCase() : 'S',
                                 style: TextStyle(
@@ -656,13 +658,15 @@ class _StudentListScreenState extends State<StudentListScreen> {
                                           vertical: 2,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: primaryColor.withValues(alpha:0.1),
+                                          color: primaryColor.withValues(
+                                            alpha: 0.1,
+                                          ),
                                           borderRadius: BorderRadius.circular(
                                             6,
                                           ),
                                           border: Border.all(
-                                            color: primaryColor.withValues(alpha:
-                                              0.3,
+                                            color: primaryColor.withValues(
+                                              alpha: 0.3,
                                             ),
                                           ),
                                         ),

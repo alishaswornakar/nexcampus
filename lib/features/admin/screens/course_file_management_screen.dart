@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/course_file_model.dart';
 import '../services/admin_course_file_service.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 // -----------------------------------------------------------------------------
 // 1. OVERSIGHT SCREEN CONTENT (Handles Navigation inside Oversight Tab)
@@ -74,16 +75,16 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
         return Scaffold(
           backgroundColor: const Color(0xFFF8FAFC),
           appBar: AppBar(
-            backgroundColor: const Color(0xFFF8FAFC),
+            backgroundColor: AppTheme.primary,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black87),
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: widget.onBackToHome,
             ),
             title: const Text(
               'Oversight',
               style: TextStyle(
-                color: Colors.black87,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),
@@ -130,7 +131,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: AppTheme.primary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black87),
@@ -805,6 +806,7 @@ class _CourseFileManagementScreenState
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
+        backgroundColor: AppTheme.primary,
         title: const Text(
           "My Course Files",
           style: TextStyle(
@@ -813,10 +815,9 @@ class _CourseFileManagementScreenState
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: const Color(0xFFF8FAFC),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             if (widget.onBack != null) {
               widget.onBack!();

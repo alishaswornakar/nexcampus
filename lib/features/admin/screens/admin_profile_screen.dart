@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'admin_edit_profile_screen.dart';
 import '../../authentication/presentation/pages/login_screen.dart';
 
@@ -10,10 +11,14 @@ class AdminProfileScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6FA),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF2140A7),
+        backgroundColor: AppTheme.primary,
         title: const Text(
           'Profile',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
@@ -32,7 +37,7 @@ class AdminProfileScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha:0.03),
+                    color: Colors.black.withValues(alpha: 0.03),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
@@ -48,13 +53,13 @@ class AdminProfileScreen extends StatelessWidget {
                         height: 85,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFF2140A7).withValues(alpha:0.1),
-                          border: Border.all(color: const Color(0xFF2140A7), width: 2),
+                          color: AppTheme.primary.withValues(alpha: 0.1),
+                          border: Border.all(color: AppTheme.primary, width: 2),
                         ),
                         child: const Icon(
                           Icons.person,
                           size: 50,
-                          color: Color(0xFF2140A7),
+                          color: AppTheme.primary,
                         ),
                       ),
                       // Camera Icon Badge
@@ -67,7 +72,8 @@ class AdminProfileScreen extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const AdminEditProfileScreen(),
+                                builder: (context) =>
+                                    const AdminEditProfileScreen(),
                               ),
                             );
                           },
@@ -75,7 +81,7 @@ class AdminProfileScreen extends StatelessWidget {
                             padding: const EdgeInsets.all(6),
                             decoration: const BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Color(0xFF2140A7),
+                              color: AppTheme.primary,
                             ),
                             child: const Icon(
                               Icons.camera_alt,
@@ -102,16 +108,13 @@ class AdminProfileScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF2140A7),
+                      color: AppTheme.primary,
                     ),
                   ),
                   const SizedBox(height: 2),
                   const Text(
                     'admin@nexcampus.com',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFF64748B),
-                    ),
+                    style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
                   ),
                 ],
               ),
@@ -125,7 +128,7 @@ class AdminProfileScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha:0.03),
+                    color: Colors.black.withValues(alpha: 0.03),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
@@ -155,7 +158,7 @@ class AdminProfileScreen extends StatelessWidget {
               height: 48,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2140A7),
+                  backgroundColor: AppTheme.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -176,7 +179,11 @@ class AdminProfileScreen extends StatelessWidget {
                     SizedBox(width: 8),
                     Text(
                       'Edit Profile',
-                      style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -208,11 +215,19 @@ class AdminProfileScreen extends StatelessWidget {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.logout_rounded, color: Colors.redAccent, size: 18),
+                    Icon(
+                      Icons.logout_rounded,
+                      color: Colors.redAccent,
+                      size: 18,
+                    ),
                     SizedBox(width: 8),
                     Text(
                       'Logout',
-                      style: TextStyle(fontSize: 15, color: Colors.redAccent, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.redAccent,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -233,7 +248,11 @@ class AdminProfileScreen extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 13, color: Color(0xFF64748B), fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              fontSize: 13,
+              color: Color(0xFF64748B),
+              fontWeight: FontWeight.w500,
+            ),
           ),
           Text(
             value,

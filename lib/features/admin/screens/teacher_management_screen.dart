@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'add_teacher_screen.dart';
 import 'teacher_list_screen.dart';
+import 'package:nexcampus_app/core/constants/app_theme.dart';
 
 class TeacherManagementScreen extends StatelessWidget {
   const TeacherManagementScreen({super.key});
@@ -8,20 +9,21 @@ class TeacherManagementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F6FB),
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
+        backgroundColor: AppTheme.primary,
         title: const Text(
           "Teacher Management",
           style: TextStyle(
-            color: Color(0xFF1E2938),
+            color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
         ),
-        backgroundColor: const Color(0xFFF4F6FB),
+
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1E2938)),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -37,7 +39,9 @@ class TeacherManagementScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const TeacherListScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const TeacherListScreen(),
+                  ),
                 );
               },
             ),
@@ -50,7 +54,9 @@ class TeacherManagementScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const AddTeacherScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const AddTeacherScreen(),
+                  ),
                 );
               },
             ),
