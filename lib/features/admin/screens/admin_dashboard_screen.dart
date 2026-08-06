@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:nexcampus_app/features/admin/screens/admin_preview_screen.dart';
+import 'package:nexcampus_app/features/admin/screens/admin_profile_screen.dart';
 import 'package:nexcampus_app/features/admin/widgets/stat_card.dart';
 import 'package:nexcampus_app/features/admin/widgets/activity_item.dart';
 import 'package:nexcampus_app/features/admin/screens/assignment_management_screen.dart';
@@ -12,7 +14,7 @@ import 'admin_attendance_view_screen.dart';
 import 'admin_team_management_screen.dart';
 import 'admin_queue_management_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'admin_preview_screen.dart';
+//import 'admin_preview_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -26,32 +28,42 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   int managementStep = 0;
   OversightView _oversightInitialView = OversightView.mainMenu;
 
+  
+
   void _onBottomNavTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      // Oversight tab मा थिच्दा सधैं मुख्य Oversight Menu देखिन्छ
-      if (index == 2) {
-        _oversightInitialView = OversightView.mainMenu;
-      }
-    });
+  if (index == 3) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const AdminProfileScreen(),
+      ),
+    );
+    return;
   }
+
+  setState(() {
+    _selectedIndex = index;
+
+    if (index == 2) {
+      _oversightInitialView = OversightView.mainMenu;
+    }
+  });
+}
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> pages = [
-      _buildHomeContent(context),
-      // ManagementScreenContent(
-      //   onBackToHome: () => setState(() => _selectedIndex = 0),
-      // ),
-      const ManagementScreenContent(),
-      OversightScreenContent(
-        key: ValueKey(_oversightInitialView),
-        initialView: _oversightInitialView,
-        onBackToHome: () => setState(() => _selectedIndex = 0),
-      ),
-      const Center(child: Text("Profile Screen")),
-    ];
 
+    final List<Widget> pages = [
+  _buildHomeContent(context),
+  const ManagementScreenContent(),
+  OversightScreenContent(
+    key: ValueKey(_oversightInitialView),
+    initialView: _oversightInitialView,
+    onBackToHome: () => setState(() => _selectedIndex = 0),
+  ),
+  const AdminProfileScreen(),
+];
+    
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6FA),
       body: IndexedStack(index: _selectedIndex, children: pages),
@@ -214,9 +226,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         'title': 'Preview',
         'icon': Icons.visibility_outlined,
         'onTap': () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const AdminPreviewScreen()),
-        ),
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AdminPreviewScreen(),
+              ),
+            ),
       },
       {
         'title': 'Student Reports',
@@ -321,22 +335,26 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        GestureDetector(
-                          onTap: () => Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LoginScreen(),
-                            ),
-                            (route) => false,
-                          ),
-                          child: const CircleAvatar(
-                            radius: 20,
-                            backgroundColor: Colors.white,
-                            backgroundImage: NetworkImage(
-                              'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-                            ),
-                          ),
-                        ),
+                        
+
+                        InkWell(
+  borderRadius: BorderRadius.circular(25),
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const AdminProfileScreen(),
+      ),
+    );
+  },
+  child: const CircleAvatar(
+    radius: 22,
+    backgroundImage: NetworkImage(
+     // "https://i.pravatar.cc/300",
+     'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+    ),
+  ),
+),
                       ],
                     ),
                   ],
@@ -522,66 +540,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 }
 
-// 📄 MANAGEMENT SCREEN CONTENT
-// class ManagementScreenContent extends StatelessWidget {
-//   final VoidCallback onBackToHome;
 
-//   const ManagementScreenContent({super.key, required this.onBackToHome});
-
-//   void _showUserTypeSelectionModal(BuildContext context) {
-//     showModalBottomSheet(
-//       context: context,
-//       shape: const RoundedRectangleBorder(
-//         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-//       ),
-//       builder: (context) {
-//         return Padding(
-//           padding: const EdgeInsets.symmetric(vertical: 20),
-//           child: Column(
-//             mainAxisSize: MainAxisSize.min,
-//             children: [
-//               const Text(
-//                 "Select User Type",
-//                 style: TextStyle(
-//                   fontSize: 18,
-//                   fontWeight: FontWeight.bold,
-//                 ),
-//               ),
-//               const SizedBox(height: 15),
-//               ListTile(
-//                 leading: const Icon(Icons.school, color: Color(0xFF3F51B5)),
-//                 title: const Text("Student Management"),
-//                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-//                 onTap: () {
-//                   Navigator.pop(context);
-//                   Navigator.push(
-//                     context,
-//                     MaterialPageRoute(
-//                       builder: (context) => const StudentManagementScreen(),
-//                     ),
-//                   );
-//                 },
-//               ),
-//               ListTile(
-//                 leading: const Icon(Icons.person, color: Color(0xFF3F51B5)),
-//                 title: const Text("Teacher Management"),
-//                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-//                 onTap: () {
-//                   Navigator.pop(context);
-//                   Navigator.push(
-//                     context,
-//                     MaterialPageRoute(
-//                       builder: (context) => const TeacherManagementScreen(),
-//                     ),
-//                   );
-//                 },
-//               ),
-//             ],
-//           ),
-//         );
-//       },
-//     );
-//   }
 
 // MANAGEMENT SCREEN CONTENT (Yo code le aafno purano ManagementScreenContent lai replace garnus)
 class ManagementScreenContent extends StatelessWidget {
@@ -795,15 +754,108 @@ class ManagementScreenContent extends StatelessWidget {
   }
 }
 
+
 class UserListView extends StatelessWidget {
   final String role;
-  const UserListView({super.key, required this.role});
+
+  const UserListView({
+    super.key,
+    required this.role,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Registered ${role.toUpperCase()}s")),
-      body: Center(child: Text("List of $role")),
+      appBar: AppBar(
+        title: Text("Registered ${role.toUpperCase()}s"),
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+    .collection('users')
+    .where('role', isEqualTo: role)
+   // .orderBy('createdAt', descending: true)
+    .snapshots(),
+        // stream: FirebaseFirestore.instance
+        //     .collection(role == "teacher" ? "teacherData" : "users")
+        //     .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          final docs = snapshot.data?.docs ?? [];
+
+          if (docs.isEmpty) {
+            return Center(
+              child: Text("No $role found"),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: docs.length,
+            itemBuilder: (context, index) {
+              final data =
+                  docs[index].data() as Map<String, dynamic>;
+
+              final fullName =
+                  data['fullName']?.toString() ?? "Unknown";
+
+              return Card(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    child: Text(
+                      fullName.isNotEmpty
+                          ? fullName[0].toUpperCase()
+                          : "?",
+                    ),
+                  ),
+                  title: Text(fullName),
+                  subtitle: Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Text(data['email']?.toString() ?? ''),
+    Text(data['department']?.toString() ?? ''),
+
+    if (role == "student") ...[
+      Text("Semester : ${data['semester'] ?? ''}"),
+      Text("Roll : ${data['roll'] ?? ''}"),
+    ],
+
+    if (role == "teacher") ...[
+      Text("Qualification : ${data['qualification'] ?? ''}"),
+      Text("Experience : ${data['experience'] ?? ''}"),
+    ],
+  ],
+),
+                  // subtitle: Column(
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     Text(data['email']?.toString() ?? ''),
+                  //     Text(data['department']?.toString() ?? ''),
+                  //     if (role == "student")
+                  //       Text("Semester : ${data['semester'] ?? ''}"),
+                  //     if (role == "student")
+                  //       Text("Roll : ${data['roll'] ?? ''}"),
+                  //   ],
+                  // ),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
@@ -915,7 +967,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                           "Faculty uploads pending audit.",
                           style: TextStyle(color: Colors.white70, fontSize: 13),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 10),
                         Row(
                           children: [
                             Container(
@@ -1324,6 +1376,9 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
     );
   }
 }
+
+
+
 
 // import 'package:flutter/material.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
