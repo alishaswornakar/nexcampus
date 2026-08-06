@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:nexcampus_app/core/constants/app_theme.dart';
-import 'package:nexcampus_app/features/student/blocs/notes/bloc/notes_bloc.dart';
-import 'package:nexcampus_app/features/student/blocs/notes/bloc/notes_event.dart';
+
 
 import 'package:nexcampus_app/features/teachers/teachers_features/notes/blocs/bloc/notes_bloc.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/notes/blocs/bloc/notes_event.dart';
