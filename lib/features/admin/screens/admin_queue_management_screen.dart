@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:nexcampus_app/features/admin/screens/admin_dashboard_screen.dart';
 
 class AdminQueueManagementScreen extends StatefulWidget {
   const AdminQueueManagementScreen({super.key});
@@ -11,6 +12,47 @@ class AdminQueueManagementScreen extends StatefulWidget {
 
 class _AdminQueueManagementScreenState
     extends State<AdminQueueManagementScreen> {
+      int _selectedIndex = 1;
+
+void _onItemTapped(int index) {
+  switch (index) {
+    case 0:
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const AdminDashboardScreen(initialIndex: 0),
+        ),
+      );
+      break;
+
+    case 1:
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const AdminDashboardScreen(initialIndex: 1),
+        ),
+      );
+      break;
+
+    case 2:
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const AdminDashboardScreen(initialIndex: 2),
+        ),
+      );
+      break;
+
+    case 3:
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const AdminDashboardScreen(initialIndex: 3),
+        ),
+      );
+      break;
+  }
+}
   // DB को serviceName सँग हुबहु मिल्ने लिस्ट
   final List<Map<String, String>> services = [
     {'name': 'College Bank', 'counter': 'Counter 3'},
@@ -403,7 +445,33 @@ class _AdminQueueManagementScreenState
           ),
         ],
       ),
+      bottomNavigationBar: BottomNavigationBar(
+  currentIndex: _selectedIndex,
+  onTap: _onItemTapped,
+  type: BottomNavigationBarType.fixed,
+  selectedItemColor: const Color(0xFF3F51B5),
+  unselectedItemColor: Colors.grey,
+  items: const [
+    BottomNavigationBarItem(
+      icon: Icon(Icons.home_filled),
+      label: 'Home',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.manage_accounts_outlined),
+      label: 'Management',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.insert_chart_outlined_rounded),
+      label: 'Oversight',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.person_outline_rounded),
+      label: 'Profile',
+    ),
+  ],
+),
     );
+    
   }
 
   // Serving Card
