@@ -238,8 +238,30 @@ class AuthService {
   // SIGN OUT
   // =========================
   Future<void> signOut() async {
+    final uid = _auth.currentUser?.uid;
+
+    // Remove this device's FCM token from the user's doc so the next
+    // person who logs in on this device doesn't inherit push
+    // notifications / token association from the previous account.
+    if (uid != null) {
+      try {
+        await FCMService.clearToken(uid);
+      } catch (_) {
+        // Non-fatal — don't block sign-out if this fails.
+      }
+    }
+
+    final googleSignIn = GoogleSignIn();
+
+    // signOut() alone only clears the local session; it does NOT forget
+    // which Google account was chosen. disconnect() revokes access and
+    // clears the cached account so the account picker shows up again
+    // next time, instead of silently re-signing the previous user in.
+    if (await googleSignIn.isSignedIn()) {
+      await googleSignIn.disconnect();
+    }
+
     await _auth.signOut();
-    await GoogleSignIn().signOut();
   }
 
   // =========================

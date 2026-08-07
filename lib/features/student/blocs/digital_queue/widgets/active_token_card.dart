@@ -70,7 +70,6 @@ class ActiveTokenCard extends StatelessWidget {
             SizedBox(height: isSmallScreen ? 12 : 14),
             EstimatedWaitCard(
               queuePosition: token.queuePosition,
-              estimatedWaitMinutes: token.estimatedWaitMinutes,
             ),
             if (totalWaiting != null) ...[
               SizedBox(height: isSmallScreen ? 12 : 14),

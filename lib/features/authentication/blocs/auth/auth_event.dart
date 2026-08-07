@@ -27,3 +27,5 @@ class SignupRequested extends AuthEvent {
   });
 }
 class GoogleLoginRequested extends AuthEvent {}
+
+class LogoutRequested extends AuthEvent {}

@@ -128,13 +128,20 @@ class _QuickAccessGridState
   late final User _authUser =
       FirebaseAuth.instance.currentUser!;
 
-
+  // A cached profile is only valid for the user it was fetched for.
+  // Without this check, logging out and logging in as a different
+  // user reuses the previous user's cached studentId/name/email/etc,
+  // which is what fed the wrong studentId into Attendance, Digital
+  // Queue, and Team Finder.
+  bool get _cacheIsForCurrentUser =>
+      _ProfileCache.cached != null &&
+      _ProfileCache.cached!.studentId == _authUser.uid;
 
   late _StudentProfile _profile =
 
-      _ProfileCache.cached ??
-
-      _StudentProfile(
+      _cacheIsForCurrentUser
+          ? _ProfileCache.cached!
+          : _StudentProfile(
 
         studentId: _authUser.uid,
 
@@ -162,7 +169,14 @@ class _QuickAccessGridState
     super.initState();
 
 
-    if(_ProfileCache.cached == null){
+    if(!_cacheIsForCurrentUser){
+
+      // Stale cache from a previous user (or no cache at all) — drop
+      // any in-flight fetch that was started for that other user too,
+      // otherwise it could resolve later and overwrite this user's
+      // freshly-fetched profile with the previous user's data.
+      _ProfileCache.cached = null;
+      _ProfileCache.inFlight = null;
 
       _loadExtraProfileFields();
 
@@ -175,6 +189,7 @@ class _QuickAccessGridState
 
   Future<void> _loadExtraProfileFields() async {
 
+    final requestedUid = _authUser.uid;
 
     _ProfileCache.inFlight ??=
 
@@ -207,6 +222,11 @@ class _QuickAccessGridState
           await _ProfileCache.inFlight!;
 
 
+      // Only cache/apply this result if it's still for the user who
+      // is currently logged in — guards against a slow fetch for a
+      // user who has since logged out landing after a new user's
+      // fetch has already completed.
+      if (profile.studentId != requestedUid) return;
 
       _ProfileCache.cached =
           profile;

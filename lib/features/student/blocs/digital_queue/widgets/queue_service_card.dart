@@ -116,11 +116,6 @@ class QueueServiceCard extends StatelessWidget {
                   label: '${service.totalWaiting} waiting',
                   isSmallScreen: isSmallScreen,
                 ),
-                _StatPill(
-                  icon: Icons.access_time_outlined,
-                  label: '${service.averageServiceTime} min/person',
-                  isSmallScreen: isSmallScreen,
-                ),
               ],
             ),
             SizedBox(height: isSmallScreen ? 10 : 12),

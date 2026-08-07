@@ -89,8 +89,23 @@ class _DigitalQueueView extends StatelessWidget {
       ),
       body: BlocListener<DigitalQueueBloc, DigitalQueueState>(
         listenWhen: (previous, current) =>
-            previous.actionStatus != current.actionStatus,
+            previous.actionStatus != current.actionStatus ||
+            (previous.activeToken?.status != current.activeToken?.status &&
+                current.activeToken?.status == 'serving'),
         listener: (context, state) {
+          if (state.activeToken?.status == 'serving') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.green,
+                behavior: SnackBarBehavior.floating,
+                content: Text(
+                  'For ${state.activeToken!.studentName}, you are called to '
+                  '${state.activeToken!.serviceName}.',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            );
+          }
           if (state.actionStatus == QueueActionStatus.success &&
               state.tokenCancelled) {
             ScaffoldMessenger.of(context).showSnackBar(

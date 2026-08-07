@@ -15,7 +15,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/student/widgets/bottom_nav_bar.dart';
 import 'package:nexcampus_app/features/student/blocs/user_profile/screens/edit_profile_screen.dart';
-import 'package:nexcampus_app/features/authentication/presentation/pages/login_screen.dart'; // Add this import
+import 'package:nexcampus_app/features/authentication/presentation/pages/login_screen.dart';
+import 'package:nexcampus_app/features/authentication/services/auth_service.dart';
 
 class UserProfileScreen extends StatelessWidget {
   const UserProfileScreen({super.key});
@@ -94,7 +95,7 @@ class UserProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const LogoutTile(),
+                  LogoutTile(onLogout: () => performLogout(context)),
                   const SizedBox(height: 24),
                 ],
               ),
@@ -117,8 +118,9 @@ Future<void> performLogout(BuildContext context) async {
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
-    // Sign out from Firebase
-    await FirebaseAuth.instance.signOut();
+    // Sign out (clears Firebase session, disconnects Google account,
+    // clears this device's FCM token)
+    await AuthService().signOut();
 
     // Close loading dialog
     if (context.mounted) {

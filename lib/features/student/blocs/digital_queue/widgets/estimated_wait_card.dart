@@ -6,11 +6,9 @@ class EstimatedWaitCard extends StatelessWidget {
   const EstimatedWaitCard({
     super.key,
     required this.queuePosition,
-    required this.estimatedWaitMinutes,
   });
 
   final int queuePosition;
-  final int estimatedWaitMinutes;
 
   @override
   Widget build(BuildContext context) {
@@ -21,31 +19,13 @@ class EstimatedWaitCard extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final spacing = isSmallScreen ? 8.0 : 10.0;
-        return Row(
-          children: [
-            Expanded(
-              child: _InfoTile(
-                icon: Icons.person_outline,
-                label: 'Position',
-                value: '$queuePosition',
-                iconColor: theme.colorScheme.primary,
-                isSmallScreen: isSmallScreen,
-                isTablet: isTablet,
-              ),
-            ),
-            SizedBox(width: spacing),
-            Expanded(
-              child: _InfoTile(
-                icon: Icons.timer_outlined,
-                label: 'Est. wait',
-                value: '$estimatedWaitMinutes min',
-                iconColor: theme.colorScheme.secondary,
-                isSmallScreen: isSmallScreen,
-                isTablet: isTablet,
-              ),
-            ),
-          ],
+        return _InfoTile(
+          icon: Icons.person_outline,
+          label: 'Position',
+          value: '$queuePosition',
+          iconColor: theme.colorScheme.primary,
+          isSmallScreen: isSmallScreen,
+          isTablet: isTablet,
         );
       },
     );

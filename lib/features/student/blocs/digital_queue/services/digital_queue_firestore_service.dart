@@ -558,8 +558,12 @@ class DigitalQueueFirestoreService {
       if (query.docs.isEmpty) return null;
 
       final tokenRef = query.docs.first.reference;
+      final serviceRef = _servicesRef.doc(serviceId);
+      int removedPosition = 0;
 
-      return await _firestore.runTransaction<QueueTokenModel?>((txn) async {
+      final result = await _firestore.runTransaction<QueueTokenModel?>((
+        txn,
+      ) async {
         final snap = await txn.get(tokenRef);
         if (!snap.exists || snap.data() == null) return null;
         final data = Map<String, dynamic>.from(snap.data()!);
@@ -581,10 +585,101 @@ class DigitalQueueFirestoreService {
           'counterName': counterName,
         });
 
+        // The token is leaving the waiting line (even though it isn't
+        // finished yet) — this MUST decrement totalWaiting here, or it
+        // never decrements at all in the normal waiting -> serving ->
+        // completed flow, since completeToken() only decrements when
+        // the token was still 'waiting' at completion time.
+        removedPosition = (data['queuePosition'] as num?)?.toInt() ?? 0;
+        txn.update(serviceRef, {
+          'totalWaiting': FieldValue.increment(-1),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
         return QueueTokenModel.fromMap(data);
       });
+
+      if (result != null && removedPosition > 0) {
+        unawaited(
+          _recalculateQueuePositions(
+            serviceId: serviceId,
+            removedPosition: removedPosition,
+          ),
+        );
+      }
+
+      return result;
     } catch (e) {
       throw QueueException('Failed to call next token: $e');
+    }
+  }
+
+  /// Same as [callNextToken], but for a specific token id instead of
+  /// automatically pulling the front of the line — for admin/counter UIs
+  /// that let staff call a particular student out of order (e.g. a
+  /// priority case). Applies the identical totalWaiting decrement +
+  /// position recalculation so the queue stays consistent regardless of
+  /// which path called a token in.
+  Future<QueueTokenModel?> callSpecificToken({
+    required String tokenId,
+    required String counterName,
+  }) async {
+    final tokenRef = _tokensRef.doc(tokenId);
+    String? serviceId;
+    int removedPosition = 0;
+
+    try {
+      final result = await _firestore.runTransaction<QueueTokenModel?>((
+        txn,
+      ) async {
+        final snap = await txn.get(tokenRef);
+        if (!snap.exists || snap.data() == null) {
+          throw QueueException('Token not found');
+        }
+        final data = Map<String, dynamic>.from(snap.data()!);
+
+        if (data['status'] != QueueStatus.waiting) {
+          throw QueueException('Only a waiting token can be called');
+        }
+
+        serviceId = data['serviceId'] as String;
+        removedPosition = (data['queuePosition'] as num?)?.toInt() ?? 0;
+
+        final now = DateTime.now();
+        data['id'] = tokenRef.id;
+        data['status'] = QueueStatus.serving;
+        data['calledAt'] = Timestamp.fromDate(now);
+        data['counterName'] = counterName;
+
+        txn.update(tokenRef, {
+          'status': QueueStatus.serving,
+          'calledAt': Timestamp.fromDate(now),
+          'counterName': counterName,
+        });
+
+        final serviceRef = _servicesRef.doc(serviceId!);
+        txn.update(serviceRef, {
+          'totalWaiting': FieldValue.increment(-1),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        return QueueTokenModel.fromMap(data);
+      });
+
+      if (result != null && serviceId != null && removedPosition > 0) {
+        unawaited(
+          _recalculateQueuePositions(
+            serviceId: serviceId!,
+            removedPosition: removedPosition,
+          ),
+        );
+      }
+
+      return result;
+    } on QueueException {
+      rethrow;
+    } catch (e) {
+      throw QueueException('Failed to call token: $e');
     }
   }
 

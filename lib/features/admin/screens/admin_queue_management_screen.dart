@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nexcampus_app/core/constants/app_theme.dart';
 import 'package:nexcampus_app/features/admin/screens/admin_dashboard_screen.dart';
+import 'package:nexcampus_app/features/student/blocs/digital_queue/services/digital_queue_firestore_service.dart';
+import 'package:nexcampus_app/features/student/blocs/digital_queue/models/queue_token_model.dart' show QueueStatus;
 
 class AdminQueueManagementScreen extends StatefulWidget {
   const AdminQueueManagementScreen({super.key});
@@ -52,51 +54,86 @@ class _AdminQueueManagementScreenState
     }
   }
 
-  final List<Map<String, String>> services = [
-    {'name': 'Exam Section', 'counter': 'Counter 1'},
-    {'name': 'Accounts Section', 'counter': 'Counter 2'},
-    {'name': 'College Bank', 'counter': 'Counter 3'},
-    {'name': 'Certificate Section', 'counter': 'Counter 4'},
-    {'name': 'Library Clearance', 'counter': 'Counter 5'},
-  ];
-
-  late String selectedService;
-  late String selectedCounter;
+  // Services now come live from Firestore (`queue_services`) instead of a
+  // hardcoded local list — a hardcoded list can silently drift out of sync
+  // with the real service documents (renames, typos, casing), which was
+  // causing the serviceName-based token query below to miss most waiting
+  // tokens for a section.
+  String? selectedServiceId;
+  String selectedService = '';
+  String selectedCounter = '';
+  int selectedAverageServiceTime = 5;
   bool isCounterOpen = true;
 
-  @override
-  void initState() {
-    super.initState();
-    selectedService = services[0]['name']!;
-    selectedCounter = services[0]['counter']!;
-  }
-
-  void _onServiceChanged(String? newService) {
-    if (newService == null) return;
-    final match = services.firstWhere(
-      (element) => element['name'] == newService,
-    );
+  void _onServiceChanged(String? newServiceId, List<QueryDocumentSnapshot> allServices) {
+    if (newServiceId == null) return;
+    final match = allServices.firstWhere((d) => d.id == newServiceId);
+    final data = match.data() as Map<String, dynamic>;
     setState(() {
-      selectedService = newService;
-      selectedCounter = match['counter']!;
+      selectedServiceId = newServiceId;
+      selectedService = data['name'] ?? '';
+      selectedCounter = data['counterName'] ?? '';
+      selectedAverageServiceTime = (data['averageServiceTime'] as num?)?.toInt() ?? 5;
     });
   }
 
-  Future<void> _updateTokenStatus(String docId, String status) async {
-    Map<String, dynamic> updateData = {'status': status};
+  final _queueService = DigitalQueueFirestoreService();
 
-    if (status == 'Serving') {
-      updateData['calledAt'] = FieldValue.serverTimestamp();
-    } else if (status == 'Completed') {
-      updateData['completedAt'] = FieldValue.serverTimestamp();
-    } else if (status == 'Skipped' || status == 'Hold') {
-      updateData['cancelledAt'] = FieldValue.serverTimestamp();
+  Future<void> _callToken(String docId) async {
+    try {
+      final calledToken = await _queueService.callSpecificToken(
+        tokenId: docId,
+        counterName: selectedCounter,
+      );
+      if (mounted && calledToken != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.green,
+            content: Text(
+              'For ${calledToken.studentName}, you are called to ${calledToken.serviceName}.',
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to call token: $e')));
+      }
     }
+  }
 
-    await FirebaseFirestore.instance
-        .collection('queue_tokens')
-        .doc(docId)
-        .update(updateData);
+  Future<void> _completeToken(String docId) async {
+    try {
+      await _queueService.completeToken(
+        tokenId: docId,
+        counterName: selectedCounter,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to complete token: $e')),
+        );
+      }
+    }
+  }
+
+  /// "Hold" — the student was called but didn't respond/show up. Marks
+  /// the token missed (archives it) rather than leaving it stuck in
+  /// 'serving' forever, which would otherwise keep counting against the
+  /// service indefinitely.
+  Future<void> _holdToken(String docId) async {
+    try {
+      await _queueService.markTokenAsMissed(tokenId: docId);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to update token: $e')));
+      }
+    }
   }
 
   void _showStudentDetails(Map<String, dynamic> data) {
@@ -145,7 +182,7 @@ class _AdminQueueManagementScreenState
                         fontSize: 11,
                       ),
                     ),
-                    backgroundColor: data['status'] == 'Serving'
+                    backgroundColor: data['status'] == QueueStatus.serving
                         ? Colors.green
                         : const Color(0xFF4F46E5),
                   ),
@@ -191,11 +228,6 @@ class _AdminQueueManagementScreenState
                 Icons.date_range,
                 "Queue Date",
                 data['queueDate'],
-              ),
-              _buildDetailRow(
-                Icons.timer_outlined,
-                "Est. Wait Time",
-                "${data['estimatedWaitMinutes'] ?? 0} mins",
               ),
               const SizedBox(height: 20),
               SizedBox(
@@ -279,26 +311,58 @@ class _AdminQueueManagementScreenState
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('queue_tokens')
-            .where('serviceName', isEqualTo: selectedService)
+            .collection('queue_services')
+            .orderBy('displayOrder')
             .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+        builder: (context, servicesSnapshot) {
+          if (servicesSnapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final docs = snapshot.hasData ? snapshot.data!.docs : [];
+          final serviceDocs = servicesSnapshot.hasData
+              ? servicesSnapshot.data!.docs
+              : <QueryDocumentSnapshot>[];
+
+          if (serviceDocs.isEmpty) {
+            return const Center(child: Text('No services configured.'));
+          }
+
+          // Default to the first service once docs arrive.
+          if (selectedServiceId == null ||
+              !serviceDocs.any((d) => d.id == selectedServiceId)) {
+            final first = serviceDocs.first;
+            final firstData = first.data() as Map<String, dynamic>;
+            selectedServiceId = first.id;
+            selectedService = firstData['name'] ?? '';
+            selectedCounter = firstData['counterName'] ?? '';
+            selectedAverageServiceTime =
+                (firstData['averageServiceTime'] as num?)?.toInt() ?? 5;
+          }
+
+          return StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('queue_tokens')
+                .where('serviceId', isEqualTo: selectedServiceId)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final docs = snapshot.hasData ? snapshot.data!.docs : [];
 
           final servingDoc = docs
               .where(
                 (d) =>
-                    (d.data() as Map<String, dynamic>)['status'] == 'Serving',
+                    (d.data() as Map<String, dynamic>)['status'] ==
+                    QueueStatus.serving,
               )
               .toList();
           final waitingDocs = docs
               .where(
                 (d) =>
-                    (d.data() as Map<String, dynamic>)['status'] == 'waiting',
+                    (d.data() as Map<String, dynamic>)['status'] ==
+                    QueueStatus.waiting,
               )
               .toList();
 
@@ -338,13 +402,14 @@ class _AdminQueueManagementScreenState
                       ),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
-                          value: selectedService,
+                          value: selectedServiceId,
                           isExpanded: true,
-                          items: services.map((s) {
+                          items: serviceDocs.map((doc) {
+                            final data = doc.data() as Map<String, dynamic>;
                             return DropdownMenuItem(
-                              value: s['name'],
+                              value: doc.id,
                               child: Text(
-                                s['name']!,
+                                data['name'] ?? '',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xFF1E293B),
@@ -353,7 +418,7 @@ class _AdminQueueManagementScreenState
                               ),
                             );
                           }).toList(),
-                          onChanged: _onServiceChanged,
+                          onChanged: (id) => _onServiceChanged(id, serviceDocs),
                         ),
                       ),
                     ),
@@ -480,25 +545,13 @@ class _AdminQueueManagementScreenState
               ],
 
               // 4. Up Next Section Title
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Up Next",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
-                    ),
-                  ),
-                  Text(
-                    "Estimated wait time: ${waitingDocs.length * 5} mins",
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFF64748B),
-                    ),
-                  ),
-                ],
+              const Text(
+                "Up Next",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1E293B),
+                ),
               ),
               const SizedBox(height: 12),
 
@@ -539,6 +592,8 @@ class _AdminQueueManagementScreenState
               ),
               const SizedBox(height: 20),
             ],
+          );
+            },
           );
         },
       ),
@@ -672,7 +727,7 @@ class _AdminQueueManagementScreenState
                     "Complete",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
-                  onPressed: () => _updateTokenStatus(doc.id, 'Completed'),
+                  onPressed: () => _completeToken(doc.id),
                 ),
               ),
               const SizedBox(width: 10),
@@ -691,7 +746,7 @@ class _AdminQueueManagementScreenState
                     "Hold",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
-                  onPressed: () => _updateTokenStatus(doc.id, 'Hold'),
+                  onPressed: () => _holdToken(doc.id),
                 ),
               ),
             ],
@@ -721,28 +776,13 @@ class _AdminQueueManagementScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "#$tokenNo",
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF4F46E5),
-                  fontSize: 18,
-                ),
-              ),
-              const Row(
-                children: [
-                  Icon(Icons.access_time, size: 14, color: Color(0xFF64748B)),
-                  SizedBox(width: 4),
-                  Text(
-                    "5m",
-                    style: TextStyle(color: Color(0xFF64748B), fontSize: 12),
-                  ),
-                ],
-              ),
-            ],
+          Text(
+            "#$tokenNo",
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4F46E5),
+              fontSize: 18,
+            ),
           ),
           const SizedBox(height: 8),
           InkWell(
@@ -809,7 +849,7 @@ class _AdminQueueManagementScreenState
                         ),
                       ],
                     ),
-                    onPressed: () => _updateTokenStatus(doc.id, 'Serving'),
+                    onPressed: () => _callToken(doc.id),
                   )
                 : OutlinedButton(
                     style: OutlinedButton.styleFrom(

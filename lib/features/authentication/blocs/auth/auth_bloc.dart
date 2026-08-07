@@ -86,6 +86,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginRequested>(_login);
     on<SignupRequested>(_signup);
     on<GoogleLoginRequested>(_googleLogin);
+    on<LogoutRequested>(_logout);
   }
 
   // =========================
@@ -165,6 +166,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthAuthenticated(role));
     } catch (e) {
       emit(AuthError("Google sign-in failed"));
+    }
+  }
+
+  // =========================
+  // LOGOUT
+  // =========================
+  Future<void> _logout(
+    LogoutRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      await _authService.signOut();
+    } finally {
+      // Always reset state even if signOut() throws, so the UI never
+      // gets stuck showing the previous user's authenticated state.
+      emit(AuthUnauthenticated());
     }
   }
 }

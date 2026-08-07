@@ -39,4 +39,29 @@ class FCMService {
       debugPrint("FCM Token Updated");
     });
   }
+
+  /// Removes the FCM token from this user's doc and drops the token
+  /// from the local device cache, so it doesn't get reused for /
+  /// associated with whichever account logs in next on this device.
+  ///
+  /// Pass [uid] explicitly (captured before signOut()) rather than
+  /// relying on `_auth.currentUser`, since by the time this runs
+  /// during logout the current user may already be null.
+  static Future<void> clearToken(String uid) async {
+    try {
+      await _firestore.collection("users").doc(uid).update({
+        "fcmToken": FieldValue.delete(),
+      });
+    } catch (e) {
+      debugPrint("FCM Token clear (Firestore) failed: $e");
+    }
+
+    try {
+      await _messaging.deleteToken();
+    } catch (e) {
+      debugPrint("FCM Token clear (local) failed: $e");
+    }
+
+    debugPrint("FCM Token Cleared");
+  }
 }
