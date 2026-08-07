@@ -40,35 +40,6 @@ class AssignmentSubmissionService {
     }
   }
 
-  /// Teacher: Get all submissions for an assignment
-  // Stream<List<AssignmentSubmissionModel>>
-  //     getAssignmentSubmissions({
-  //   required String assignmentId,
-  // }) {
-  //   return submissionCollection
-  //       .where(
-  //         "assignmentId",
-  //         isEqualTo: assignmentId,
-  //       )
-  //       .orderBy(
-  //         "submittedAt",
-  //         descending: true,
-  //       )
-  //       .snapshots()
-  //       .map(
-  //         (snapshot) => snapshot.docs
-  //             .map(
-  //               (doc) =>
-  //                   AssignmentSubmissionModel.fromMap(
-  //                 doc.data()
-  //                     as Map<String, dynamic>,
-  //                 doc.id,
-  //               ),
-  //             )
-  //             .toList(),
-  //       );
-  // }
-
   /// Student: Get my submissions
   Stream<List<AssignmentSubmissionModel>> getStudentSubmissions({
     required String studentId,
@@ -113,7 +84,6 @@ class AssignmentSubmissionService {
   }
 
   /// Teacher: Grade Submission
-  /// Grade Assignment
   Future<void> gradeSubmission({
     required String submissionId,
     required String grade,
@@ -135,6 +105,7 @@ class AssignmentSubmissionService {
     }
   }
 
+  /// Teacher: Get all submissions for a single assignment
   Stream<List<AssignmentSubmissionModel>> getAssignmentSubmissions({
     required String assignmentId,
   }) {
@@ -159,5 +130,35 @@ class AssignmentSubmissionService {
               )
               .toList();
         });
+  }
+
+  /// Teacher: Get submissions across MULTIPLE assignments at once.
+  /// Used for the dashboard "Recent Activity" feed so we don't need
+  /// a teacherId field on the submission itself.
+  /// Note: Firestore `whereIn` supports at most 30 values, so if a
+  /// teacher has more than 30 assignments only the first 30 (by the
+  /// order they were fetched) are included here.
+  Stream<List<AssignmentSubmissionModel>> getSubmissionsForAssignments({
+    required List<String> assignmentIds,
+  }) {
+    if (assignmentIds.isEmpty) {
+      return Stream.value(const []);
+    }
+
+    final ids = assignmentIds.take(30).toList();
+
+    return submissionCollection
+        .where("assignmentId", whereIn: ids)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map(
+                (doc) => AssignmentSubmissionModel.fromMap(
+                  doc.data() as Map<String, dynamic>,
+                  doc.id,
+                ),
+              )
+              .toList(),
+        );
   }
 }

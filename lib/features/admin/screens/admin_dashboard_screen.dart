@@ -670,17 +670,7 @@ class ManagementScreenContent extends StatelessWidget {
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: const Color.fromARGB(255, 224, 228, 241),
-          // decoration: BoxDecoration(
-          //   color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          // borderRadius: BorderRadius.circular(20),
-          // boxShadow: [
-          //   BoxShadow(
-          //     color: Colors.black.withOpacity(0.04),
-          //     blurRadius: 10,
-          //     offset: const Offset(0, 4),
-          //   ),
-          // ],
         ),
         child: Row(
           children: [
@@ -774,13 +764,6 @@ class UserListView extends StatelessWidget {
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: ListTile(
-                  // leading: CircleAvatar(
-                  //   child: Text(
-                  //     fullName.isNotEmpty
-                  //         ? fullName[0].toUpperCase()
-                  //         : "?",
-                  //   ),
-                  // ),
                   title: Text(fullName),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1218,7 +1201,7 @@ class _OversightScreenContentState extends State<OversightScreenContent> {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Color(0xFF1E293B), // fixed: was Colors.white, invisible on the light #EEF2FF card
                       ),
                     ),
                     const SizedBox(height: 4),

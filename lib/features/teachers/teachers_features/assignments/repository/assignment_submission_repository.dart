@@ -34,8 +34,7 @@ class AssignmentSubmissionRepository {
   }
 
   /// Teacher - Get submissions for an assignment
-  Stream<List<AssignmentSubmissionModel>>
-      getAssignmentSubmissions({
+  Stream<List<AssignmentSubmissionModel>> getAssignmentSubmissions({
     required String assignmentId,
   }) {
     return service.getAssignmentSubmissions(
@@ -43,9 +42,18 @@ class AssignmentSubmissionRepository {
     );
   }
 
+  /// Teacher - Get submissions across multiple assignments
+  /// (used for the dashboard "Recent Activity" feed)
+  Stream<List<AssignmentSubmissionModel>> getSubmissionsForAssignments({
+    required List<String> assignmentIds,
+  }) {
+    return service.getSubmissionsForAssignments(
+      assignmentIds: assignmentIds,
+    );
+  }
+
   /// Student - Get all my submissions
-  Stream<List<AssignmentSubmissionModel>>
-      getStudentSubmissions({
+  Stream<List<AssignmentSubmissionModel>> getStudentSubmissions({
     required String studentId,
   }) {
     return service.getStudentSubmissions(
@@ -54,8 +62,7 @@ class AssignmentSubmissionRepository {
   }
 
   /// Check whether student already submitted
-  Future<AssignmentSubmissionModel?>
-      getStudentSubmission({
+  Future<AssignmentSubmissionModel?> getStudentSubmission({
     required String assignmentId,
     required String studentId,
   }) {
@@ -67,16 +74,16 @@ class AssignmentSubmissionRepository {
 
   /// Grade Submission
   Future<void> gradeSubmission({
-  required String submissionId,
-  required String grade,
-  required String feedback,
-  required String status,
-}) {
-  return service.gradeSubmission(
-    submissionId: submissionId,
-    grade: grade,
-    feedback: feedback,
-    status: status,
-  );
-}
+    required String submissionId,
+    required String grade,
+    required String feedback,
+    required String status,
+  }) {
+    return service.gradeSubmission(
+      submissionId: submissionId,
+      grade: grade,
+      feedback: feedback,
+      status: status,
+    );
+  }
 }

@@ -7,7 +7,7 @@ import 'package:nexcampus_app/features/authentication/presentation/pages/login_s
 import 'package:nexcampus_app/features/teachers/screens/widgets/bottom_nav_bar.dart';
 import 'package:nexcampus_app/features/teachers/screens/widgets/dashboard_greeting_card.dart';
 import 'package:nexcampus_app/features/teachers/screens/widgets/quick_access_grid.dart';
-import 'package:nexcampus_app/features/teachers/screens/widgets/recent_activity_card.dart';
+import 'package:nexcampus_app/features/teachers/screens/widgets/recent_activity_list.dart';
 
 import 'package:nexcampus_app/features/teachers/shared_screens/department_semester_selection_screen.dart';
 import 'package:nexcampus_app/features/teachers/teachers_features/teacher_profile/blocs/bloc/teacherprofile_bloc.dart';
@@ -227,30 +227,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
 
                                 const SizedBox(height: 14),
 
-                                const RecentActivityCard(
-                                  icon: Icons.assignment_outlined,
-                                  color: Colors.green,
-                                  title: "Flutter Assignment Submitted",
-                                  subtitle:
-                                      "Computer Engineering • Semester 6",
-                                  time: "15 min ago",
-                                ),
-
-                                const RecentActivityCard(
-                                  icon: Icons.fact_check_outlined,
-                                  color: AppTheme.primary,
-                                  title: "Attendance Updated",
-                                  subtitle: "Civil Engineering • Semester 2",
-                                  time: "1 hour ago",
-                                ),
-
-                                const RecentActivityCard(
-                                  icon: Icons.campaign_outlined,
-                                  color: AppTheme.primary,
-                                  title: "Holiday Notice Published",
-                                  subtitle: "All Departments",
-                                  time: "Yesterday",
-                                ),
+                                RecentActivityList(teacherId: teacherId),
 
                                 SizedBox(height: spacing),
                               ],
